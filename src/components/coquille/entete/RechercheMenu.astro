@@ -1,0 +1,567 @@
+---
+/*
+ * Recherche du haut du menu. Un sélecteur à deux segments, dans la barre,
+ * choisit où chercher (une pastille glisse vers le choix actif) :
+ * - les sites des bibliothèques (par défaut) : des suggestions s'ouvrent
+ *   sous le champ, à mesure qu'on tape, les plus pertinentes d'abord, toutes sources
+ *   confondues (le site, la Boîte à outils et Studio·bib, d'après l'index
+ *   réuni de src/lib/recherche/moteur.ts) ; chacune nomme sa source, puis la page.
+ *   « Tous les résultats », comme Entrée sans suggestion choisie, mène à la
+ *   page de résultats (/resultats/?q=…) ;
+ * - Sofia : le formulaire part vers Sofia, comme avant.
+ *
+ * Motif « combobox » de l'APG (liste, aria-activedescendant) : le
+ * focus reste dans le champ, les flèches parcourent les suggestions, Entrée
+ * suit la suggestion choisie, Échap referme la liste sans fermer le menu.
+ *
+ * Le sélecteur est un groupe de boutons radio natifs (flèches du clavier,
+ * annonce « 1 sur 2 »). Leur attribut `form` ne désigne aucun formulaire :
+ * ils ne partent pas avec la requête vers Sofia.
+ *
+ * Sans JavaScript, le sélecteur reste masqué et le formulaire part vers
+ * Sofia : l'étiquette le dit.
+ */
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import { ACTION_SOFIA, PARAMETRES_SOFIA, PLACEHOLDER_SOFIA } from '@/lib/sofia'
+import ChampRecherche from './ChampRecherche.astro'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+---
+
+<ChampRecherche
+  id={id}
+  etiquette="Rechercher dans Sofia"
+  nom="Recherche"
+  action={ACTION_SOFIA}
+  parametre="queryString"
+  caches={Object.entries(PARAMETRES_SOFIA)}
+  placeholder={PLACEHOLDER_SOFIA}
+  data-recherche-sofia
+  data-recherche-menu
+>
+  <span slot="portee" class="portee" hidden data-portee-conteneur>
+    {/* Libellé court sous 900 px (« Nos sites ») : la saisie garde sa place */}
+    <span class="segments" role="radiogroup" aria-label="Où chercher" data-segments>
+      <span class="indicateur" aria-hidden="true" data-indicateur></span>
+      {
+        [
+          ['sites', 'Les sites des bibliothèques', 'Nos sites'],
+          ['sofia', 'Sofia', 'Sofia'],
+        ].map(([valeur, long, court], i) => (
+          <label class="segment">
+            <input type="radio" class="visuellement-masque" name={`${id}-portee`} form={`${id}-portee`} value={valeur} checked={i === 0} data-texte={long} data-portee />
+            <span class="long">{long}</span>
+            <span class="court">{court}</span>
+          </label>
+        ))
+      }
+    </span>
+  </span>
+
+  <div class="suggestions" id={`${id}-suggestions`} role="listbox" aria-label="Suggestions" hidden data-suggestions></div>
+  {/* Icône des liens externes, copiée dans les suggestions : le caractère ↗
+      s'affiche en emoji sur iOS */}
+  <template data-icone-externe>
+    <IconeSprite icone={ArrowUpRightIcon} size={16} weight="bold" aria-hidden="true" className="option-externe" />
+  </template>
+  <p class="visuellement-masque" role="status" data-statut-suggestions></p>
+</ChampRecherche>
+
+<script>
+  import type MiniSearch from 'minisearch'
+  import { chargerIndex, suggerer } from '@/lib/recherche/moteur'
+  import { avecBase } from '@/lib/chemin'
+  import { PLACEHOLDER_SOFIA } from '@/lib/sofia'
+
+  // Source affichée devant la page ; les sections de l'index du site (Pages,
+  // Nouvelles, Bibliothèques, Personnel) sont toutes « Site des bibliothèques »
+  const SOURCES: Record<string, string> = { outils: 'Boîte à outils', studio: 'Studio·bib' }
+  const SOURCE_SITE = 'Site des bibliothèques'
+  const NOMBRE = 8
+  const PLACEHOLDERS = { sofia: PLACEHOLDER_SOFIA, sites: 'Services, guides, soutien informatique…' }
+  const DELAI_FRAPPE = 120
+
+  for (const formulaire of document.querySelectorAll<HTMLFormElement>('[data-recherche-menu]')) {
+    const champ = formulaire.querySelector<HTMLInputElement>('input[type=search]')!
+    const etiquette = formulaire.querySelector<HTMLLabelElement>('label')!
+    const choix = [...formulaire.querySelectorAll<HTMLInputElement>('[data-portee]')]
+    const segments = formulaire.querySelector<HTMLElement>('[data-segments]')!
+    const indicateur = formulaire.querySelector<HTMLElement>('[data-indicateur]')!
+    const liste = formulaire.querySelector<HTMLElement>('[data-suggestions]')!
+    const statut = formulaire.querySelector<HTMLElement>('[data-statut-suggestions]')!
+    const iconeExterne = formulaire.querySelector<HTMLTemplateElement>('[data-icone-externe]')!
+    let index: MiniSearch | null = null
+    let echec = false
+    let minuterie: ReturnType<typeof setTimeout> | undefined
+    let active = -1
+
+    // Amélioration progressive : le sélecteur et le rôle combobox
+    // n'existent qu'avec JavaScript
+    formulaire.querySelector<HTMLElement>('[data-portee-conteneur]')!.hidden = false
+    etiquette.textContent = 'Rechercher'
+    champ.setAttribute('role', 'combobox')
+    champ.setAttribute('aria-autocomplete', 'list')
+    champ.setAttribute('aria-controls', liste.id)
+    champ.setAttribute('aria-expanded', 'false')
+
+    const choisi = () => choix.find((c) => c.checked) ?? choix[0]
+    const sites = () => choisi().value === 'sites'
+    const urlResultats = (requete: string) => avecBase(`/resultats/?q=${encodeURIComponent(requete)}`)
+    const options = () => [...liste.querySelectorAll<HTMLElement>('[role=option]')]
+
+    // La pastille prend la place et la largeur du segment choisi ; elle
+    // glisse (transition CSS) quand le choix change. Recalculée quand le
+    // libellé change de longueur (court ou long, menu ouvert, texte agrandi).
+    function placerIndicateur() {
+      const segment = choisi().closest('label')!
+      if (!segment.offsetWidth) return
+      indicateur.style.width = `${segment.offsetWidth}px`
+      indicateur.style.translate = `${segment.offsetLeft}px 0`
+    }
+    new ResizeObserver(() => {
+      placerIndicateur()
+      // Pas de glissement à la première mise en place
+      requestAnimationFrame(() => segments.classList.add('pret'))
+    }).observe(segments)
+
+    // `charger` : seulement quand la personne choisit une portée. Au
+    // chargement de la page, rien n'est téléchargé (les deux index pèsent
+    // ≈ 290 Ko compressés) : le champ les demande à sa première prise de focus.
+    function majPortee(charger_ = true) {
+      champ.placeholder = PLACEHOLDERS[sites() ? 'sites' : 'sofia']
+      champ.setAttribute('aria-label', `Rechercher dans ${choisi().dataset.texte}`)
+      placerIndicateur()
+      if (charger_ && sites()) charger()
+      rendre()
+    }
+
+    function charger() {
+      if (index) return
+      echec = false
+      chargerIndex('sites')
+        .then((i) => {
+          index = i
+        })
+        .catch(() => {
+          echec = true
+        })
+        .finally(() => {
+          if (document.activeElement === champ) rendre()
+        })
+    }
+
+    function fermer() {
+      liste.hidden = true
+      champ.setAttribute('aria-expanded', 'false')
+      champ.removeAttribute('aria-activedescendant')
+      active = -1
+    }
+
+    function activer(position: number) {
+      const tous = options()
+      tous.forEach((o, i) => o.setAttribute('aria-selected', String(i === position)))
+      active = position
+      if (position < 0) {
+        champ.removeAttribute('aria-activedescendant')
+        return
+      }
+      champ.setAttribute('aria-activedescendant', tous[position].id)
+      tous[position].scrollIntoView({ block: 'nearest' })
+    }
+
+    function option(texte: string, url: string | null, source = '', externe = false) {
+      const element = document.createElement('div')
+      element.className = 'option'
+      element.id = `${liste.id}-${liste.children.length}`
+      element.setAttribute('role', 'option')
+      element.setAttribute('aria-selected', 'false')
+      if (url) element.dataset.url = url
+      if (source) {
+        // Lu « Studio·bib : Installer le VPN » ; la flèche est visuelle
+        const nom = document.createElement('span')
+        nom.className = 'option-source'
+        nom.textContent = source
+        const fleche = document.createElement('span')
+        fleche.className = 'option-fleche'
+        fleche.setAttribute('aria-hidden', 'true')
+        fleche.textContent = '→'
+        const separateur = document.createElement('span')
+        separateur.className = 'visuellement-masque'
+        separateur.textContent = ' : '
+        element.append(nom, fleche, separateur)
+      }
+      const titre = document.createElement('span')
+      titre.className = 'option-titre'
+      titre.textContent = texte
+      element.append(titre)
+      if (externe) element.append(iconeExterne.content.cloneNode(true))
+      return element
+    }
+
+    function rendre() {
+      const requete = champ.value.trim()
+      liste.replaceChildren()
+      active = -1
+      if (!sites() || !requete || document.activeElement !== champ) {
+        fermer()
+        statut.textContent = ''
+        return
+      }
+
+      const suggestions = index ? suggerer(index, requete).slice(0, NOMBRE) : []
+      for (const { title, url, section } of suggestions) liste.append(option(title, url, SOURCES[section] ?? SOURCE_SITE, /^https?:/.test(url)))
+      const total = suggestions.length
+
+      // Dernière ligne : tous les résultats du site, dans la boîte de recherche
+      const tout = option(`Tous les résultats pour « ${requete} »`, null)
+      tout.classList.add('option-tout')
+      liste.append(tout)
+
+      liste.hidden = false
+      champ.setAttribute('aria-expanded', 'true')
+      champ.removeAttribute('aria-activedescendant')
+      const message = total ? `${total} suggestion${total > 1 ? 's' : ''}` : index || echec ? 'Aucune suggestion' : 'Chargement des suggestions…'
+      if (statut.textContent !== message) statut.textContent = message
+    }
+
+    function suivre(element: HTMLElement) {
+      const requete = champ.value.trim()
+      fermer()
+      if (element.dataset.url) {
+        window.location.href = element.dataset.url
+        return
+      }
+      window.location.href = urlResultats(requete)
+    }
+
+    for (const c of choix) c.addEventListener('change', () => majPortee())
+
+    champ.addEventListener('input', () => {
+      clearTimeout(minuterie)
+      minuterie = setTimeout(rendre, DELAI_FRAPPE)
+    })
+    champ.addEventListener('focus', () => {
+      if (sites()) {
+        charger()
+        rendre()
+      }
+    })
+
+    champ.addEventListener('keydown', (e) => {
+      if (liste.hidden) {
+        if (e.key === 'ArrowDown' && sites() && champ.value.trim()) {
+          e.preventDefault()
+          rendre()
+          activer(0)
+        }
+        return
+      }
+      const nombre = options().length
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        activer(active + 1 >= nombre ? 0 : active + 1)
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        activer(active - 1 < 0 ? nombre - 1 : active - 1)
+      } else if (e.key === 'Escape') {
+        // La liste se referme ; le menu, lui, reste ouvert
+        e.preventDefault()
+        e.stopPropagation()
+        fermer()
+      } else if (e.key === 'Enter' && active >= 0) {
+        e.preventDefault()
+        suivre(options()[active])
+      }
+    })
+
+    // Le clic ne doit pas retirer le focus du champ avant d'être lu
+    liste.addEventListener('mousedown', (e) => e.preventDefault())
+    liste.addEventListener('click', (e) => {
+      const element = (e.target as Element).closest<HTMLElement>('[role=option]')
+      if (element) suivre(element)
+    })
+
+    // La liste se referme quand le focus quitte le champ
+    champ.addEventListener('blur', () => fermer())
+
+    // Sites des bibliothèques : Entrée mène à la page de résultats.
+    // En capture, pour passer avant l'envoi vers Sofia (lib/sofia.ts).
+    formulaire.addEventListener(
+      'submit',
+      (e) => {
+        if (!sites()) return
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        const requete = champ.value.trim()
+        if (!requete) return
+        fermer()
+        window.location.href = urlResultats(requete)
+      },
+      { capture: true },
+    )
+
+    majPortee(false)
+  }
+</script>
+
+<style>
+  /* Dans la barre, avant la saisie */
+  .portee {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    min-width: 0;
+    max-width: 60%;
+    margin-inline-start: -0.625rem;
+    padding-inline-end: var(--espace-1);
+  }
+
+  .portee[hidden] {
+    display: none;
+  }
+
+  /* Rail clair, deux segments ; la pastille bleu foncé marque le choix */
+  .segments {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+    padding: 3px;
+    border-radius: var(--rayon-plein);
+    background: var(--couleur-teinte);
+  }
+
+  .indicateur {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    border-radius: var(--rayon-plein);
+    background: var(--bleu-fonce);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--bleu-fonce) 30%, transparent);
+  }
+
+  .pret .indicateur {
+    transition:
+      translate var(--duree-moyenne-2) var(--courbe-emphase-deceleree),
+      width var(--duree-moyenne-2) var(--courbe-emphase-deceleree);
+  }
+
+  .segment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--rayon-plein);
+    color: var(--couleur-accent);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .segment span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .segment:has(:checked) {
+    color: var(--couleur-sur-fonce);
+    cursor: default;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .segment:not(:has(:checked)):hover {
+      color: var(--couleur-texte);
+    }
+  }
+
+  .segment:has(:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .segment .long {
+    display: none;
+  }
+
+  @media (width >= 900px) {
+    .segment {
+      padding-inline: var(--espace-2);
+      font-size: var(--texte-reduit);
+    }
+
+    .segment .long {
+      display: inline;
+    }
+
+    .segment .court {
+      display: none;
+    }
+  }
+
+  /* Sous 600 px, deux rangées dans le même cadre : le sélecteur sur toute la
+     largeur (deux moitiés), puis la saisie et le bouton. Sur une rangée, à
+     320 px, les libellés étaient coupés et la saisie faisait 56 px. */
+  @media (width < 600px) {
+    :global([data-recherche-menu] .champ:has(> [data-portee-conteneur]:not([hidden]))) {
+      flex-wrap: wrap;
+      row-gap: 0.25rem;
+      padding-block: 0.375rem 0.25rem;
+      border-radius: var(--rayon-moyen);
+    }
+
+    .portee {
+      flex: 1 0 calc(100% + 0.625rem);
+      max-width: none;
+      padding-inline-end: 0;
+    }
+
+    .segments {
+      flex: 1 1 auto;
+    }
+
+    .segment {
+      flex: 1 1 0;
+      justify-content: center;
+    }
+  }
+
+  /* Couleurs forcées : le fond de la pastille disparaît ; un contour
+     marque le choix */
+  @media (forced-colors: active) {
+    .segments {
+      border: 1px solid CanvasText;
+    }
+
+    .segment:has(:checked) {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+      color: CanvasText;
+    }
+
+    .segment:has(:focus-visible) {
+      outline-color: Highlight;
+      outline-offset: 2px;
+    }
+  }
+
+  /* ---- Suggestions, juste sous le champ ---- */
+  .suggestions {
+    position: absolute;
+    z-index: var(--z-dessus-2);
+    inset-inline: 0;
+    top: calc(100% + 0.375rem);
+    max-height: min(26rem, 60vh);
+    padding-block-start: var(--espace-1);
+    overflow-y: auto;
+    /* Au clavier, l'option choisie ne passe pas sous « Tous les résultats » */
+    scroll-padding-block-end: 4rem;
+    overscroll-behavior: contain;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-petit);
+    background: var(--couleur-surface);
+    box-shadow:
+      0 8px 10px -6px color-mix(in srgb, var(--gris-700) 20%, transparent),
+      0 16px 24px 2px color-mix(in srgb, var(--gris-700) 12%, transparent);
+  }
+
+  /* Entrée brève, une fois à l'ouverture (pas à chaque frappe : la liste
+     reste affichée) ; sortie instantanée, l'état de [hidden] n'a pas de
+     transition */
+  .suggestions {
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-emphase-deceleree),
+      translate var(--duree-courte-4) var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    .suggestions {
+      opacity: 0;
+      translate: 0 -0.25rem;
+    }
+  }
+
+  .suggestions[hidden] {
+    display: none;
+    transition: none;
+  }
+
+  /* Les lignes sont créées par le script : :global sous .suggestions.
+     « Tous les résultats » reste collé au bas de la liste : visible sans
+     la faire défiler. */
+  .suggestions :global(.option-tout) {
+    position: sticky;
+    bottom: 0;
+    margin-block-start: var(--espace-1);
+    border-block-start: 1px solid var(--couleur-bordure);
+    background: var(--couleur-surface);
+  }
+
+  .suggestions :global(.option) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--espace-1);
+    min-height: var(--taille-cible);
+    padding: 0.625rem var(--espace-2);
+    color: var(--couleur-texte);
+    cursor: pointer;
+  }
+
+  /* Source, flèche, page : la page passe sous la source si la ligne manque
+     de place, la source ne se coupe pas */
+  .suggestions :global(.option-source) {
+    flex-shrink: 0;
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-forte);
+  }
+
+  .suggestions :global(.option-fleche) {
+    flex-shrink: 0;
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .suggestions :global(.option-titre) {
+    flex: 1 1 10rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .suggestions :global(.option-externe) {
+    flex-shrink: 0;
+    align-self: center;
+    color: var(--couleur-accent);
+  }
+
+  .suggestions :global(.option-tout) {
+    color: var(--couleur-accent);
+    font-weight: var(--graisse-forte);
+  }
+
+  .suggestions :global(.option:hover),
+  .suggestions :global(.option[aria-selected='true']) {
+    background: var(--couleur-teinte);
+  }
+
+  /* L'option choisie au clavier ne tient pas qu'au fond : un liseré */
+  .suggestions :global(.option[aria-selected='true']) {
+    box-shadow: inset 4px 0 0 var(--bleu-principal);
+  }
+
+  @media (forced-colors: active) {
+    .suggestions :global(.option[aria-selected='true']) {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+/*
+ * Barre de progression sous un carrousel : où l'on est rendu. Le curseur a la
+ * largeur de la part visible et suit le défilement (souris, doigt, flèches) ;
+ * il est placé par src/lib/carrousel.ts. Visuelle seulement (aria-hidden) :
+ * les flèches annoncent les cartes visibles. Masquée sans JavaScript et quand
+ * tout tient dans la largeur.
+ */
+interface Props {
+  class?: string
+}
+
+// `reste` porte l'attribut de portée du parent : son style s'applique à `class`
+const { class: classe, ...reste } = Astro.props
+---
+
+<div class:list={['progression', classe]} aria-hidden="true" hidden data-progression {...reste}>
+  <span class="curseur" data-curseur></span>
+</div>
+
+<style>
+  /* Rail pâle, curseur bleu (3:1 au moins sur blanc et sur bleu pâle, WCAG 1.4.11) */
+  .progression {
+    position: relative;
+    height: 4px;
+    overflow: hidden;
+    border-radius: var(--rayon-plein);
+    background-color: color-mix(in srgb, var(--couleur-texte) 15%, transparent);
+  }
+
+  .progression[hidden] {
+    display: none;
+  }
+
+  .curseur {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    border-radius: inherit;
+    background-color: var(--couleur-lien);
+    transition: transform var(--duree-courte-2) linear;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .curseur {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .progression {
+      outline: 1px solid CanvasText;
+    }
+
+    .curseur {
+      background-color: CanvasText;
+    }
+  }
+</style>

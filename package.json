@@ -1,0 +1,50 @@
+{
+  "name": "bibweb",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "dev:fond": "astro dev --background",
+    "dev:arreter": "astro dev stop",
+    "build": "astro build",
+    "preview": "astro preview",
+    "verifier": "node scripts/verifier-pages.mjs",
+    "verifier:seuils": "node scripts/verifier-seuils.mjs",
+    "indexer:externes": "node scripts/indexer-externes.mjs",
+    "astro": "astro",
+    "dev:propre": "astro dev stop; rm -f .astro/data-store.json && astro dev --background",
+    "cms:local": "npx --yes decap-server@3.11.3",
+    "test": "node --test 'src/**/*.test.ts'"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.3",
+    "@astrojs/mdx": "^8.1.0",
+    "@astrojs/preact": "^6.1.2",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/figtree": "^5.3.0",
+    "@fontsource-variable/lora": "^5.3.0",
+    "@iframe-resizer/parent": "^5.5.9",
+    "@phosphor-icons/react": "^2.1.10",
+    "@sindresorhus/slugify": "^3.0.1",
+    "astro": "^7.4.1",
+    "github-slugger": "^2.0.0",
+    "leaflet": "^1.9.4",
+    "mdast-util-from-markdown": "^2.1.0",
+    "mdast-util-mdx": "^3.0.0",
+    "micromark-extension-mdxjs": "^3.0.0",
+    "minisearch": "^7.2.0",
+    "preact": "^11.2.0",
+    "preact-render-to-string": "^6.8.2",
+    "rehype-parse": "^9.0.1",
+    "rehype-remark": "^10.0.1",
+    "remark-directive": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.22",
+    "entities": "^4.5.0",
+    "playwright-core": "^1.64.1"
+  }
+}

@@ -1,0 +1,41 @@
+---
+/*
+ * Bloc « accordeons » : titre, texte et volets d'accordéon (GroupeAccordeons),
+ * dans la colonne de texte (ColonneDecalee 0.5), comme les héros et les listes
+ * de liens. Les volets ne dépassent pas 50rem, comme ceux du bloc
+ * icone-texte (Engagements, principes de l'IA) : une rangée de toute la
+ * largeur éloignait le + de son titre. Ils sont centrés dans la bande.
+ */
+import ColonneDecalee from '@/components/primitives/ColonneDecalee.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import Volets from './Volets.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'accordeons'> }
+
+const { bloc } = Astro.props
+---
+
+<ColonneDecalee offset={0.5}>
+  <Titre texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <div class="intro"><TexteMarkdown texte={bloc.texte} brut /></div>}
+  <div class="volets"><Volets volets={bloc.volets} couleur={bloc.couleur} fond={bloc.fond} /></div>
+</ColonneDecalee>
+
+<style>
+  .intro {
+    margin-bottom: var(--espace-bloc);
+  }
+
+  /* Centrés dans la bande, sous le titre et le texte */
+  .volets {
+    width: 100%;
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+
+  .intro > :global(:last-child) {
+    margin-bottom: 0;
+  }
+</style>

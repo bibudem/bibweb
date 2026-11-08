@@ -1,0 +1,203 @@
+---
+/*
+ * Squelette HTML commun à toutes les pages : <head> (SEO, partage, icônes),
+ * lien d'évitement, coquille (en-tête, pied de page) et web components
+ * institutionnels. Les gabarits (GabaritPage, GabaritNouvelle…) placent leur
+ * contenu dans le slot par défaut.
+ */
+import { sansBase } from '@/lib/chemin'
+import { jsonLd } from '@/lib/json-ld'
+import '@/styles/global.css'
+// Polices préchargées : sans cela, l'échange de police au chargement fait
+// passer des paragraphes sur une ligne de plus (CLS de 0,19 mesuré sur
+// /conditions-utilisation/ à 900 px). Seul le sous-ensemble latin, le seul
+// utilisé par le contenu, est préchargé.
+import figtreeLatin from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url'
+import loraLatin from '@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url'
+import '@/styles/animations.css'
+import Entete from '@/components/coquille/Entete.astro'
+import BandeauHoraires from '@/components/coquille/BandeauHoraires.astro'
+import PiedDePage from '@/components/coquille/PiedDePage.astro'
+import LiensRapides from '@/components/coquille/LiensRapides.astro'
+import ServicesInstitutionnels from '@/components/coquille/ServicesInstitutionnels.astro'
+import RetourHaut from '@/components/coquille/RetourHaut.astro'
+import { LANGUE_SITE, estEnFrancais } from '@/lib/contenu'
+import { SITE_TITRE, SITE_DESCRIPTION, NOM_ORGANISATION } from '@/lib/site'
+
+interface Props {
+  titre?: string
+  description?: string
+  noindex?: boolean
+  /** Sans en-tête ni pied de page (pages utilitaires) */
+  vierge?: boolean
+  /** Niveau de page (0 = accueil) : règle la place de la bannière d'avis */
+  niveau?: number
+  /** `article` pour une nouvelle */
+  typeOg?: 'website' | 'article'
+  /** Langue du contenu (BCP 47), si ce n'est pas le français */
+  lang?: string
+}
+
+
+const { titre, description: descriptionPage, noindex = false, vierge = false, niveau = 0, typeOg = 'website', lang } = Astro.props
+const description = descriptionPage?.trim() || SITE_DESCRIPTION
+const titreComplet = titre && titre !== SITE_TITRE ? `${titre} | ${SITE_TITRE}` : SITE_TITRE
+const titrePartage = titre ?? SITE_TITRE
+const canonique = new URL(sansBase(Astro.url.pathname), Astro.site)
+const indexable = !noindex && !vierge
+
+// Partage (réseaux sociaux, messageries) : la même image pour toutes les
+// pages, le logo des bibliothèques sur bleu foncé, en 1200 × 630 (format des
+// grandes cartes de Facebook, LinkedIn, X, Teams…), en JPEG, lu partout.
+// Les photos de bannière ne sont pas reprises : la page reste identifiée
+// comme celle des bibliothèques, quel que soit l'endroit où elle est partagée.
+const imageAbsolue = new URL('/images/partage.jpg', Astro.site)
+const largeurPartage = 1200
+const hauteurPartage = 630
+const altPartage = 'Logo des bibliothèques de l’Université de Montréal'
+
+// Accueil : le site et l'organisation, pour les moteurs de recherche
+const donneesSite =
+  niveau === 0 && sansBase(Astro.url.pathname) === '/'
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': [
+          { '@type': 'WebSite', name: SITE_TITRE, url: new URL('/', Astro.site).href, inLanguage: 'fr-CA' },
+          { '@type': 'Library', name: NOM_ORGANISATION, url: new URL('/', Astro.site).href, logo: new URL('/images/logo-udem-bib.png', Astro.site).href, parentOrganization: { '@type': 'CollegeOrUniversity', name: 'Université de Montréal', url: 'https://www.umontreal.ca' } },
+        ],
+      }
+    : null
+
+// Page dans une autre langue : <html> (donc <title> et le contenu) prend sa
+// langue, et les pièces de la coquille, qui restent en français, sont
+// enveloppées dans un élément lang="fr-CA" sans boîte (display: contents :
+// l'en-tête collant et les barres fixes ne voient aucune différence).
+// En français, pas d'enveloppe : le DOM reste celui de toutes les pages.
+const langPage = estEnFrancais(lang) ? LANGUE_SITE : lang
+const Coquille = langPage === LANGUE_SITE ? Fragment : 'div'
+const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, style: 'display: contents' }
+---
+
+<!doctype html>
+<html lang={langPage}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preload" href={figtreeLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={loraLatin} as="font" type="font/woff2" crossorigin />
+    <title>{titreComplet}</title>
+    <meta name="description" content={description} />
+    {/* Une page non indexée ne se déclare pas canonique */}
+    {indexable && <link rel="canonical" href={canonique} />}
+    {!indexable && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content={typeOg} />
+    <meta property="og:locale" content="fr_CA" />
+    <meta property="og:site_name" content={SITE_TITRE} />
+    <meta property="og:title" content={titrePartage} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={imageAbsolue} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content={String(largeurPartage)} />
+    <meta property="og:image:height" content={String(hauteurPartage)} />
+    {altPartage && <meta property="og:image:alt" content={altPartage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@bibUdeM" />
+    <meta name="twitter:title" content={titrePartage} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageAbsolue} />
+    {altPartage && <meta name="twitter:image:alt" content={altPartage} />}
+    {donneesSite && <script is:inline type="application/ld+json" set:html={jsonLd(donneesSite)} />}
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {/* Fil des nouvelles, repérable par les lecteurs RSS depuis n'importe quelle page */}
+    <link rel="alternate" type="application/rss+xml" title="Nouvelles des Bibliothèques de l’UdeM" href="/nouvelles/rss.xml" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+    <meta name="theme-color" content="#0b113a" />
+    {/* Sens du glissement entre deux pages (voir @view-transition dans
+        global.css) : « retour » pour le bouton Précédent ou une page plus
+        haute dans l'arborescence, sinon « avance ». Dans le <head> : il doit
+        être prêt avant le premier affichage de la page. */}
+    <script is:inline>
+      window.addEventListener('pagereveal', (e) => {
+        if (!e.viewTransition) return
+        const profondeur = (url) => new URL(url).pathname.split('/').filter(Boolean).length
+        const a = window.navigation?.activation
+        let retour = false
+        if (a?.navigationType === 'traverse' && a.from) retour = a.entry.index < a.from.index
+        else if (a?.from?.url) retour = profondeur(location.href) < profondeur(a.from.url)
+        e.viewTransition.types.add(retour ? 'retour' : 'avance')
+        // Précédent / Suivant : la position de défilement est rétablie sans
+        // défilement doux (data-vt-historique, voir global.css)
+        if (a?.navigationType === 'traverse') {
+          document.documentElement.dataset.vtHistorique = ''
+          e.viewTransition.finished.finally(() => delete document.documentElement.dataset.vtHistorique)
+        }
+      })
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="lien-evitement" href="#contenu-principal" lang={langPage === LANGUE_SITE ? undefined : LANGUE_SITE}>Aller au contenu principal</a>
+    {
+      vierge ? (
+        <main id="contenu-principal" class="conteneur">
+          <slot />
+        </main>
+      ) : (
+        <>
+          <Coquille {...attributsCoquille}>
+            <ServicesInstitutionnels position="haut" niveau={niveau} />
+            <Entete />
+            <BandeauHoraires />
+          </Coquille>
+          <slot name="avant-contenu" />
+          {/* Avis des pages de niveau 2 et plus : après la bannière de
+              section, comme dans PageTemplate (rien sous le niveau 2) */}
+          <Coquille {...attributsCoquille}>
+            <ServicesInstitutionnels position="avis" niveau={niveau} />
+          </Coquille>
+          <slot />
+          <Coquille {...attributsCoquille}>
+            {/* Après le contenu : barre et tiroir sont fixes, seul l'ordre
+                de tabulation en dépend (avant, la barre précédait le fil
+                d'Ariane ; WCAG 2.4.3) */}
+            <LiensRapides />
+            <PiedDePage />
+            <ServicesInstitutionnels position="bas" niveau={niveau} />
+            <RetourHaut />
+          </Coquille>
+        </>
+      )
+    }
+    {/* Apparitions au défilement : module différé, exécuté après l'analyse du
+        HTML. Il ne masque que ce qui est sous la ligne de flottaison. */}
+    <script>
+      import '@/lib/animations'
+    </script>
+    {/* Lien d'évitement : le focus passe au contenu principal, pour que
+        Tab reparte de là et que les lecteurs d'écran le lisent. Sans
+        JavaScript, l'ancre suffit dans les navigateurs actuels. */}
+    <script>
+      import { focaliserTemporairement } from '@/lib/focus'
+
+      document.querySelector('.lien-evitement')?.addEventListener('click', () => {
+        const principal = document.getElementById('contenu-principal')
+        if (principal) focaliserTemporairement(principal, { preventScroll: true })
+      })
+    </script>
+    {/* Lien d'ancre des titres : le clic copie aussi l'adresse de la section
+        (c'est presque toujours pour la partager). La navigation vers l'ancre
+        a lieu comme avant, et sans JavaScript ou sans presse-papier le lien
+        reste un simple lien. */}
+    <script>
+      import { copierLienAncre } from '@/lib/ancres-copie'
+
+      copierLienAncre()
+    </script>
+  </body>
+</html>
+

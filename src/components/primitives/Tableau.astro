@@ -1,0 +1,91 @@
+---
+/*
+ * Tableau du contenu (TableContainer component={Paper}, Table et leurs
+ * parties MUI dans la source) : une zone sur surface claire qui défile à
+ * l'horizontale quand le tableau est plus large que l'écran (minWidth 650 des
+ * pages de prêt), atteignable au clavier et nommée d'après le tableau.
+ *
+ * Le slot donne <thead>, <tbody>, <tr class="rangee"> et les cellules
+ * (class="cellule", aligne-* pour l'alignement). Les cellules d'en-tête
+ * marquées data-cellule deviennent des <th scope="col"> et les <th> sans
+ * portée la reçoivent (tableau.ts) : MUI le faisait par contexte React.
+ */
+import { semantiqueTableau } from './tableau'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Nom du tableau, repris par la zone défilante */
+  titre?: string
+  /** Style du <table> (largeur minimale) */
+  style?: Style
+}
+
+const { titre, style } = Astro.props
+const contenu = semantiqueTableau(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
+---
+
+<div role="region" aria-label={titre ?? 'Tableau'} tabindex="0" class="conteneur-tableau surface">
+  <table class="tableau" aria-label={titre} style={fusionnerStyles(style)} set:html={contenu}></table>
+</div>
+
+<style>
+  /* position: relative : les éléments en position absolue du tableau (texte
+     .visuellement-masque des liens) restent dans la zone qui défile ; sans
+     elle, ils débordaient de la page sur un téléphone */
+  .conteneur-tableau {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .surface {
+    border-radius: var(--rayon-minuscule);
+    background-color: var(--couleur-fond);
+    color: var(--couleur-texte);
+    box-shadow:
+      0 2px 1px -1px color-mix(in srgb, var(--bleu-fonce) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--bleu-fonce) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--bleu-fonce) 12%, transparent);
+  }
+
+  @media (forced-colors: active) {
+    .surface {
+      border: 1px solid CanvasText;
+    }
+  }
+
+  .tableau {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  .tableau :global(.cellule) {
+    padding: 16px;
+    border-bottom: 1px solid var(--couleur-bordure);
+    color: var(--couleur-texte);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.43;
+    text-align: left;
+    vertical-align: inherit;
+  }
+
+  .tableau :global(thead .cellule) {
+    line-height: 1.5rem;
+  }
+
+  /* Dernière rangée sans filet : ce que le contenu demandait par sx sur chaque TableRow */
+  .tableau :global(tbody > tr:last-child > *) {
+    border-bottom: 0;
+  }
+
+  /* Alignements des colonnes GFM (:-: et -:) */
+  .tableau :global(.aligne-center) {
+    text-align: center;
+  }
+
+  .tableau :global(.aligne-right) {
+    text-align: right;
+  }
+</style>

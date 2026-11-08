@@ -1,0 +1,173 @@
+---
+/*
+ * Fiche repliable d'une bibliothèque ou d'un point de service
+ * (FicheBibliotheque.jsx), affichée dans /espaces/ et /nous-joindre/.
+ * Le contenu vient de src/data/horaires/lieux.ts : `id` est l'ancre de la
+ * fiche (« lsh », « Hubert-reeves »…), qui l'ouvre au chargement comme au
+ * changement d'ancre (script d'Accordeon).
+ *
+ * Disposition de la source, sur 10 colonnes : Aujourd'hui et Espaces (3),
+ * Adresse, Nous joindre et contenu libre (4), photo (3, masquée sous 900 px).
+ * Sous 600 px, tout passe en une colonne.
+ *
+ * Corrigé : un lien d'ancre <a href="#id"> était imbriqué dans le bouton du
+ * volet (élément interactif imbriqué), et l'id était posé sur ce bouton. Le
+ * volet est un <details> natif, avec l'id ; les blocs ont de vrais titres.
+ */
+import { Image } from 'astro:assets'
+import { DoorIcon } from '@phosphor-icons/react/dist/ssr/Door'
+import { MapTrifoldIcon } from '@phosphor-icons/react/dist/ssr/MapTrifold'
+import { UsersIcon } from '@phosphor-icons/react/dist/ssr/Users'
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
+import Accordeon from '@/components/contenu/accordeons/Accordeon.astro'
+import AccordeonTitre from '@/components/contenu/accordeons/AccordeonTitre.astro'
+import Lien from '@/components/primitives/Lien.astro'
+import Bloc from './Bloc.astro'
+import ContenuFiche from './ContenuFiche.astro'
+import HoraireAujourdhui from './HoraireAujourdhui.astro'
+import { lieuParFiche } from '@/data/horaires/lieux'
+import { imagesLieux } from '@/data/horaires/images'
+
+interface Props {
+  /** Ancre de la fiche (fiche.id dans lieux.ts) */
+  id: string
+  /** Niveau du nom de la fiche ; les blocs prennent le suivant */
+  niveauTitre?: 2 | 3 | 4
+  class?: string
+}
+
+const { id, niveauTitre = 3, class: classe } = Astro.props
+const lieu = lieuParFiche(id)
+if (!lieu?.fiche) throw new Error(`FicheBibliotheque : aucune fiche « ${id} » dans src/data/horaires/lieux.ts`)
+const { fiche, codeBib } = lieu
+const image = codeBib ? imagesLieux[codeBib] : undefined
+const niveauBloc = niveauTitre + 1
+const premiereColonne = Boolean(codeBib || fiche.espaces)
+---
+
+<Accordeon id={fiche.id} class:list={['fiche', classe]}>
+  <AccordeonTitre niveauTitre={niveauTitre}>{fiche.titre}</AccordeonTitre>
+  <div class="details">
+    {
+      premiereColonne && (
+        <div class="colonne colonne-1">
+          {codeBib && <HoraireAujourdhui bib={codeBib} niveauTitre={niveauBloc} />}
+          {fiche.espaces && (
+            <Bloc titre="Espaces" Icon={DoorIcon} niveauTitre={niveauBloc}>
+              <ContenuFiche blocs={fiche.espaces} />
+            </Bloc>
+          )}
+        </div>
+      )
+    }
+    <div class="colonne colonne-2">
+      <Bloc titre="Adresse" Icon={MapTrifoldIcon} niveauTitre={niveauBloc}>
+        {fiche.adresse.map((ligne) => <p>{ligne}</p>)}
+        <p class="espace-avant">
+          <Lien to={fiche.itineraire} Icon={ArrowSquareOutIcon}>Voir l'itinéraire</Lien>
+        </p>
+      </Bloc>
+      {
+        (fiche.nousJoindre || fiche.repertoire) && (
+          <Bloc titre="Nous joindre" Icon={UsersIcon} niveauTitre={niveauBloc}>
+            {fiche.nousJoindre && <ContenuFiche blocs={fiche.nousJoindre} classeListe="liste-contacts" />}
+            {fiche.repertoire && (
+              <p class="espace-avant">
+                <Lien to={fiche.repertoire.lien} Icon={fiche.repertoire.fleche || undefined}>
+                  Répertoire du personnel
+                </Lien>
+              </p>
+            )}
+          </Bloc>
+        )
+      }
+      {
+        fiche.enfants && (
+          <Bloc>
+            <ContenuFiche blocs={fiche.enfants} />
+          </Bloc>
+        )
+      }
+    </div>
+    {
+      image && (
+        <div class="colonne-image">
+          <Image src={image} alt="" widths={[400, 600, 800]} sizes="(min-width: 1536px) 430px, 28vw" formats={['avif', 'webp']} loading="lazy" class="photo" />
+        </div>
+      )
+    }
+  </div>
+</Accordeon>
+
+<style>
+  .fiche {
+    color: var(--couleur-texte);
+  }
+
+  /* Les encadrés des fiches sont plus petits que dans le reste du contenu
+     (13 px au texte par défaut) */
+  .fiche :global(.alerte) {
+    font-size: var(--texte-minuscule);
+  }
+
+  .details {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: var(--espace-4);
+    padding: 20px;
+    border-radius: 0 0 var(--rayon-petit) var(--rayon-petit);
+    background-color: var(--couleur-teinte);
+  }
+
+  .colonne {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-4);
+    min-width: 0;
+    padding: 1.3333rem 0 1.3333rem 1.3333rem;
+  }
+
+  /* Par la colonne : l'emporte sur la remise à zéro des marges du contenu
+     de Bloc (.contenu-bloc p) */
+  .colonne .espace-avant {
+    margin-top: 1em;
+  }
+
+  .details :global(.liste-contacts) {
+    margin-left: 1em;
+  }
+
+  .colonne-image {
+    display: none;
+  }
+
+  @media (width >= 600px) {
+    .details {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 900px) {
+    .details {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 4fr) minmax(0, 3fr);
+      padding: 0;
+    }
+
+    .colonne-image {
+      position: relative;
+      display: block;
+      grid-column: 3;
+      grid-row: 1;
+      min-height: 100%;
+    }
+
+    .colonne-image :global(.photo) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0 0 var(--rayon-petit) 0;
+    }
+  }
+</style>

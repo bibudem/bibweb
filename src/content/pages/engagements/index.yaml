@@ -1,0 +1,53 @@
+# Page vitrine /engagements/ : voir docs/REDACTION.md, section « Vitrines »
+# Le contenu de chaque engagement est dans sa page de niveau 2.
+# Version précédente (blocs détaillés) : docs/archives/engagements-2026-11-06.yaml
+title: Engagements
+crumbLabel: Engagements
+
+banniere:
+  titre: Pour un monde équitable et durable
+  sousTitre:
+    - "Science ouverte, équité et inclusion, Premiers Peuples, environnement, IA et langue française : ce que les bibliothèques défendent et font."
+  image: engagements
+  cadrage: 25%
+
+sections:
+  - type: liste-liens
+    presentation: cartes
+    liens:
+      - titre: Science ouverte
+        description: Découvrez nos actions pour rendre la recherche accessible à tous les publics, dont le soutien à l’édition savante en libre accès.
+        lien: /engagements/science-ouverte/
+        icone: lock-open
+      - titre: Équité, diversité, inclusion et accessibilité
+        description: Découvrez comment nous rendons nos collections, services et espaces inclusifs et accessibles.
+        lien: /engagements/equite-diversite-inclusion/
+        icone: users-three
+      - titre: Premiers Peuples
+        description: Découvrez nos actions pour soutenir et valoriser les savoirs des Premiers Peuples.
+        lien: /engagements/premiers-peuples/
+        icone: handshake
+      - titre: Empreinte écologique
+        description: Découvrez notre démarche pour réduire notre impact environnemental.
+        lien: /engagements/empreinte-ecologique/
+        icone: leaf
+      - titre: Intelligence artificielle
+        description: Prenez connaissance de nos principes directeurs pour un usage éthique de l’IA.
+        lien: /engagements/intelligence-artificielle/
+        icone: sparkle
+      - titre: Science en français
+        description: Découvrez nos actions pour la recherche et le rayonnement de la science en français.
+        lien: /engagements/science-en-francais/
+        icone: translate
+      - titre: Ateliers Wikipédia
+        description: Participez à l’enrichissement de la présence francophone sur Wikipédia.
+        lien: /engagements/ateliers-wiki/
+        icone: globe
+      - titre: Bibliothèques vivantes
+        description: Empruntez un « livre humain » le temps d’une conversation.
+        lien: /engagements/bibliotheques-vivantes/
+        icone: chats-circle
+      - titre: La lecture en cadeau
+        description: Offrez un livre jeunesse neuf à un enfant de communautés autochtones.
+        lien: /engagements/lecture-cadeau/
+        icone: gift

@@ -1,0 +1,389 @@
+---
+/*
+ * Section Quoi de neuf (accueil, QuoiDeNeuf de coquille-web) : les colonnes
+ * passées en enfants (ListeEvenements, ListeNouvellesAccueil,
+ * ListeFormationsAccueil) côte à côte dès 900 px (deux, la troisième
+ * dessous, puis trois dès 1200 px), des onglets en dessous de 900 px pour
+ * gagner de la hauteur.
+ *
+ * - La mise en page est en CSS, pensée d'abord pour le mobile : onglets
+ *   visibles et premier panneau seul affiché dès le premier rendu, sans
+ *   saut quand le script arrive.
+ * - Sans JavaScript (scripting: none), pas d'onglets : les trois colonnes
+ *   s'empilent avec leur titre.
+ * - Les rôles ARIA (tablist, tab, tabpanel) ne sont posés que par le script
+ *   et seulement sous 900 px : avant, ou sur grand écran, les colonnes ne
+ *   sont pas annoncées comme des panneaux sans onglets. L'onglet actif se
+ *   repère donc par data-actif. Clavier du motif Onglets de l'APG.
+ * - Sous 900 px, l'onglet tient lieu de titre visible ; le h3 de la colonne
+ *   reste pour la navigation par titres des lecteurs d'écran.
+ * - Chaque onglet est relié à la colonne dont le titre a son `id`.
+ * - Sous 900 px, avec le script, les panneaux défilent à l'horizontale,
+ *   comme les écrans d'une application : on passe de l'un à l'autre d'un
+ *   glissement du doigt (défilement natif, aimanté sur chaque panneau) ou en
+ *   touchant un onglet. La pastille de l'onglet actif suit le doigt ; la
+ *   hauteur du bloc s'ajuste à celle du panneau affiché. Les panneaux hors
+ *   de vue sont inertes (hors de l'ordre de tabulation et de l'arbre
+ *   d'accessibilité). Mouvement réduit : saut direct au panneau.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Un onglet par colonne, dans le même ordre ; `id` est celui du h3 de la colonne */
+  onglets: { id: string; label: string }[]
+  class?: string
+  style?: Style
+}
+
+const { onglets, class: classe, style } = Astro.props
+if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la propriété `onglets` est obligatoire.')
+---
+
+<div class:list={['quoi-de-neuf', classes(classe)]} style={fusionnerStyles(style)} data-quoi-de-neuf>
+  <div class="onglets" data-onglets>
+    <span class="indicateur" aria-hidden="true" data-indicateur></span>
+    {
+      onglets.map(({ id, label }, i) => (
+        <button type="button" class="onglet" id={`quoi-de-neuf-onglet-${id}`} data-cible={id} data-actif={i === 0 ? 'true' : 'false'}>
+          {label}
+        </button>
+      ))
+    }
+  </div>
+  <div class="grille"><slot /></div>
+</div>
+
+<script>
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-quoi-de-neuf]')) {
+    const barre = racine.querySelector<HTMLElement>('[data-onglets]')!
+    const onglets = [...barre.querySelectorAll<HTMLButtonElement>('button[data-cible]')]
+    const panneaux = onglets.map((o) => racine.querySelector<HTMLElement>(`[data-colonne="${o.dataset.cible}"]`))
+    const mq = window.matchMedia('(width >= 900px)')
+    let actif = 0
+
+    panneaux.forEach((p, i) => {
+      if (p) p.id ||= `quoi-de-neuf-panneau-${onglets[i].dataset.cible}`
+    })
+
+    const grille = racine.querySelector<HTMLElement>('.grille')!
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const enOnglets = () => !mq.matches
+    const carrousel = () => grille.classList.contains('carrousel')
+    // Position de défilement de chaque panneau (ils sont côte à côte)
+    const position = (i: number) => (panneaux[i]?.offsetLeft ?? 0) - (panneaux[0]?.offsetLeft ?? 0)
+
+    // La pastille prend la place et la taille de l'onglet actif (les
+    // onglets peuvent passer sur deux lignes avec le texte agrandi). Avec
+    // une position fractionnaire (glissement en cours), elle est entre deux
+    // onglets.
+    const indicateur = barre.querySelector<HTMLElement>('[data-indicateur]')!
+    function placerIndicateur(progression = actif) {
+      const a = onglets[Math.floor(progression)]
+      const b = onglets[Math.min(Math.ceil(progression), onglets.length - 1)]
+      if (!a.offsetWidth) return
+      const t = progression - Math.floor(progression)
+      const entre = (x: number, y: number) => x + (y - x) * t
+      indicateur.style.width = `${entre(a.offsetWidth, b.offsetWidth)}px`
+      indicateur.style.height = `${entre(a.offsetHeight, b.offsetHeight)}px`
+      indicateur.style.translate = `${entre(a.offsetLeft, b.offsetLeft)}px ${entre(a.offsetTop, b.offsetTop)}px`
+    }
+    new ResizeObserver(() => {
+      placerIndicateur()
+      // Pas de glissement à la première mise en place
+      requestAnimationFrame(() => barre.classList.add('pret'))
+    }).observe(barre)
+
+    // Hauteur du bloc : celle du panneau affiché (les listes se remplissent
+    // après coup, d'où l'observation de chaque panneau)
+    function ajusterHauteur() {
+      const p = panneaux[actif]
+      grille.style.height = carrousel() && p ? `${p.offsetHeight}px` : ''
+    }
+    const observateur = new ResizeObserver(ajusterHauteur)
+    for (const p of panneaux) if (p) observateur.observe(p)
+
+    function activer(index: number, focus = false, defiler = true) {
+      actif = index
+      onglets.forEach((o, i) => {
+        o.dataset.actif = String(i === actif)
+        if (enOnglets()) {
+          o.setAttribute('aria-selected', String(i === actif))
+          o.tabIndex = i === actif ? 0 : -1
+        }
+        panneaux[i]?.setAttribute('data-actif', String(i === actif))
+        if (panneaux[i]) panneaux[i]!.inert = carrousel() && i !== actif
+      })
+      ajusterHauteur()
+      if (defiler && carrousel()) grille.scrollTo({ left: position(actif), behavior: reduit.matches ? 'auto' : 'smooth' })
+      else placerIndicateur()
+      if (focus) onglets[actif].focus()
+    }
+
+    // Glissement du doigt (ou défilement lancé par un onglet) : la pastille
+    // suit ; à l'arrêt, le panneau le plus proche devient l'onglet actif
+    let enAttente = false
+    let minuterieFin: ReturnType<typeof setTimeout> | undefined
+    function finDefilement() {
+      barre.classList.remove('suivi')
+      const pas = position(1) || grille.clientWidth
+      const index = Math.round(grille.scrollLeft / pas)
+      if (index !== actif) activer(index, false, false)
+      else placerIndicateur()
+    }
+    grille.addEventListener(
+      'scroll',
+      () => {
+        if (!carrousel()) return
+        clearTimeout(minuterieFin)
+        minuterieFin = setTimeout(finDefilement, 120)
+        if (enAttente) return
+        enAttente = true
+        requestAnimationFrame(() => {
+          enAttente = false
+          barre.classList.add('suivi')
+          const pas = position(1) || grille.clientWidth
+          const progression = Math.max(0, Math.min(onglets.length - 1, grille.scrollLeft / pas))
+          placerIndicateur(progression)
+          // Texte en blanc sur l'onglet le plus proche de la pastille (visuel
+          // seulement : aria-selected change à l'arrêt)
+          onglets.forEach((o, i) => (o.dataset.actif = String(i === Math.round(progression))))
+        })
+      },
+      { passive: true },
+    )
+
+    function mettreEnPage() {
+      grille.classList.toggle('carrousel', enOnglets())
+      activer(actif, false, false)
+      if (carrousel()) grille.scrollLeft = position(actif)
+    }
+
+
+    function poserRoles() {
+      const oui = enOnglets()
+      if (oui) {
+        barre.setAttribute('role', 'tablist')
+        barre.setAttribute('aria-label', 'Quoi de neuf')
+      } else {
+        barre.removeAttribute('role')
+        barre.removeAttribute('aria-label')
+      }
+      onglets.forEach((o, i) => {
+        const p = panneaux[i]
+        if (oui) {
+          o.setAttribute('role', 'tab')
+          o.setAttribute('aria-controls', p?.id ?? '')
+          o.setAttribute('aria-selected', String(i === actif))
+          o.tabIndex = i === actif ? 0 : -1
+          p?.setAttribute('role', 'tabpanel')
+          p?.setAttribute('aria-labelledby', o.id)
+        } else {
+          for (const a of ['role', 'aria-controls', 'aria-selected', 'tabindex']) o.removeAttribute(a)
+          p?.removeAttribute('role')
+          // Hors onglets, la colonne reprend son titre comme nom
+          p?.setAttribute('aria-labelledby', o.dataset.cible!)
+        }
+      })
+    }
+
+    onglets.forEach((o, i) => o.addEventListener('click', () => activer(i)))
+    barre.addEventListener('keydown', (e) => {
+      if (!enOnglets()) return
+      const dernier = onglets.length - 1
+      const cible = { ArrowRight: actif === dernier ? 0 : actif + 1, ArrowLeft: actif === 0 ? dernier : actif - 1, Home: 0, End: dernier }[e.key]
+      if (cible === undefined) return
+      e.preventDefault()
+      activer(cible, true)
+    })
+    mq.addEventListener('change', () => {
+      poserRoles()
+      mettreEnPage()
+    })
+    poserRoles()
+    mettreEnPage()
+  }
+</script>
+
+<style>
+  /* Mobile et tablette (onglets) : deux éléments par colonne seulement, le
+     lien « Tous nos… » de la colonne mène à la suite. Les éléments chargés
+     dans le navigateur (événements, formations) sont des li.element eux
+     aussi : la règle les touche dès qu'ils arrivent. */
+  @media (width < 900px) {
+    .quoi-de-neuf :global(li.element:nth-child(n + 3)) {
+      display: none;
+    }
+  }
+
+  /* Pas de marge propre sous le titre du bloc : --espace-titre suffit, comme
+     dans les autres blocs (la source ajoutait 2rem) */
+  .quoi-de-neuf {
+    margin-top: 0;
+  }
+
+  /* Contrôle segmenté sur une ligne en temps normal ; avec le texte agrandi
+     (WCAG 1.4.4) ou plus espacé (1.4.12), les onglets passent à la ligne au
+     lieu de déborder. */
+  .onglets {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: var(--espace-3);
+    position: relative;
+    padding: 0.25rem;
+    border: 1px solid var(--bleu-200);
+    border-radius: var(--rayon-grand);
+  }
+
+  /* Pastille de l'onglet actif, placée par le script ; elle glisse une fois
+     la barre prête (classe .pret) */
+  .indicateur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--rayon-plein);
+    background-color: var(--bleu-fonce);
+  }
+
+  .pret:not(.suivi) .indicateur {
+    transition:
+      translate var(--duree-moyenne-2) var(--courbe-emphase-deceleree),
+      width var(--duree-moyenne-2) var(--courbe-emphase-deceleree),
+      height var(--duree-moyenne-2) var(--courbe-emphase-deceleree);
+  }
+
+  .onglet {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 2.75rem;
+    padding-inline: var(--espace-1);
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background-color: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    /* Fluide : les trois onglets tiennent sur une ligne jusqu'à 320 px */
+    font-size: clamp(0.8125rem, 0.45rem + 2vw, 0.9375rem);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .onglet[data-actif='true'] {
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+  }
+
+  /* Une fois la pastille en place, c'est elle qui fait le fond */
+  .pret .onglet[data-actif='true'] {
+    background-color: transparent;
+  }
+
+  .onglet:focus-visible {
+    outline: 2px solid var(--couleur-accent);
+    outline-offset: 2px;
+  }
+
+  /* En couleurs forcées, le fond est remplacé par la couleur système : un
+     contour, que le navigateur peint toujours, marque l'onglet actif. */
+  @media (forced-colors: active) {
+    .onglet[data-actif='true'] {
+      outline: 2px solid SelectedItem;
+      outline-offset: -2px;
+    }
+  }
+
+  .grille {
+    display: grid;
+    gap: var(--espace-bloc);
+  }
+
+  /* Astro rend les <script> des listes à leur place, entre les colonnes : les
+     sélecteurs comptent donc les colonnes (section), pas tous les enfants */
+  .grille > :global(*) {
+    min-width: 0;
+  }
+
+  @media (width < 900px) and (scripting: enabled) {
+    .onglets {
+      display: flex;
+    }
+
+    /* Avant le script, le premier panneau seul (pas de saut à l'arrivée du
+       script) */
+    .grille:not(.carrousel) > :global(:not(:nth-child(1 of section))) {
+      display: none;
+    }
+
+    /* Panneaux côte à côte, défilement horizontal aimanté. Les 4 px de
+       rembourrage gardent visibles les anneaux de focus au bord ; l'écart
+       entre panneaux (16 px) cache le voisin. */
+    .grille.carrousel {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin: -4px;
+      padding: 4px;
+      overflow: auto hidden;
+      overscroll-behavior-x: contain;
+      scroll-padding-inline: 4px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      box-sizing: content-box;
+      transition: height var(--duree-moyenne-2) var(--courbe-standard);
+    }
+
+    .grille.carrousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hauteur propre à chaque panneau (les colonnes s'étirent à 100 % sur
+       grand écran) ; position relative : le titre masqué (position
+       absolue) reste dans le cadre de défilement au lieu d'élargir la page */
+    .grille.carrousel > :global(section) {
+      position: relative;
+      flex: 0 0 100%;
+      height: auto;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .grille > :global(*) > :global(h3) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  }
+
+  @media (width >= 900px) {
+    .grille {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* La 3e colonne passe sous les deux autres, sur toute la largeur */
+    .grille > :global(:nth-child(3 of section)) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .grille {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grille > :global(:nth-child(3 of section)) {
+      grid-column: auto;
+    }
+  }
+</style>

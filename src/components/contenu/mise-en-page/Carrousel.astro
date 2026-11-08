@@ -1,0 +1,249 @@
+---
+/*
+ * Carrousel de cartes (d'après coquille-web), sans embla.
+ *
+ * - Défilement natif horizontal avec scroll-snap : souris, trackpad,
+ *   toucher et clavier (Tab amène chaque carte à l'écran) fonctionnent sans
+ *   JS. Le comportement commun des carrousels (src/lib/carrousel.ts) ajoute
+ *   les flèches (BoutonsCarrousel), désactivées aux extrémités et masquées
+ *   quand tout tient dans la largeur, et l'annonce des cartes visibles. Tant
+ *   qu'il reste des cartes à droite, le bord droit de la piste s'efface en
+ *   fondu (data-suite).
+ * - Motif Carrousel de l'APG : région nommée par le titre,
+ *   aria-roledescription « carrousel » ; chaque diapositive est un groupe
+ *   « n sur N ». Pas de défilement automatique.
+ * - Sous la piste, une barre de progression montre où l'on est : le
+ *   curseur a la largeur de la part visible et suit le défilement (souris,
+ *   doigt, flèches). Visuelle seulement (aria-hidden) : chaque diapositive
+ *   s'annonce déjà « n sur N ». Masquée quand tout tient dans la largeur.
+ * - Abandonnés : la capture de la molette verticale (elle empêchait de
+ *   faire défiler la page au-dessus du carrousel) et les pastilles de
+ *   pagination de la source (5 px de haut, sans état annoncé).
+ *
+ * Chaque enfant de premier niveau du MDX est une diapositive, comme
+ * Children.toArray dans la source.
+ */
+import Typographie from '@/components/primitives/Typographie.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import { panneauxDuSlot } from '@/lib/decoupage'
+import { idUnique } from '@/lib/ids'
+import BoutonsCarrousel from '@/components/partage/BoutonsCarrousel.astro'
+import ProgressionCarrousel from '@/components/partage/ProgressionCarrousel.astro'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Chaîne (rendue en h2) ; un autre titre passe en slot « title » */
+  title?: string
+  /** Chaîne ; un élément passe en slot « description » */
+  description?: string
+  moreText?: string
+  moreLink?: string
+  /** `_blank` pour ouvrir moreLink dans un nouvel onglet (annoncé par Bouton) */
+  moreTarget?: string
+  /** Nom accessible : le titre seul. À donner quand le titre est un élément
+      (un Titre de vitrine contient le texte masqué de son lien d'ancre, qui
+      doublait le nom : « … Lien vers la section « … » ») */
+  ariaLabel?: string
+  class?: string
+  style?: Style
+}
+
+const { title, description, moreText, moreLink, moreTarget, ariaLabel, class: classe, style, ...reste } = Astro.props
+const id = idUnique('carrousel')
+const { panneaux, annexes } = panneauxDuSlot(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
+const total = panneaux.length
+const aTitre = title !== undefined || Astro.slots.has('title')
+// Un slot passé sous condition ({texte && <… slot="description" />}) existe
+// même vide pour Astro.slots.has : on regarde ce qu'il rend
+const htmlDescription = Astro.slots.has('description') ? (await Astro.slots.render('description')).trim() : ''
+const aDescription = description !== undefined || htmlDescription !== ''
+---
+
+<div
+  class:list={['carrousel', classe]}
+  style={fusionnerStyles(style)}
+  role="region"
+  aria-roledescription="carrousel"
+  aria-labelledby={aTitre && !ariaLabel ? `${id}-titre` : undefined}
+  aria-label={ariaLabel}
+  data-carrousel
+  {...reste}
+>
+  <div class:list={['entete', { 'sans-description': !aDescription }]}>
+    {
+      aTitre && (
+        <div class="titre" id={`${id}-titre`}>
+          <slot name="title">
+            <Typographie component="h2" variant="h2">
+              {title}
+            </Typographie>
+          </slot>
+        </div>
+      )
+    }
+    <div class="rangee">
+      <div class="description">
+        {
+          aDescription && (
+            htmlDescription ? (
+              <Fragment set:html={htmlDescription} />
+            ) : (
+              <Typographie variant="body1" component="div">
+                {description}
+              </Typographie>
+            )
+          )
+        }
+      </div>
+      <BoutonsCarrousel class="commandes-entete" piste={`${id}-piste`} />
+    </div>
+  </div>
+
+  <div class="piste" id={`${id}-piste`} data-piste data-revelation="groupe" data-revelation-mouvement="echelle">
+    {
+      panneaux.map((html, i) => (
+        <div class="diapositive" role="group" aria-roledescription="diapositive" aria-label={`${i + 1} sur ${total}`} data-diapositive>
+          <Fragment set:html={html} />
+        </div>
+      ))
+    }
+  </div>
+  <ProgressionCarrousel class="progression-piste" />
+  <Fragment set:html={annexes} />
+
+  {
+    moreLink && moreText && (
+      <div class="plus">
+        <Bouton primary href={moreLink} target={moreTarget}>
+          {moreText}
+        </Bouton>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  import { brancherCarrousel } from '@/lib/carrousel'
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-carrousel]')) brancherCarrousel(racine)
+</script>
+
+<style>
+  /* Titre, description, cartes et bouton « voir tout » : --espace-bloc
+     entre les groupes (45 px dans la source), --espace-grille entre les
+     cartes (25 px, puis 40 px dès 600 px dans la source, par l'addition de
+     trois marges) */
+  .carrousel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-bloc);
+    min-width: 0;
+  }
+
+  .titre :global(:is(h2, h3)) {
+    margin-top: 0;
+  }
+
+  .description > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Le gap du carrousel fait l'écart ; sans la marge haute de Bouton */
+  .plus > :global(.bouton) {
+    margin-top: 0;
+  }
+
+  .rangee {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .description {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* Flèches sous la description (mobile), à droite du titre dès 600 px */
+  .commandes-entete {
+    justify-content: flex-end;
+    margin-top: var(--espace-1);
+  }
+
+  .piste {
+    display: flex;
+    gap: var(--espace-grille);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    /* Les cartes à révélation se règlent sur sa largeur (100cqi) */
+    container-type: inline-size;
+    /* Le contour de focus d'une carte ne doit pas être rogné */
+    padding-block: 4px;
+    margin-block: -4px;
+  }
+
+  /* Avec les boutons, la barre de défilement fait doublon (la source n'en
+     avait pas) ; sans JS, elle reste la seule commande visible */
+  [data-pret] .piste {
+    scrollbar-width: none;
+  }
+
+  [data-pret] .piste::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Il reste des cartes à droite : le bord droit de la piste s'efface en
+     fondu, pour signaler la suite. Le masque ne joue que sur l'opacité (le
+     noir n'y est pas une couleur affichée). Au bout de la piste, plus de
+     fondu. Sans JS, pas d'attribut : la barre de défilement suffit. */
+  .piste[data-suite] {
+    --fondu: clamp(1.5rem, 5vw, 3rem);
+
+    /* Discret : la dernière bande ne descend qu'à 40 % d'opacité */
+    mask-image: linear-gradient(to right, black calc(100% - var(--fondu)), rgb(0 0 0 / 40%));
+  }
+
+  /* Barre de progression : le gap du carrousel l'éloignerait trop des
+     cartes, on la rapproche */
+  .progression-piste {
+    margin-top: calc(var(--espace-element) - var(--espace-bloc));
+  }
+
+  .diapositive {
+    display: flex;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  @media (width >= 600px) {
+    .rangee {
+      flex-direction: row;
+    }
+
+    /* Sans description, les flèches se rangent à droite du titre : seules
+       sur leur ligne, elles creusaient 66 px de plus entre titre et cartes */
+    .sans-description {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .sans-description .titre {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .sans-description .description {
+      display: none;
+    }
+
+    .commandes-entete {
+      align-items: flex-end;
+      margin-top: 0;
+      padding-left: var(--espace-4);
+      /* Pas de marge négative comme le edge="end" de MUI : hors d'une
+         Section (sans gouttière), elle faisait déborder la page de 12 px. */
+    }
+  }
+
+</style>

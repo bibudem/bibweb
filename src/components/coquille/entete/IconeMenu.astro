@@ -1,0 +1,67 @@
+---
+/*
+ * Icône du bouton Menu, reprise de studio·bib (techno-astro, Entete.astro) :
+ * trois traits qui se changent en croix. Le bouton parent pilote
+ * l'animation par son aria-expanded (Entete.astro le met à jour).
+ *
+ * Burger → croix : les traits du haut et du bas se rejoignent au centre
+ * (translate), puis pivotent à ±45° (rotate) pendant que celui du milieu
+ * s'efface. À la fermeture, l'ordre s'inverse. Propriétés individuelles
+ * (translate, rotate, scale) : elles se décalent dans le temps.
+ */
+interface Props {
+  taille?: number
+}
+
+const { taille = 34 } = Astro.props
+---
+
+<svg class="burger" viewBox="0 0 34 34" width={taille} height={taille} aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+  <line class="trait haut" x1="6" y1="10" x2="28" y2="10"></line>
+  <line class="trait milieu" x1="6" y1="17" x2="28" y2="17"></line>
+  <line class="trait bas" x1="6" y1="24" x2="28" y2="24"></line>
+</svg>
+
+<style>
+  .burger {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .trait {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      translate var(--duree-courte-3) var(--courbe-icone) var(--duree-courte-1),
+      rotate var(--duree-courte-3) var(--courbe-icone),
+      scale var(--duree-courte-2) var(--courbe-icone) var(--duree-courte-1),
+      opacity var(--duree-courte-2) var(--courbe-standard) var(--duree-courte-1);
+  }
+
+  :global([aria-expanded='true']) > .burger .trait {
+    transition-delay: 0ms, var(--duree-courte-2), 0ms, 0ms;
+  }
+
+  :global([aria-expanded='true']) > .burger .haut {
+    translate: 0 7px;
+    rotate: 45deg;
+  }
+
+  :global([aria-expanded='true']) > .burger .bas {
+    translate: 0 -7px;
+    rotate: -45deg;
+  }
+
+  :global([aria-expanded='true']) > .burger .milieu {
+    scale: 0 1;
+    opacity: 0;
+  }
+
+  /* Mouvement réduit : global.css ramène les durées à presque rien ; les
+     délais aussi, pour que la croix apparaisse d'un coup */
+  @media (prefers-reduced-motion: reduce) {
+    .trait {
+      transition-delay: 0ms !important;
+    }
+  }
+</style>

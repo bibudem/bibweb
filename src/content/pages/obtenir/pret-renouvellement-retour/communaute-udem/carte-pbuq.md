@@ -1,0 +1,29 @@
+---
+title: Carte PBUQ
+crumbLabel: Carte PBUQ
+superHero:
+  imageName: obtenir-mezzanine
+  title: Obtenir un document
+---
+
+## Carte PBUQ
+
+La carte PBUQ permet d’emprunter directement dans les bibliothèques d’établissements universitaires canadiens qui ne font pas partie du [Partenariat des bibliothèques universitaires du Québec (PBUQ)](https://pbuq.ca/) grâce à des ententes interuniversitaires.
+
+Les membres de la communauté de l’UdeM peuvent :
+
+* emprunter dans une bibliothèque universitaire canadienne (hors PBUQ) avec cette carte
+* retourner les documents empruntés à la bibliothèque prêteuse ou au comptoir de prêt d’une des [bibliothèques UdeM](/espaces/)
+
+Pour emprunter dans une bibliothèque du PBUQ, seule la carte de votre établissement est nécessaire.
+
+### Modalités
+
+#### Pour obtenir la carte
+
+* Vous présenter au comptoir de prêt de n’importe quelle bibliothèque de l’UdeM
+* Avoir un dossier Sofia valide et sans frais impayés
+
+#### Modalités d’emprunt
+
+Les modalités diffèrent selon l’entente.

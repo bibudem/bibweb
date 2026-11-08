@@ -1,0 +1,496 @@
+---
+/*
+ * Liens rapides (QuickLinks.jsx et module LibChat de coquille-web).
+ *
+ * - ≥ 900 px : tiroir bleu au bord droit ; replié, seule sa poignée
+ *   (une flèche vers la gauche) dépasse. Un clic sur la poignée fait sortir
+ *   une rangée horizontale de liens, icône et libellé court dessous, comme
+ *   la barre mobile ; Échap ou un clic ailleurs la font rentrer. La poignée
+ *   est un bouton de divulgation (aria-expanded). La rangée se replie dès
+ *   que la page défile ; la poignée reste toujours affichée. Sans JavaScript, la rangée reste
+ *   dépliée.
+ *   Changements par rapport à la source, qui recouvrait du contenu (le
+ *   bouton « Suivant » de Carrousel, le texte des Sections) :
+ *   · repliée dès le chargement : la source l'affichait dépliée (environ
+ *     300 px) pendant 3 s ou jusqu'au premier défilement, puis la repliait
+ *     d'elle-même ; ce mouvement automatique masquait le haut de la page ;
+ *   · ouverte au clic plutôt qu'au survol, avec les libellés visibles ;
+ *   · poignée de 40 px au lieu de 65 : elle tient dans la plus petite
+ *     marge latérale du contenu (40 px des Sections entre 900 et 1199 px,
+ *     64 px de gouttière au-delà).
+ * - < 900 px : barre fixe au bas de l'écran, icônes seules avec un nom
+ *   accessible. Le corps de page réserve sa hauteur (padding-bottom) et
+ *   scroll-padding-bottom écarte le focus de dessous la barre (WCAG 2.4.11).
+ *   Elle couvrait le bas du texte pendant la lecture : elle sort de l'écran
+ *   au défilement vers le bas et revient au défilement vers le haut, en haut
+ *   et en bas de la page, et dès qu'un de ses liens reçoit le focus
+ *   (:focus-within). Elle suit le doigt, pixel pour pixel, comme la barre
+ *   d'outils de Chrome sur Android : les deux bougent ensemble au lieu de
+ *   partir chacune à son rythme. À l'arrêt du défilement, elle finit de
+ *   sortir ou revient, selon la moitié où elle s'est arrêtée. Mouvement
+ *   réduit : tout ou rien, sans transition (règle globale). Sans JS, elle
+ *   reste affichée.
+ *
+ * Placé après <main> dans Base.astro : barre et tiroir sont fixes, leur
+ * place dans le DOM ne change que l'ordre de tabulation (en-tête, fil
+ * d'Ariane, contenu, liens rapides, pied de page ; WCAG 2.4.3).
+ *
+ * « Clavarder » est un bouton (la source utilisait un lien vers « # ») qui
+ * ouvre la fenêtre LibChat ; le script LibChat est chargé une seule fois.
+ */
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft'
+import { ChatsIcon } from '@phosphor-icons/react/dist/ssr/Chats'
+import IconeSofia from '@/components/icones/IconeSofia.astro'
+import { LIENS_RAPIDES as LIENS } from '@/data/navigation'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a83afdd3'
+---
+
+<div class="liens-rapides-bureau theme-clair" data-liens-rapides>
+  <nav class="panneau" aria-label="Liens rapides" data-replie>
+    <button type="button" class="poignee infobulle infobulle-gauche" aria-expanded="false" aria-controls="liens-rapides-liste" aria-label="Liens rapides" data-infobulle="Liens rapides" data-poignee>
+      <IconeSprite icone={CaretLeftIcon} size={24} weight="bold" aria-hidden="true" />
+    </button>
+    <ul id="liens-rapides-liste">
+      {
+        LIENS.map(({ libelle, court, href, Icone, nouvelOngletBureau }) => (
+          <li>
+            <a href={href} aria-label={nouvelOngletBureau ? `${libelle} (nouvel onglet)` : libelle} {...(nouvelOngletBureau ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+              {Icone ? <IconeSprite icone={Icone} size={24} aria-hidden="true" /> : <IconeSofia size={24} />}
+              <span class="etiquette" aria-hidden="true">{court}</span>
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <button type="button" aria-label="Clavarder" data-clavarder>
+          <IconeSprite icone={ChatsIcon} size={24} aria-hidden="true" />
+          <span class="etiquette" aria-hidden="true">Clavarder</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<nav class="liens-rapides-mobile theme-clair" aria-label="Liens rapides" data-liens-rapides-mobile>
+  <ul>
+    {
+      LIENS.map(({ libelle, court, href, Icone }) => (
+        <li>
+          <a href={href} aria-label={libelle}>
+            {Icone ? <IconeSprite icone={Icone} size={26} aria-hidden="true" /> : <IconeSofia size={26} />}
+            <span class="etiquette" aria-hidden="true">{court}</span>
+          </a>
+        </li>
+      ))
+    }
+    <li>
+      <button type="button" aria-label="Clavarder" data-clavarder>
+        <IconeSprite icone={ChatsIcon} size={26} aria-hidden="true" />
+        <span class="etiquette" aria-hidden="true">Clavarder</span>
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<div id={`libchat_${LIBCHAT_HASH}`} class="libchat"></div>
+
+<script define:vars={{ LIBCHAT_HASH }} is:inline>
+  // Chargement de LibChat (comme le module de coquille-web) : son bouton flottant est
+  // masqué, la fenêtre s'ouvre depuis « Clavarder ».
+  ;(() => {
+    if (document.getElementById('libchat-script')) return
+    const style = document.createElement('style')
+    style.textContent = '.s-lch-widget-float-btn{display:none!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important}'
+    document.head.appendChild(style)
+    const script = document.createElement('script')
+    script.id = 'libchat-script'
+    script.src = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${LIBCHAT_HASH}`
+    script.async = true
+    script.onload = () => (window.libChatLoaded = true)
+    script.onerror = () => (window.libChatLoaded = false)
+    document.body.appendChild(script)
+
+    window.openLibChatDirect = () => {
+      if (!window.libChatLoaded) {
+        alert('Le service de clavardage est temporairement indisponible.')
+        return
+      }
+      const bouton = document.querySelector('.s-lch-widget-float-btn')
+      const boite = document.querySelector('.s-lch-widget-float')
+      if (bouton) {
+        bouton.style.opacity = '0'
+        bouton.style.pointerEvents = 'none'
+        bouton.style.visibility = 'hidden'
+        bouton.click()
+      }
+      if (boite) boite.style.zIndex = 'var(--z-clavardage)'
+    }
+  })()
+</script>
+
+<script>
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element | null)?.closest?.('[data-clavarder]')) return
+    ;(window as unknown as { openLibChatDirect?: () => void }).openLibChatDirect?.()
+  })
+
+  // Tiroir du bureau : la poignée déplie et replie la rangée de liens.
+  // Échap ou un clic ailleurs la replient ; Échap rend le focus à la poignée.
+  // Portée au tiroir : d'autres composants ont un .panneau (le sommaire des
+  // longues pages vient avant dans le DOM)
+  const panneau = document.querySelector<HTMLElement>('[data-liens-rapides] .panneau')
+  const poignee = panneau?.querySelector<HTMLButtonElement>('[data-poignee]')
+  if (panneau && poignee) {
+    const ouvrir = (ouvert: boolean) => {
+      poignee.setAttribute('aria-expanded', String(ouvert))
+      panneau.toggleAttribute('data-replie', !ouvert)
+    }
+    poignee.addEventListener('click', () => {
+      // Pas d'infobulle juste après un clic : en refermant, la poignée
+      // repasse sous le curseur et la bulle apparaissait un instant
+      poignee.setAttribute('data-infobulle-fermee', '')
+      ouvrir(panneau.hasAttribute('data-replie'))
+    })
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return
+      // Replié, Échap ferme l'infobulle de la poignée, même affichée au
+      // survol sans le focus (WCAG 1.4.13) ; elle revient au prochain
+      // survol ou focus
+      if (panneau.hasAttribute('data-replie')) {
+        if (poignee.matches(':hover, :focus-visible')) poignee.setAttribute('data-infobulle-fermee', '')
+        return
+      }
+      if (!panneau.contains(document.activeElement)) return
+      ouvrir(false)
+      poignee.focus()
+    })
+    for (const evenement of ['pointerleave', 'blur']) {
+      poignee.addEventListener(evenement, () => poignee.removeAttribute('data-infobulle-fermee'))
+    }
+    document.addEventListener('click', (e) => {
+      if (!panneau.contains(e.target as Node)) ouvrir(false)
+    })
+    // La rangée ouverte se replie dès que la page défile, vers le bas comme
+    // vers le haut ; la poignée, elle, reste toujours affichée
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!panneau.hasAttribute('data-replie')) ouvrir(false)
+      },
+      { passive: true },
+    )
+  }
+
+  // Barre mobile qui suit le défilement (voir l'en-tête).
+  // --decalage-liens-rapides, sur la racine, la descend de 0 (affichée) à
+  // toute sa hauteur et son ombre (sortie) ; « Retour en haut » (RetourHaut)
+  // la suit. Le CSS ne s'en sert que sous 900 px : rien à décider ici selon
+  // la largeur. data-suit : le doigt la déplace.
+  // Mouvement réduit : SEUIL évite qu'un petit rebond la fasse clignoter.
+  const SEUIL = 8
+  const OMBRE = 16
+  const barre = document.querySelector<HTMLElement>('[data-liens-rapides-mobile]')
+  if (barre) {
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let precedent = window.scrollY
+    let decalage = 0
+    let enAttente = false
+    let minuterieFin: ReturnType<typeof setTimeout> | undefined
+
+    const placer = (valeur: number, suivre: boolean) => {
+      decalage = valeur
+      // Pas de transition pendant que le doigt la déplace ; une transition
+      // pour les mouvements qu'elle finit seule
+      barre.toggleAttribute('data-suit', suivre)
+      document.documentElement.style.setProperty('--decalage-liens-rapides', `${valeur}px`)
+    }
+
+    // À l'arrêt, la barre ne reste pas à moitié sortie
+    const terminer = () => {
+      if (reduit.matches) return
+      const max = barre.offsetHeight + OMBRE
+      if (decalage > 0 && decalage < max) placer(decalage > max / 2 ? max : 0, false)
+    }
+
+    const mettreAJour = () => {
+      enAttente = false
+      const y = window.scrollY
+      const ecart = y - precedent
+      const max = barre.offsetHeight + OMBRE
+      const enBas = window.innerHeight + y >= document.documentElement.scrollHeight - 2
+      if (y <= 0 || enBas) placer(0, false)
+      else if (reduit.matches) {
+        if (Math.abs(ecart) < SEUIL) return
+        placer(ecart > 0 ? max : 0, false)
+      } else placer(Math.min(max, Math.max(0, decalage + ecart)), true)
+      precedent = y
+      // Repli pour les navigateurs sans l'événement scrollend
+      clearTimeout(minuterieFin)
+      minuterieFin = setTimeout(terminer, 150)
+    }
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (enAttente) return
+        enAttente = true
+        requestAnimationFrame(mettreAJour)
+      },
+      { passive: true },
+    )
+    window.addEventListener('scrollend', () => {
+      clearTimeout(minuterieFin)
+      terminer()
+    })
+
+    // La page réserve en bas la hauteur réelle de la barre : avec le texte
+    // agrandi, elle passe sur deux lignes et dépasse les 86 px par défaut
+    new ResizeObserver(() => {
+      if (barre.offsetHeight) document.documentElement.style.setProperty('--hauteur-liens-rapides', `${Math.ceil(barre.offsetHeight)}px`)
+    }).observe(barre)
+  }
+</script>
+
+<style>
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a,
+  button {
+    color: var(--couleur-sur-fonce);
+  }
+
+  a:hover {
+    color: var(--couleur-sur-fonce);
+  }
+
+  /* Le bleu du focus global disparaît sur le fond bleu */
+  :focus-visible {
+    outline-color: var(--couleur-surface);
+    outline-offset: -3px;
+  }
+
+  button {
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  /* ---- Bureau ---- */
+  .liens-rapides-bureau {
+    display: none;
+  }
+
+  @media (width >= 900px) {
+    .liens-rapides-bureau {
+      display: flex;
+      position: fixed;
+      z-index: var(--z-tiroir);
+      top: 0;
+      right: 0;
+      bottom: 0;
+      flex-direction: column;
+      justify-content: center;
+      pointer-events: none;
+    }
+  }
+
+  /* Poignée et rangée de liens côte à côte ; repliée, seule la poignée
+     (--poignee) dépasse du bord droit */
+  .panneau {
+    --poignee: 40px;
+    display: flex;
+    align-items: stretch;
+    border-radius: var(--rayon-petit) 0 0 var(--rayon-petit);
+    background-color: var(--bleu-principal);
+    box-shadow: var(--ombre-2);
+    pointer-events: auto;
+    transition: transform var(--duree-moyenne-4) var(--courbe-emphase-deceleree);
+  }
+
+  /* Sans JavaScript (scripting: none), la rangée reste dépliée */
+  @media (scripting: enabled) {
+    .panneau[data-replie] {
+      transform: translateX(calc(100% - var(--poignee)));
+      transition: transform var(--duree-courte-4) var(--courbe-emphase-acceleree);
+    }
+
+    /* Repliée, les liens sortent de l'ordre de tabulation et de l'arbre
+       d'accessibilité, après la fin du glissement */
+    .panneau[data-replie] ul {
+      visibility: hidden;
+      transition: visibility 0s linear var(--duree-courte-4);
+    }
+  }
+
+  @media (scripting: none) {
+    .poignee {
+      display: none;
+    }
+  }
+
+  .poignee {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--poignee);
+    min-height: 48px;
+    padding: 0;
+    border-radius: inherit;
+    /* Le survol couvre toute la poignée, coins arrondis compris : le
+       rembourrage du tiroir est porté par la rangée de liens */
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+    position: relative;
+  }
+
+  /* Infobulle « Liens rapides » à gauche de la poignée (utilitaire
+     .infobulle de global.css), tant que la rangée est repliée */
+  .poignee[aria-expanded='true'] {
+    --infobulle-visibilite: hidden;
+    --infobulle-opacite: 0;
+  }
+
+  /* La flèche pointe vers où la rangée va : à gauche pour sortir, à droite
+     pour rentrer */
+  .poignee :global(svg) {
+    transition: rotate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .poignee[aria-expanded='true'] :global(svg) {
+    rotate: 180deg;
+  }
+
+  .panneau ul {
+    display: flex;
+    gap: 0.25rem;
+    padding: 6px 8px 6px 0;
+  }
+
+  /* Icône et libellé court dessous, comme la barre mobile */
+  .panneau a,
+  .panneau ul button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 4.5rem;
+    min-height: 3.5rem;
+    padding: 0.375rem var(--espace-1);
+    border-radius: var(--rayon-tres-petit);
+    text-decoration: none;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .panneau a:hover,
+  .panneau button:hover {
+    background-color: color-mix(in srgb, var(--couleur-surface) 10%, transparent);
+  }
+
+  .panneau :global(svg) {
+    display: block;
+  }
+
+  /* ---- Mobile ---- */
+  .liens-rapides-mobile {
+    display: flex;
+    position: fixed;
+    z-index: var(--z-tiroir);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: center;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+    background-color: var(--bleu-principal);
+    box-shadow: var(--ombre-2);
+    translate: 0 var(--decalage-liens-rapides, 0px);
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Le doigt la déplace : elle le suit sans retard */
+  .liens-rapides-mobile[data-suit] {
+    transition: none;
+  }
+
+  /* Le focus dans la barre la ramène entière */
+  .liens-rapides-mobile:focus-within {
+    translate: 0;
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Avec le texte agrandi, les boutons passent sur une deuxième ligne au
+     lieu de sortir de l'écran (WCAG 1.4.10) */
+  .liens-rapides-mobile ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 500px;
+    max-width: 100%;
+  }
+
+  /* Icône et petit libellé dessous (le nom accessible reste le libellé
+     complet, qui contient le mot affiché : WCAG 2.5.3) */
+  .liens-rapides-mobile a,
+  .liens-rapides-mobile button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 4rem;
+    min-height: 3.5rem;
+    padding: 0.375rem 0.25rem;
+    border-radius: var(--rayon-tres-petit);
+    color: var(--couleur-sur-fonce);
+    text-decoration: none;
+  }
+
+  .etiquette {
+    font-size: var(--texte-minuscule);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .liens-rapides-mobile :global(svg) {
+    display: block;
+  }
+
+  @media (width < 900px) {
+    /* --hauteur-liens-rapides : posée par le script (hauteur réelle, zone
+       des gestes comprise) ; 86 px sans script */
+    :global(body) {
+      padding-bottom: var(--hauteur-liens-rapides, calc(86px + env(safe-area-inset-bottom, 0px)));
+    }
+
+    :global(html) {
+      scroll-padding-bottom: var(--hauteur-liens-rapides, calc(86px + env(safe-area-inset-bottom, 0px)));
+    }
+  }
+
+  @media (width >= 900px) {
+    .liens-rapides-mobile {
+      display: none;
+    }
+  }
+
+  .libchat {
+    position: fixed;
+    z-index: var(--z-clavardage);
+    right: 20px;
+    bottom: 80px;
+  }
+
+  @media (forced-colors: active) {
+    .panneau,
+    .liens-rapides-mobile {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

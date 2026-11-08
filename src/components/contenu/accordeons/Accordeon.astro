@@ -1,0 +1,119 @@
+---
+/*
+ * Volet d'accordéon (d'après coquille-web) en <details> natif : il
+ * s'ouvre au clavier et sans JavaScript. Dans un GroupeAccordeons, il reçoit le
+ * `name` du groupe (un seul volet ouvert à la fois, comme dans la source).
+ * Hors groupe, il fonctionne seul (la source plantait).
+ *
+ * Fond de page et texte foncé, comme le Paper (MUI) de la source, même posé dans
+ * une Section foncée (d'où surface-claire).
+ *
+ * Une ancre qui vise le volet ou un élément de son contenu l'ouvre, au
+ * chargement comme au changement de hash : le petit script ci-dessous.
+ *
+ * Ouverture et fermeture animées par ::details-content et interpolate-size
+ * (hauteur et opacité, utilitaire .volet-anime de global.css) là où les
+ * deux existent ; ailleurs, le contenu
+ * apparaît en fondu (AccordeonContenu) et se ferme d'un coup. La hauteur est
+ * la seule exception à « transform et opacity » : rien d'autre ne fait
+ * glisser le contenu qui suit. Une ouverture par ancre n'est pas animée,
+ * pour que la cible soit en place tout de suite.
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Ouvert au premier affichage ; dans un groupe, le premier l'emporte */
+  defaultExpanded?: boolean | string
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { defaultExpanded = false, class: classe, style, ...reste } = Astro.props
+const ouvert = defaultExpanded === true || defaultExpanded === '' || defaultExpanded === 'true'
+---
+
+<details
+  class:list={['accordeon', 'volet-anime', 'surface-claire', classe]}
+  style={fusionnerStyles(style)}
+  open={ouvert || undefined}
+  data-accordeon
+  data-accordeon-groupe=""
+  {...reste}
+>
+  <slot />
+</details>
+
+<script>
+  import { idDeLAncre } from '@/lib/ancre-url'
+
+  // Ouvre les volets qui contiennent la cible de l'ancre, puis la ramène en
+  // vue : ouvrir un volet après le saut décale la page.
+  function ouvrirSelonAncre() {
+    const id = idDeLAncre()
+    const cible = id ? document.getElementById(id) : null
+    if (!cible) return
+    let volet = cible.closest<HTMLDetailsElement>('details[data-accordeon]')
+    let change = false
+    while (volet) {
+      if (!volet.open) {
+        volet.classList.add('sans-transition')
+        volet.open = true
+        change = true
+      }
+      volet = volet.parentElement?.closest<HTMLDetailsElement>('details[data-accordeon]') ?? null
+    }
+    if (change)
+      requestAnimationFrame(() => {
+        // Saut immédiat : le défilement doux de html ferait traverser la page
+        cible!.scrollIntoView({ behavior: 'instant' })
+        requestAnimationFrame(() => document.querySelectorAll('details.sans-transition').forEach((d) => d.classList.remove('sans-transition')))
+      })
+  }
+
+  ouvrirSelonAncre()
+  window.addEventListener('hashchange', ouvrirSelonAncre)
+
+  // Un seul volet ouvert par groupe : ouvrir un volet ferme celui qui était
+  // ouvert. S'il est plus haut, sa fermeture faisait remonter la page et le
+  // titre cliqué filait hors de vue. On le ferme d'un coup, avant
+  // l'ouverture, et on compense le défilement : le titre cliqué reste sous
+  // le pointeur (ou le focus), et le nouveau volet s'ouvre vers le bas.
+  // Le clic couvre aussi Entrée et Espace sur le titre.
+  document.addEventListener('click', (evenement) => {
+    const sommaire = (evenement.target as Element | null)?.closest('details[data-accordeon] > summary')
+    const volet = sommaire?.parentElement as HTMLDetailsElement | undefined
+    if (!sommaire || !volet || volet.open || !volet.name) return
+    const ouvert = [...document.querySelectorAll<HTMLDetailsElement>(`details[data-accordeon][open][name="${CSS.escape(volet.name)}"]`)].find(
+      (d) => d !== volet && !d.contains(volet) && d.compareDocumentPosition(volet) & Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+    if (!ouvert) return
+    const avant = sommaire.getBoundingClientRect().top
+    ouvert.classList.add('sans-transition')
+    ouvert.open = false
+    window.scrollBy({ top: sommaire.getBoundingClientRect().top - avant, behavior: 'instant' })
+    requestAnimationFrame(() => requestAnimationFrame(() => ouvert.classList.remove('sans-transition')))
+  })
+</script>
+
+<style>
+  /* Transparent : le volet prend la couleur de sa bande (il prenait celle
+     de la page, et faisait une rangée blanche sur une bande bleu pâle) */
+  .accordeon {
+    background-color: transparent;
+  }
+
+  /* Ouverture animée : utilitaire .volet-anime de global.css */
+  @supports selector(::details-content) {
+    .accordeon.sans-transition::details-content {
+      transition: none;
+    }
+  }
+
+  /* Ouverture par une ancre : titre et indicateur aussi, sans transition */
+  .accordeon.sans-transition :global(.sommaire),
+  .accordeon.sans-transition :global(.sommaire *),
+  .accordeon.sans-transition :global(.sommaire *::after) {
+    transition: none;
+  }
+</style>

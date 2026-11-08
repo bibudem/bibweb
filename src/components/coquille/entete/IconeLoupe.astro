@@ -1,0 +1,80 @@
+---
+/*
+ * Icône du bouton Rechercher, reprise de studio·bib (techno-astro,
+ * Entete.astro) : une loupe qui se change en croix. Le bouton parent pilote
+ * l'animation par son aria-expanded (Entete.astro le met à jour).
+ *
+ * Le manche (diag-a) est la partie de la première diagonale qui sort du
+ * verre (pathLength=1 : le trait visible commence à 63,5 %). Il s'allonge
+ * jusqu'à la croix pendant que le verre se réduit, puis la seconde
+ * diagonale se trace. À la fermeture, l'ordre s'inverse.
+ */
+interface Props {
+  taille?: number
+}
+
+const { taille = 28 } = Astro.props
+---
+
+<svg class="loupe-x" viewBox="0 0 34 34" width={taille} height={taille} aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round">
+  <circle class="verre" cx="14" cy="14" r="8"></circle>
+  <line class="diag-a" x1="7" y1="7" x2="27" y2="27" pathLength="1"></line>
+  <line class="diag-b" x1="27" y1="7" x2="7" y2="27" pathLength="1"></line>
+</svg>
+
+<style>
+  .loupe-x {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .loupe-x * {
+    transition-timing-function: var(--courbe-icone);
+    transition-duration: var(--duree-courte-3);
+  }
+
+  .verre {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition-property: scale, opacity;
+    transition-delay: var(--duree-courte-2);
+  }
+
+  .diag-a {
+    stroke-dasharray: 0.365 2;
+    stroke-dashoffset: -0.635;
+    transition-property: stroke-dasharray, stroke-dashoffset;
+    transition-delay: var(--duree-courte-2);
+  }
+
+  .diag-b {
+    stroke-dasharray: 0 2;
+    opacity: 0;
+    transition-property: stroke-dasharray, opacity;
+    transition-delay: 0ms;
+  }
+
+  :global([aria-expanded='true']) > .loupe-x .verre {
+    scale: 0.2;
+    opacity: 0;
+    transition-delay: 0ms;
+  }
+
+  :global([aria-expanded='true']) > .loupe-x .diag-a {
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 0;
+    transition-delay: 0ms;
+  }
+
+  :global([aria-expanded='true']) > .loupe-x .diag-b {
+    stroke-dasharray: 1 2;
+    opacity: 1;
+    transition-delay: var(--duree-courte-2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loupe-x * {
+      transition-delay: 0ms !important;
+    }
+  }
+</style>

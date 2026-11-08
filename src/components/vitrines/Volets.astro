@@ -1,0 +1,107 @@
+---
+/*
+ * Accordéons d'une vitrine (GroupeAccordeons, un seul volet ouvert à la fois).
+ * Le bloc qui les emploie les place dans la colonne de texte (ColonneDecalee
+ * 0.5), avec son titre : la source les décalait d'une colonne (colonne décalée de 1),
+ * en retrait du titre et des autres blocs de texte.
+ * Le titre d'un volet est un h3 : il suit toujours le h2 d'un bloc.
+ *
+ * Les `coordonnees` reprennent les lignes à icônes de /nous-joindre/
+ * (courriel, téléphone, adresse et itinéraire) : le rédacteur ne donne que
+ * les valeurs ; le lien tel: se déduit du numéro affiché.
+ */
+import { lienTelephone } from '@/lib/telephone.mjs'
+import { EnvelopeIcon } from '@phosphor-icons/react/dist/ssr/Envelope'
+import { PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone'
+import { MapTrifoldIcon } from '@phosphor-icons/react/dist/ssr/MapTrifold'
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
+import GroupeAccordeons from '@/components/contenu/accordeons/GroupeAccordeons.astro'
+import Accordeon from '@/components/contenu/accordeons/Accordeon.astro'
+import AccordeonTitre from '@/components/contenu/accordeons/AccordeonTitre.astro'
+import AccordeonContenu from '@/components/contenu/accordeons/AccordeonContenu.astro'
+import Lien from '@/components/primitives/Lien.astro'
+import Typographie from '@/components/primitives/Typographie.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Volet = BlocDe<'accordeons'>['volets'][number]
+
+interface Props {
+  volets: Volet[]
+  couleur: BlocDe<'accordeons'>['couleur']
+  /** Fond de la bande : sur une bande de couleur, le volet ouvert et la pastille passent en blanc, sinon ils s'y fondraient */
+  fond?: string
+}
+
+const { volets, couleur, fond } = Astro.props
+const surCouleur = fond !== undefined
+const styleIcone = { color: 'var(--bleu-principal)', flex: 'none' }
+---
+
+<GroupeAccordeons color={couleur} style={{ width: '100%', ...(surCouleur && { '--accordeon-fond': 'var(--couleur-surface)', '--accordeon-pastille': 'var(--couleur-surface)' }) }}>
+  {
+    volets.map((volet) => (
+      <Accordeon id={volet.id}>
+        <AccordeonTitre>{volet.titre}</AccordeonTitre>
+        <AccordeonContenu>
+          {volet.texte && <TexteMarkdown texte={volet.texte} espacerParagraphes />}
+          {volet.coordonnees && (
+            <div class="coordonnees">
+              {volet.coordonnees.courriel && (
+                <div class="ligne">
+                  <IconeSprite icone={EnvelopeIcon} size={24} style={styleIcone} aria-hidden="true" />
+                  <Lien to={`mailto:${volet.coordonnees.courriel}`}>{volet.coordonnees.courriel}</Lien>
+                </div>
+              )}
+              {volet.coordonnees.telephone && (
+                <div class="ligne">
+                  <IconeSprite icone={PhoneIcon} size={24} style={styleIcone} aria-hidden="true" />
+                  <Lien to={lienTelephone(volet.coordonnees.telephone) ?? `tel:${volet.coordonnees.telephone}`}>{volet.coordonnees.telephone}</Lien>
+                </div>
+              )}
+              {(volet.coordonnees.adresse || volet.coordonnees.itineraire) && (
+                <div class="ligne adresse">
+                  <IconeSprite icone={MapTrifoldIcon} size={24} style={styleIcone} aria-hidden="true" />
+                  <div>
+                    {volet.coordonnees.adresse && (
+                      <Typographie>
+                        {volet.coordonnees.adresse.map((ligne, i) => (
+                          <Fragment>
+                            {i > 0 && <br />}
+                            {ligne}
+                          </Fragment>
+                        ))}
+                      </Typographie>
+                    )}
+                    {volet.coordonnees.itineraire && (
+                      <Lien to={volet.coordonnees.itineraire} Icon={ArrowSquareOutIcon}>
+                        Voir l'itinéraire
+                      </Lien>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </AccordeonContenu>
+      </Accordeon>
+    ))
+  }
+</GroupeAccordeons>
+
+<style>
+  .ligne {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  .ligne:not(:last-child) {
+    padding-bottom: var(--espace-1);
+  }
+
+  .adresse {
+    align-items: start;
+  }
+</style>

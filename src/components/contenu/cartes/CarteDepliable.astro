@@ -1,0 +1,169 @@
+---
+/*
+ * Carte compacte qui se déplie : la rangée colorée des cartes compactes
+ * (CarteIcone fullWidth : icône, titre, pastille), sans lien, dont le
+ * texte s'ouvre sous le titre. Version compacte des cartes à révélation à
+ * icône (CarteRevelationFond), pour le bloc « cartes-revelation » en disposition
+ * `compacte`.
+ *
+ * - <details> natif : clavier, état annoncé, aucun script. Le titre reste
+ *   un vrai titre (niveauTitre, 3 par défaut) dans le <summary>.
+ * - Ouverture animée comme les accordéons (utilitaire .volet-anime de
+ *   global.css) ; sans ::details-content, ouverture instantanée.
+ * - En grille, la carte reste en haut de sa cellule : l'ouverture ne
+ *   rallonge pas la voisine.
+ * - Couleurs : celles de CarteRevelationFond (texte blanc 7,10:1 sur bleu
+ *   principal, 11,26:1 sur vert foncé ; bleu foncé sur rose 300).
+ */
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Couleur = 'bleuPrincipal' | 'rose300' | 'vertFonce'
+
+interface Props {
+  titre: string
+  Icon?: any
+  couleur?: Couleur
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+}
+
+const { titre, Icon, couleur = 'bleuPrincipal', niveauTitre = 3 } = Astro.props
+const Titre = `h${niveauTitre}`
+---
+
+<details class:list={['carte', 'volet-anime', `couleur-${couleur}`, { 'surface-claire': couleur === 'rose300' }]}>
+  <summary class="sommaire">
+    <span class="icone">{Icon && <IconeSprite icone={Icon} size={32} aria-hidden="true" focusable="false" />}</span>
+    <Titre class="titre">{titre}</Titre>
+    <span class="pastille" aria-hidden="true"><IconeSprite icone={CaretDownIcon} size="1.25rem" weight="bold" /></span>
+  </summary>
+  <div class="contenu"><slot /></div>
+</details>
+
+<style>
+  .carte {
+    align-self: start;
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond);
+    color: var(--_encre);
+  }
+
+  .couleur-bleuPrincipal {
+    --_fond: var(--bleu-principal);
+    --_survol: var(--bleu-principal-fonce);
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+  }
+
+  .couleur-vertFonce {
+    --_fond: var(--vert-fonce);
+    --_survol: color-mix(in srgb, var(--vert-fonce) 70%, var(--couleur-voile));
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+  }
+
+  .couleur-rose300 {
+    --_fond: var(--rose-300);
+    --_survol: var(--rose-500);
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
+  }
+
+  /* Liens du texte sur fond foncé */
+  .couleur-bleuPrincipal,
+  .couleur-vertFonce {
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+  }
+
+  .sommaire {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--espace-2);
+    padding: 1.25rem;
+    border-radius: inherit;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .sommaire::-webkit-details-marker {
+    display: none;
+  }
+
+  .sommaire:focus-visible {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .icone {
+    display: flex;
+    color: var(--_icone);
+  }
+
+  .icone > :global(svg) {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .titre {
+    margin: 0;
+    color: inherit;
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+  }
+
+  .pastille {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--taille-pastille-petite);
+    height: var(--taille-pastille-petite);
+    border-radius: var(--rayon-plein);
+    background-color: var(--_survol);
+  }
+
+  .pastille > :global(svg) {
+    transition: rotate var(--duree-moyenne-1) var(--courbe-emphase);
+  }
+
+  .carte[open] .pastille > :global(svg) {
+    rotate: 180deg;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sommaire:hover .titre {
+      text-decoration: underline;
+      text-decoration-thickness: from-font;
+    }
+  }
+
+  /* Texte sous la rangée ; dès 600 px, aligné sur le titre */
+  .contenu {
+    padding: 0 1.25rem 1.25rem;
+    font-size: var(--texte-courant);
+    line-height: 1.5;
+  }
+
+  @media (width >= 600px) {
+    .contenu {
+      padding-inline-start: calc(1.25rem + 2rem + 1rem);
+    }
+  }
+
+  .contenu > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+
+    .carte[open] {
+      outline: 2px solid Highlight;
+    }
+  }
+</style>

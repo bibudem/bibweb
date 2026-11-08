@@ -1,0 +1,69 @@
+---
+/*
+ * Pastille fléchée des cartes-liens : → pour une page du site, ↗ pour un
+ * autre site. Purement décorative (aria-hidden) : le lien de la carte porte
+ * le nom et les annonces. Une seule version pour toutes les cartes (elle
+ * était réécrite dans six composants).
+ *
+ * Taille : jeton --taille-pastille (carte), --taille-pastille-petite avec
+ * `petite` (rangée, liste). Couleurs : celles de la carte qui la contient,
+ * par variables (`--pastille-fond`, `--pastille-encre`, `--pastille-contour`,
+ * et leurs variantes « -actif ») ; sans elles, transparente, de la couleur du
+ * texte. Le survol et le focus (flèche qui avance, couleurs actives) sont
+ * réglés par la carte : `.carte-lien` dans global.css.
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  externe?: boolean
+  petite?: boolean
+  class?: string
+}
+
+// `reste` porte l'attribut de portée du parent : son style s'applique à `class`
+const { externe = false, petite = false, class: classe, ...reste } = Astro.props
+const Fleche = externe ? ArrowUpRightIcon : ArrowRightIcon
+---
+
+<span class:list={['pastille-fleche', { externe, petite }, classe]} aria-hidden="true" {...reste}>
+  <IconeSprite icone={Fleche} size="1.5rem" weight="light" aria-hidden="true" focusable="false" />
+</span>
+
+<style>
+  .pastille-fleche {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: var(--taille-pastille);
+    height: var(--taille-pastille);
+    border: 1px solid var(--pastille-contour, transparent);
+    border-radius: var(--rayon-plein);
+    background-color: var(--pastille-fond, transparent);
+    color: var(--pastille-encre, currentColor);
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      border-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  .petite {
+    width: var(--taille-pastille-petite);
+    height: var(--taille-pastille-petite);
+  }
+
+  .pastille-fleche > :global(svg) {
+    fill: currentColor;
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (forced-colors: active) {
+    .pastille-fleche {
+      border-color: CanvasText;
+    }
+  }
+</style>

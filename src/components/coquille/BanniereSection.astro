@@ -1,0 +1,152 @@
+---
+/*
+ * Bannière des pages de niveau 2 et plus (SuperHeroLvl2 de coquille-web),
+ * alimentée par `superHero: { imageName, title }` du frontmatter.
+ *
+ * La source la plaçait en position absolue, à une hauteur mesurée en JS sous
+ * les bandeaux d'avis, puis réservait sa place avec un espaceur de
+ * calc(230px - 5rem). Ici, elle reste dans le flux juste après l'en-tête :
+ * - dès 1200 px, une marge négative de 5rem (hauteur de la barre de bureau)
+ *   la glisse sous l'en-tête transparent, sur 230 px en tout ;
+ * - en dessous, la barre compacte est opaque : la source cachait le haut de
+ *   l'image derrière elle. La bannière fait donc directement
+ *   calc(230px - 5rem), soit la place de l'espaceur.
+ * Plus de mesure des bandeaux ni de saut au chargement : <udem-urgence>
+ * pousse simplement l'en-tête et la bannière vers le bas.
+ *
+ * Le titre est le nom de la section, répété sur toutes ses pages : la source
+ * en faisait un <h2> placé avant le <h1> de la page. Il devient un paragraphe
+ * qui garde l'apparence d'un h2, pour que la hiérarchie des titres commence
+ * au <h1> du contenu (le fil d'Ariane nomme déjà la section).
+ */
+import { Picture } from 'astro:assets'
+import { cadrageSection, imageBanniere, largeursPour } from '@/lib/bannieres'
+
+interface Props {
+  imageName: string
+  titre?: string
+  alt?: string
+  /** Hauteur de la photo à garder au recadrage (« 20% ») ; sinon celle de la photo (lib/bannieres.ts) */
+  cadrage?: string
+  class?: string
+  style?: string
+}
+
+const { imageName, titre, alt = '', cadrage = cadrageSection(imageName), class: classe, style } = Astro.props
+const image = imageBanniere(imageName)
+---
+
+<div class:list={['banniere', 'fond-photo', 'vague', classe]} style={[cadrage && `--cadrage: ${cadrage}`, style].filter(Boolean).join('; ') || undefined}>
+  <Picture
+    src={image}
+    formats={['avif', 'webp']} fallbackFormat="webp"
+    widths={largeursPour(image)}
+    sizes="100vw"
+    alt={alt}
+    loading="eager"
+    fetchpriority="high"
+    class="banniere-image fond-photo-image"
+  />
+  {
+    titre && (
+      <div class="conteneur">
+        <div class="rangee-titre">
+          <p class="titre">{titre}</p>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .banniere {
+    display: flex;
+    position: relative;
+    /* Garde le voile et le titre dans la bannière, sous l'en-tête collant */
+    isolation: isolate;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    /* Hauteur minimale et non fixe : avec le texte agrandi à 200 % (WCAG
+       1.4.4), 5rem valait 170 px, la bannière tombait à 60 px et le titre
+       était coupé par le haut ; elle grandit maintenant avec son titre. */
+    min-height: calc(230px - 5rem);
+    overflow: hidden;
+    color: var(--couleur-sur-fonce);
+  }
+
+  /* Photo et voile : utilitaires .fond-photo et .vague de global.css
+     (--cadrage : la bannière est basse, sans cadrage on ne verrait que le
+     cou). Le titre est collé à droite, mais un titre long s'étend jusqu'à
+     la gauche : la vague bleu foncé de l'accueil est centrée sous lui. */
+  .banniere {
+    --vague-x: 50%;
+    --vague-taille: 150% 260%;
+  }
+
+  @media (width >= 900px) {
+    .banniere {
+      --vague-taille: 105% 300%;
+    }
+  }
+
+  /* 1rem au-dessus et au-dessous : avec 0,5rem, les jambages (« Engagements »)
+     arrivaient à 3–5 px du bas de la bannière, et dès 900 px le titre sur
+     deux lignes touchait le haut. Au texte par défaut, la bannière garde sa
+     hauteur sous 900 px (sa hauteur minimale l'emporte). */
+  .rangee-titre {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding-block: var(--espace-2);
+  }
+
+  /* Apparence du h2 du thème (2.5rem, puis 3.5rem dès 900 px) */
+  /* Un long mot (« l'enseignement, », « document » à 200 % sur un téléphone)
+     se coupe plutôt que de sortir de la bannière avec le texte agrandi
+     (overflow-wrap). */
+  .titre {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: break-word;
+    font-size: 2.5rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.1;
+  }
+
+  /* Quand la rangée devient étroite au regard du texte (moins de 16rem :
+     texte agrandi sur un téléphone ou une tablette), la coupe se fait avec un
+     trait d'union, d'après le lang de la page, plutôt qu'au milieu d'un mot
+     sans signe (« docume / nt »). Au texte par défaut, la rangée fait au
+     moins 16,5rem (320 px) : les titres gardent leurs coupures, car hyphens
+     couperait aussi des mots qui tiennent sur leur ligne. */
+  .rangee-titre {
+    container-type: inline-size;
+  }
+
+  @container (width <= 16rem) {
+    .titre {
+      hyphens: auto;
+    }
+  }
+
+  @media (width >= 900px) {
+    .rangee-titre {
+      padding: var(--espace-2) 215px 48px 0;
+    }
+
+    .titre {
+      font-size: 3.5rem;
+    }
+  }
+
+  @media (width >= 1200px) {
+    /* La bannière passe sous l'en-tête (5rem) : le titre reste en dessous,
+       même quand le texte agrandi fait grandir l'en-tête et le titre */
+    .banniere {
+      min-height: 230px;
+      margin-top: -5rem;
+      padding-top: 5rem;
+    }
+  }
+</style>

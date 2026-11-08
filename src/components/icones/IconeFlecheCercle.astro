@@ -1,0 +1,12 @@
+---
+/* Flèche droite dans un cercle (src/icons/arrow-right-circle.svg de coquille-web) */
+import IconeSvg from './IconeSvg.astro'
+
+const props = Astro.props
+---
+
+{/* viewBox carré sur le cercle (décalé de 0,5 dans le fichier source de 50 × 51) */}
+<IconeSvg viewBox="0 0.5 50 50" {...props}>
+  <rect width="50" height="50" x="0" y="0.5" rx="25" opacity=".1"></rect>
+  <path d="m34.508 25.415-7.031 7.031a.586.586 0 0 1-.828-.828l6.03-6.031H16.907a.586.586 0 1 1 0-1.172h15.772l-6.03-6.031a.586.586 0 0 1 .828-.828l7.031 7.03a.586.586 0 0 1 0 .829z"></path>
+</IconeSvg>

@@ -1,0 +1,235 @@
+---
+/*
+ * Carte-lien compacte en rangée : icône fine à gauche, titre et description
+ * au milieu, pastille fléchée à droite, centrée sur la hauteur de la carte.
+ * La seule rangée-lien compacte du site : CarteIcone `fullWidth` (cartes de
+ * couleur des grilles élargissables et de la directive :::cartes) lui délègue
+ * son rendu.
+ *
+ * Deux familles de couleurs :
+ * - `neutre` (par défaut ; Nous joindre, À propos, Obtenir), reprise de la
+ *   carte compacte de studio·bib (CarteIcone `fullWidth`) : surface blanche à
+ *   contour gris --couleur-contour (3,7:1 sur blanc, WCAG 1.4.11), pastille à
+ *   contour qui se remplit de bleu foncé au survol et au focus (flèche
+ *   blanche, 18:1). Pas de jaune (identité de studio·bib) ;
+ * - pleine couleur (`bleuPrincipal`, `vertFonce`, `rose300`, `jaune`), comme
+ *   CarteIcone : fond de couleur, pastille pleine de la teinte de survol.
+ *   Contrastes : texte blanc 7,10:1 sur bleu principal, 11,26:1 sur vert
+ *   foncé ; bleu foncé ≥ 11:1 sur rose 300 et sur jaune ; flèche rouge orangé
+ *   foncé (3,74:1) sur la pastille rose 500.
+ *
+ * Un seul lien, sur le titre (.lien-etire de global.css) : son ::after
+ * couvre la carte, le focus est tracé sur la carte entière (anneau double).
+ * La description reste lue normalement. Sans `href` (tuile d'une page à
+ * venir) : ni lien ni pastille. Le niveau du titre est réglable (h2 sans
+ * titre de bloc, h3 sinon ; `null` : pas de titre, comme les tuiles des
+ * grilles), sans changer sa taille.
+ */
+import PastilleFleche from '@/components/partage/PastilleFleche.astro'
+import { lienCarte } from '@/lib/liens'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Couleur = 'neutre' | 'bleuPrincipal' | 'vertFonce' | 'rose300' | 'jaune'
+
+interface Props {
+  titre: string
+  description?: string
+  href?: string
+  target?: string
+  rel?: string
+  Icone?: any
+  niveauTitre?: 2 | 3 | 4 | 5 | 6 | null
+  couleur?: Couleur
+  /** `li` dans une liste de cartes (par défaut), `div` dans une grille */
+  element?: 'li' | 'div'
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { titre, description, href, target, rel, Icone, niveauTitre = 3, couleur = 'neutre', element = 'li', class: classe, style, ...reste } = Astro.props
+const { interne, rel: relFinal, annonce } = href ? lienCarte(href, target, rel) : { interne: true, rel: undefined, annonce: '' }
+const Titre = (niveauTitre === null ? 'div' : `h${niveauTitre}`) as 'h3'
+const Element = element as 'li'
+const claire = couleur === 'neutre' || couleur === 'rose300' || couleur === 'jaune'
+// Sans les attributs de portée des composants parents : CarteIcone lui
+// délègue sa variante pleine largeur, et ses règles .carte (grande carte de
+// 400 px) s'appliqueraient sinon à cette rangée
+const attributs = Object.fromEntries(Object.entries(reste).filter(([cle]) => !cle.startsWith('data-astro-cid')))
+---
+
+<Element
+  class:list={['carte', 'carte-lien', 'anneau-carte', `couleur-${couleur}`, { 'surface-claire': claire, 'sans-icone': !Icone, 'sans-description': !description, 'sans-lien': !href }, classe]}
+  style={fusionnerStyles(style)}
+  {...attributs}
+>
+  {
+    Icone && (
+      <span class="icone" aria-hidden="true">
+        <IconeSprite icone={Icone} size={32} aria-hidden="true" focusable="false" />
+      </span>
+    )
+  }
+  <Titre class="titre">
+    {
+      href ? (
+        <a class="lien-etire" href={href} target={target} rel={relFinal}>
+          {titre}
+          {annonce && <span class="visuellement-masque">{annonce}</span>}
+        </a>
+      ) : (
+        titre
+      )
+    }
+  </Titre>
+  {description && <p class="description">{description}</p>}
+  {href && <PastilleFleche class="pastille" externe={!interne} petite />}
+</Element>
+
+<style>
+  .carte {
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-content: center;
+    align-items: center;
+    gap: calc(var(--espace-1) / 2) var(--espace-element);
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--espace-carte);
+    border: 1px solid var(--_contour, transparent);
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond);
+    color: var(--_encre);
+  }
+
+  /* Neutre : surface blanche à contour, pastille à contour qui se remplit */
+  .couleur-neutre {
+    --_contour: var(--couleur-contour);
+    --_fond: var(--couleur-surface);
+    --_survol: color-mix(in srgb, var(--couleur-texte) 4%, var(--couleur-surface));
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--couleur-texte) 60%, transparent);
+    --pastille-contour: var(--couleur-contour);
+    --pastille-fond: var(--couleur-surface);
+    --pastille-encre: var(--couleur-texte);
+    --pastille-contour-actif: var(--couleur-fond-fort);
+    --pastille-fond-actif: var(--couleur-fond-fort);
+    --pastille-encre-actif: var(--couleur-sur-fonce);
+    --carte-anneau-interieur: var(--couleur-texte);
+  }
+
+  /* Pleine couleur (CarteIcone) : pastille pleine de la teinte de survol */
+  .couleur-bleuPrincipal {
+    --_fond: var(--bleu-principal);
+    --_survol: var(--bleu-principal-fonce);
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+    --pastille-encre: var(--couleur-sur-fonce);
+  }
+
+  .couleur-vertFonce {
+    --_fond: var(--vert-fonce);
+    --_survol: color-mix(in srgb, var(--vert-fonce) 70%, var(--couleur-voile));
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+    --pastille-encre: var(--couleur-sur-fonce);
+  }
+
+  .couleur-rose300 {
+    --_fond: var(--rose-300);
+    --_survol: var(--rose-500);
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
+    --pastille-encre: var(--rouge-orange-texte-sur-clair);
+  }
+
+  /* Le #ffdb81 et le #bc8800 que la source écrivait en dur, dérivés du jaune */
+  .couleur-jaune {
+    --_fond: var(--jaune);
+    --_survol: color-mix(in srgb, var(--jaune) 68%, var(--couleur-surface));
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--jaune) 74%, var(--couleur-voile));
+    --pastille-encre: var(--couleur-texte);
+  }
+
+  .carte:not(.couleur-neutre) {
+    --pastille-fond: var(--_survol);
+  }
+
+  /* Voile de survol en calque : on anime son opacité, pas la couleur */
+  .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-dessous);
+    border-radius: inherit;
+    background-color: var(--_survol);
+    opacity: 0;
+    transition: opacity var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .carte:not(.sans-lien):hover::before {
+    opacity: 1;
+  }
+
+  .icone {
+    display: flex;
+    grid-row: 1 / span 2;
+    align-self: start;
+    color: var(--_icone);
+  }
+
+  .icone :global(svg) {
+    width: 2rem;
+    height: 2rem;
+    fill: currentColor;
+  }
+
+  .titre {
+    grid-column: 2;
+    margin: 0;
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  /* Sans description, le titre occupe les deux rangées, face à la pastille */
+  .sans-description .titre {
+    grid-row: 1 / span 2;
+  }
+
+  .description {
+    grid-column: 2;
+    margin: 0;
+    font-size: var(--texte-reduit);
+    line-height: 1.4;
+  }
+
+  .pastille {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  /* Sans icône : ni colonne ni écart à gauche */
+  .sans-icone {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .sans-icone .titre,
+  .sans-icone .description {
+    grid-column: 1;
+  }
+
+  .sans-icone .pastille {
+    grid-column: 2;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

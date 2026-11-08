@@ -1,0 +1,104 @@
+---
+/*
+ * Sceau des bibliothèques de l'UdeM (le « U » entouré du nom en cercle) : au
+ * survol ou au focus du lien qui le contient, le texte tourne autour du U
+ * (sans toucher au U), puis ralentit en douceur quand on le quitte (script
+ * plus bas).
+ *
+ * Deux fichiers SVG (le U, l'anneau de texte) empilés plutôt qu'un SVG en
+ * ligne : l'anneau pesait 21 Ko dans chaque page ; en fichier, le navigateur
+ * le garde en cache. Le script fait tourner l'image de l'anneau autour de son
+ * centre, qui est celui du dessin (151, 151). Couleurs figées dans les
+ * fichiers (texte blanc : à poser sur fond foncé), comme dans le SVG en
+ * ligne, qui ne dépendait ni de currentColor ni du CSS.
+ *
+ * Le sceau est une image à nom accessible (role="img") : le lien qui le
+ * contient n'a pas d'autre texte. Les deux <img> sont décoratives (alt vide).
+ * Source : public/images/logo-bib/logo-bib-sceau-bleu.svg.
+ */
+import anneau from './pied/sceau-anneau.svg'
+import u from './pied/sceau-u.svg'
+
+interface Props {
+  /** Nom accessible du sceau (le lien parent n'a pas d'autre texte) */
+  nom?: string
+  class?: string
+}
+
+const { nom = 'Les bibliothèques, Université de Montréal – Accueil', class: classe } = Astro.props
+---
+
+<span class:list={['sceau', classe]} role="img" aria-label={nom}>
+  <img class="u" src={u.src} alt="" width="302" height="302" loading="lazy" decoding="async" />
+  <img class="anneau" src={anneau.src} alt="" width="302" height="302" loading="lazy" decoding="async" />
+</span>
+
+<script>
+  // Le texte accélère en douceur au survol (souris) ou au focus clavier du lien parent, et ralentit
+  // en douceur quand on le quitte : la vitesse tend vers sa cible (décroissance exponentielle),
+  // sans à-coup. Aucun mouvement si l'appareil est réglé pour limiter les animations.
+  const VITESSE = 12 // degrés par seconde (un tour en 30 s)
+  const ACCELERATION = 0.5 // secondes : constante de temps de la montée en vitesse
+  const RALENTISSEMENT = 0.8 // secondes : constante de temps de l'arrêt (plus long = plus doux)
+
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (const sceau of document.querySelectorAll<HTMLElement>('.sceau')) {
+      const anneau = sceau.querySelector<HTMLElement>('.anneau')
+      const lien = sceau.closest('a')
+      if (!anneau || !lien) continue
+
+      let angle = 0
+      let vitesse = 0
+      let cible = 0
+      let dernier = 0
+      let image = 0
+
+      const pas = (maintenant: number) => {
+        const dt = Math.min((maintenant - dernier) / 1000, 0.1)
+        dernier = maintenant
+        const tau = cible > vitesse ? ACCELERATION : RALENTISSEMENT
+        vitesse += (cible - vitesse) * (1 - Math.exp(-dt / tau))
+        angle = (angle + vitesse * dt) % 360
+        anneau.style.rotate = `${angle}deg`
+        // Arrêt complet quand la vitesse est devenue imperceptible
+        if (cible === 0 && vitesse < 0.05) {
+          image = 0
+          return
+        }
+        image = requestAnimationFrame(pas)
+      }
+
+      const viser = (v: number) => {
+        cible = v
+        if (!image) {
+          dernier = performance.now()
+          image = requestAnimationFrame(pas)
+        }
+      }
+
+      lien.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && viser(VITESSE))
+      lien.addEventListener('pointerleave', () => viser(0))
+      lien.addEventListener('focusin', () => lien.matches(':focus-visible') && viser(VITESSE))
+      lien.addEventListener('focusout', () => viser(0))
+    }
+  }
+</script>
+
+<style>
+  .sceau {
+    display: block;
+    position: relative;
+  }
+
+  .sceau img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* L'anneau par-dessus le U, au même endroit (ordre du dessin d'origine) */
+  .anneau {
+    position: absolute;
+    inset: 0;
+  }
+</style>

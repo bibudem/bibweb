@@ -1,0 +1,128 @@
+---
+/*
+ * Collections, Boîte à outils et Studio·bib sous 1200 px (PanneauMenu) :
+ * cartes repliables (<details name>, une seule ouverte à la fois). Dès
+ * 1200 px, le catalogue (Catalogue) prend le relais.
+ *
+ * PanneauMenu passe `class="groupe"` : sa propre portée de style atteint
+ * ainsi la racine (affichage, placement dans la grille, entrée en décalage).
+ */
+import { Image } from 'astro:assets'
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import { CARTES } from '@/data/navigation'
+import Bouton from '@/components/primitives/Bouton.astro'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  /** id du menu : nom du groupe de <details> */
+  id: string
+  class?: string
+  style?: string
+}
+
+const { id, class: classe, style, ...reste } = Astro.props
+---
+
+<ul class:list={[classe, 'cartes-pliables']} style={style} aria-label="Services et collections" {...reste}>
+  {
+    CARTES.map((carte) => (
+      <li style={`--couleur-carte: ${carte.couleur}`}>
+        <details class="volet-anime" name={`${id}-cartes`}>
+          <summary>
+            <Image src={carte.image} alt="" width={40} height={40} class="vignette" />
+            <span class="pliable-titre">
+              {carte.titre}
+              <span class="fonction">{carte.fonction}</span>
+            </span>
+            <IconeSprite icone={CaretDownIcon} size={20} aria-hidden="true" className="chevron" />
+          </summary>
+          <ul class="carte-liens">
+            {carte.liens.map((lien) => (
+              <li>
+                <a href={lien.href}>{lien.libelle}</a>
+              </li>
+            ))}
+          </ul>
+          {carte.appel && (
+            <Bouton class="carte-appel" href={carte.appel.href} secondary>
+              {carte.appel.libelle}
+            </Bouton>
+          )}
+        </details>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cartes-pliables details {
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-tres-petit);
+    background-color: var(--couleur-fond);
+    box-shadow: inset 4px 0 0 var(--couleur-carte);
+  }
+
+  .cartes-pliables summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3.5rem;
+    padding: var(--espace-1) var(--espace-2);
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-moyenne);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .cartes-pliables summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .pliable-titre {
+    flex: 1 1 auto;
+  }
+
+  .cartes-pliables :global(.chevron) {
+    color: var(--couleur-accent);
+    transition: rotate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .cartes-pliables details[open] :global(.chevron) {
+    rotate: 180deg;
+  }
+
+  .cartes-pliables details > :not(summary) {
+    margin-inline: var(--espace-2);
+  }
+
+  /* Ouverture en hauteur, comme les accordéons du contenu : utilitaire
+     .volet-anime de global.css */
+
+  .cartes-pliables details > :last-child {
+    margin-bottom: var(--espace-2);
+  }
+
+  .carte-liens a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--couleur-texte);
+    font-size: var(--texte-courant);
+    line-height: 1.4;
+    transition: color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .carte-liens a:hover {
+    color: var(--couleur-lien);
+    text-decoration: underline;
+  }
+
+  /* Bouton secondaire du site (Bouton) : seule sa place est réglée ici. Le
+     texte s'aligne sur les liens (1rem du bord), et le fond du survol reste
+     dans la carte (12 px de marge intérieure au lieu de 25). */
+  .cartes-pliables details > .carte-appel {
+    margin-top: 0;
+    margin-inline-start: 4px;
+    padding-inline-start: 12px;
+  }
+</style>

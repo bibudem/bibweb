@@ -1,0 +1,67 @@
+---
+/*
+ * Encadré d'un groupe :::encadres (RenduDirectives) : contenu (slot) et icône
+ * facultative à côté du titre. L'icône est chargée par RenduDirectives.
+ */
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  Icone?: any
+  taille?: number
+  couleur?: string
+}
+
+const { Icone, taille, couleur } = Astro.props
+---
+
+<div class="encadre surface-claire">
+  {
+    Icone && (
+      <span class="encadre-icone" aria-hidden="true">
+        <IconeSprite icone={Icone} size={taille ?? 50} color={couleur ?? 'var(--rouge-orange)'} aria-hidden="true" focusable="false" />
+      </span>
+    )
+  }
+  <slot />
+</div>
+
+<style>
+  .encadre {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-content: start;
+    column-gap: var(--espace-element);
+    padding: var(--espace-carte);
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond-encadre);
+  }
+
+  .encadre > :global(*) {
+    grid-column: 1 / -1;
+  }
+
+  /* Le titre et l'icône partagent la première rangée */
+  .encadre > .encadre-icone {
+    display: flex;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .encadre > .encadre-icone + :global(*) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Le titre colle au haut de l'encadré, comme la source */
+  .encadre > .encadre-icone + :global(*),
+  .encadre > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  @media (forced-colors: active) {
+    .encadre {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

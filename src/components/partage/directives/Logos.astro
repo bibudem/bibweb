@@ -1,0 +1,32 @@
+---
+/*
+ * Directive :::logos (RenduDirectives) : grille de logos (Logo), rendus
+ * dans le slot.
+ */
+---
+
+<div class="logos">
+  <slot />
+</div>
+
+<style>
+  /* Logos : 1, 2 puis 4 par rangée, centrés, 200 px de haut au plus */
+  .logos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  @media (width >= 600px) {
+    .logos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 1200px) {
+    .logos {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

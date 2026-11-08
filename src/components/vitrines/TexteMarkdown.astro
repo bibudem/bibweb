@@ -1,0 +1,48 @@
+---
+/*
+ * Texte Markdown d'une vitrine (champ `texte`).
+ *
+ * Par défaut, les paragraphes sont rendus par Typographie (corps de texte sans
+ * marge, comme les <Typographie> des pages MDX d'origine) ; le reste (listes,
+ * etc.) garde le HTML du Markdown. `brut` rend le HTML tel quel, pour les
+ * emplacements où le MDX d'origine écrivait du Markdown (paragraphes avec
+ * leur marge basse).
+ *
+ * `espacerParagraphes` : si le texte a au moins deux paragraphes à la suite,
+ * chacun, sauf le dernier, reçoit --espace-element dessous, l'écart des
+ * paragraphes des pages de texte (la source donnait 0,35em, soit 6 px) ; un
+ * paragraphe seul ou suivi d'une liste reste sans marge (recherche, ORCID).
+ */
+import Typographie from '@/components/primitives/Typographie.astro'
+import { markdownEnHtml } from '@/lib/markdown'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  texte: string
+  brut?: boolean
+  /** Style de chaque paragraphe */
+  styleParagraphe?: Style
+  espacerParagraphes?: boolean
+}
+
+const { texte, brut = false, styleParagraphe, espacerParagraphes = false } = Astro.props
+const html = await markdownEnHtml(texte)
+const margeBasse = espacerParagraphes && /<\/p>\s*<p>/.test(html)
+// Le HTML du Markdown est prévisible : des <p> de premier niveau (un <p> ne
+// s'imbrique jamais dans un autre), séparés des autres blocs
+const morceaux = brut ? [html] : html.split(/(<p>[\s\S]*?<\/p>)/).filter((m) => m.trim())
+const styleEspace = fusionnerStyles({ marginBottom: 'var(--espace-element)' }, styleParagraphe)
+---
+
+{
+  morceaux.map((morceau, i) => {
+    const paragraphe = !brut && morceau.match(/^<p>([\s\S]*)<\/p>$/)
+    return paragraphe ? (
+      <Typographie style={margeBasse && i < morceaux.length - 1 ? styleEspace : styleParagraphe}>
+        <Fragment set:html={paragraphe[1]} />
+      </Typographie>
+    ) : (
+      <Fragment set:html={morceau} />
+    )
+  })
+}

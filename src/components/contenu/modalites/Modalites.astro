@@ -1,0 +1,32 @@
+---
+/*
+ * Liste de modalités : une icône et un court texte par ligne (conditions de
+ * prêt, description des icônes). Les pages de coquille-web répétaient un
+ * <ul> en style inline ; ici, une vraie liste, stylée par jetons.
+ *
+ * <Modalites>
+ *   <Modalite Icon={BooksIcon}>Nombre maximum de documents : 100</Modalite>
+ * </Modalites>
+ */
+interface Props {
+  class?: string
+  style?: string
+}
+
+const { class: classe, style } = Astro.props
+---
+
+<ul class:list={['modalites', classe]} style={style}>
+  <slot />
+</ul>
+
+<style>
+  .modalites {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-1);
+    margin: 0 0 1em;
+    padding: 0;
+    list-style: none;
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+/*
+ * Bloc « texte » : titre, texte et rangée de boutons qui passe à la ligne
+ * (enseignement : ressources éducatives libres). Comme dans les héros :
+ * --espace-bloc entre le texte et les boutons, --espace-element entre eux,
+ * dans la colonne de texte (ColonneDecalee 0.5).
+ */
+import ColonneDecalee from '@/components/primitives/ColonneDecalee.astro'
+import BoutonVitrine from './BoutonVitrine.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'texte'> }
+
+const { bloc } = Astro.props
+---
+
+<ColonneDecalee offset={0.5}>
+  <Titre texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <TexteMarkdown texte={bloc.texte} espacerParagraphes />}
+  {
+    bloc.boutons && (
+      <div class="boutons">
+        {bloc.boutons.map((bouton) => (
+          <BoutonVitrine bouton={bouton} fond={bloc.fond} />
+        ))}
+      </div>
+    )
+  }
+</ColonneDecalee>
+
+<style>
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-element);
+    margin-top: var(--espace-bloc);
+  }
+
+  .boutons > :global(.bouton) {
+    margin: 0;
+  }
+</style>

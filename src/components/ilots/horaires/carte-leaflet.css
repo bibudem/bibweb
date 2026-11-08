@@ -1,0 +1,168 @@
+/*
+ * Carte Leaflet, encadré « hors de cette vue » et bulles (CarteLeaflet.tsx).
+ * Importée par CarteHoraires.tsx, après recherche-lieu.css.
+ */
+
+.ch-carte {
+  /* La carte reste sous l'en-tête collant et le menu du site */
+  position: relative;
+  z-index: var(--z-plan);
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: var(--rayon-petit);
+  background-color: var(--couleur-teinte);
+}
+
+@media (width >= 900px) {
+  .ch-carte {
+    height: 560px;
+  }
+}
+
+/* Cadre de la carte : porte l'encadré « hors de cette vue » par-dessus */
+.ch-carte-cadre {
+  position: relative;
+}
+
+/* Sous la carte sur mobile (par-dessus, il cacherait des marqueurs) ;
+   dès 900 px, posé dans le coin bas gauche, où la carte est la plus vide */
+.ch-hors-vue {
+  margin-top: var(--espace-1);
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-petit);
+  background-color: var(--couleur-surface);
+  box-shadow: var(--ombre-1);
+  font-size: var(--texte-petit);
+  line-height: 1.35;
+}
+
+@media (width >= 900px) {
+  .ch-hors-vue {
+    position: absolute;
+    z-index: var(--z-dessus-1);
+    bottom: 10px;
+    left: 10px;
+    max-inline-size: 20rem;
+    margin: 0;
+  }
+}
+
+.ch-hors-vue p {
+  margin: 0 0 0.25rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+.ch-hors-vue ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ch-hors-vue button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-1);
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--couleur-lien);
+  font: inherit;
+  font-weight: var(--graisse-moyenne);
+  text-align: start;
+  cursor: pointer;
+}
+
+.ch-hors-vue button:hover span {
+  text-decoration: underline;
+}
+
+.ch-hors-vue button svg {
+  flex-shrink: 0;
+  transition: translate var(--duree-courte-4) var(--courbe-standard);
+}
+
+.ch-hors-vue button:hover svg,
+.ch-hors-vue button:focus-visible svg {
+  translate: 3px 0;
+}
+
+.ch-carte .leaflet-container,
+.ch-carte.leaflet-container {
+  font-family: inherit;
+}
+
+.ch-carte .leaflet-popup-content-wrapper,
+.ch-carte .leaflet-popup-tip {
+  border-radius: var(--rayon-tres-petit);
+}
+
+.ch-carte .leaflet-popup-content {
+  color: var(--couleur-texte);
+  font-family: var(--police-sans);
+  font-size: var(--texte-petit);
+}
+
+.ch-bulle-liste {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ch-bulle-lien {
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--couleur-accent);
+  font: inherit;
+  font-weight: var(--graisse-forte);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ch-bulle-lien:hover {
+  text-decoration: underline;
+}
+
+/* Marqueurs rendus focalisables (voir CarteLeaflet.tsx) */
+.ch-carte path.leaflet-interactive:focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 2px;
+}
+
+/* Liens du crédit soulignés : la couleur seule ne les distingue pas (WCAG 1.4.1) */
+.ch-carte .leaflet-control-attribution a {
+  text-decoration: underline;
+}
+
+/* Lien « Leaflet » du crédit : 15 px de haut dans le style de Leaflet. Une
+   ligne de 24 px en fait une cible de 24 px (WCAG 2.5.8) ; la bande du
+   crédit passe de 17 à 24 px. Une zone élargie par pseudo-élément serait
+   rognée en bas par le overflow: hidden de la carte. */
+.ch-carte .leaflet-control-attribution {
+  line-height: 24px;
+}
+
+.ch-carte .leaflet-control-attribution a {
+  display: inline-block;
+}
+
+.ch-carte .leaflet-control-zoom a {
+  border-radius: var(--rayon-tres-petit);
+  color: var(--couleur-accent);
+}
+
+/* Couleurs forcées : les boutons sans bordure (fond coloré seulement) se
+   lisaient comme du texte simple ; un contour système les rend repérables */
+@media (forced-colors: active) {
+  .ch-hors-vue button {
+    border: 1px solid ButtonText;
+  }
+}

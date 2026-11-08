@@ -1,0 +1,245 @@
+---
+/*
+ * Carte photo qui révèle une description (d'après coquille-web).
+ *
+ * 23 × 25rem (18 × 20rem sous 600 px), photo en cover sous un dégradé noir,
+ * titre en bas. À la révélation, un voile bleu foncé couvre la photo, le
+ * titre monte et le sous-titre et la description apparaissent en fondu.
+ * Corrigés :
+ * - la source ne réagissait qu'au survol : la révélation suit aussi le focus
+ *   clavier (la description est la zone focalisable et défilable de la carte)
+ *   et le toucher (un petit script donne le focus à la description) ;
+ * - le Fade de MUI posait visibility: hidden : la description était
+ *   inaccessible aux lecteurs d'écran ; ici, l'opacité seule la cache ;
+ * - plus de role="region" sur un div sans action ; le sous-titre était un h6
+ *   (niveau sauté) : c'est un paragraphe ; niveauTitre (3 par défaut) fixe la
+ *   balise du titre ;
+ * - seuls transform et opacity sont animés (la source animait top, bottom et
+ *   background-color), aux durées et courbes des jetons ;
+ * - le #e5f0f8 et le rgba(7,31,56,.7) en dur deviennent bleu 100 et bleu
+ *   foncé à 70 %. Texte blanc ou bleu 100 sur la photo voilée : au moins
+ *   7:1 même sur une photo blanche (noir à 25 % puis dégradé à 65 %, ou
+ *   voile bleu foncé à 70 %).
+ * - `small` (passé dans espaces) restait sans effet : accepté et ignoré.
+ */
+import type { ImageMetadata } from 'astro'
+import { Image as ImageAstro } from 'astro:assets'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { idUnique } from '@/lib/ids'
+
+interface Props {
+  title: string
+  subtitle?: string
+  Image: ImageMetadata | string
+  /** Texte de remplacement de la photo ; décorative par défaut */
+  alt?: string
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  small?: boolean
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { title, subtitle, Image, alt = '', niveauTitre = 3, small: _small, class: classe, style, ...reste } = Astro.props
+
+if (!Image) throw new Error('CarteRevelationImage : la propriété `Image` est obligatoire.')
+
+const idTitre = idUnique('carte-titre')
+const Titre = `h${niveauTitre}`
+
+// En cover, une photo plus large que la carte (paysage dans une carte
+// portrait) s'affiche à la hauteur de la carte × son ratio : 37,5rem pour
+// du 3:2, et non 23rem. Annoncer 23rem faisait choisir une image trop
+// petite, agrandie et floue.
+const ratio = typeof Image === 'string' ? 1 : Image.width / Image.height
+const largeurPetite = Math.ceil(Math.max(18, 20 * ratio) * 100) / 100
+const largeurGrande = Math.ceil(Math.max(23, 25 * ratio) * 100) / 100
+const largeurs = [...new Set([largeurPetite, largeurGrande].flatMap((rem) => [1, 2].map((d) => Math.ceil(rem * 16 * d))))].sort((a, b) => a - b)
+const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
+---
+
+<div class:list={['carte', classe]} style={fusionnerStyles(style)} data-carte-revelable {...reste}>
+  {
+    typeof Image === 'string' ? (
+      <img class="photo" src={Image} alt={alt} loading="lazy" decoding="async" />
+    ) : (
+      <ImageAstro class="photo" src={Image} alt={alt} widths={largeurs} sizes={tailles} formats={['avif', 'webp']} loading="lazy" />
+    )
+  }
+  <div class="degrade" aria-hidden="true"></div>
+  <div class="voile" aria-hidden="true"></div>
+  <Titre class="titre" id={idTitre}>{title}</Titre>
+  <div class="contenu" tabindex="0" role="group" aria-labelledby={idTitre} data-description>
+    {subtitle && <p class="sous-titre">{subtitle}</p>}
+    <div class="description"><slot /></div>
+  </div>
+</div>
+
+<script>
+  import { activerRevelation } from './revelation'
+
+  activerRevelation()
+</script>
+
+<style>
+  .carte {
+    --_marge: 1.5rem;
+    --_hauteur: 20rem;
+    /* Toujours foncée : liens, focus et accent comme le ton foncé de Section */
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+    --rouge-orange-texte: var(--jaune);
+    position: relative;
+    isolation: isolate;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    /* Jamais plus large que la piste du carrousel (conteneur de requête) :
+       avec le texte à 200 %, 18rem valait 612 px, une carte plus large qu'un
+       téléphone. Au texte par défaut, la piste est toujours plus large. */
+    width: min(18rem, 100cqi);
+    height: var(--_hauteur);
+    overflow: hidden;
+    border-radius: var(--rayon-carte);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+  }
+
+  @media (width >= 600px) {
+    .carte {
+      --_hauteur: 25rem;
+      width: min(23rem, 100cqi);
+    }
+  }
+
+  .photo,
+  .degrade,
+  .voile {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .photo {
+    object-fit: cover;
+  }
+
+  /* Les trois couches noires de la source : voile de 25 %, dégradé de la
+     carte (65 % → 30 % → 0) et dégradé du bas (65 % sur la moitié) */
+  .degrade {
+    background:
+      linear-gradient(to top, color-mix(in srgb, var(--couleur-voile) 65%, transparent), transparent 50%),
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--couleur-voile) 65%, transparent),
+        color-mix(in srgb, var(--couleur-voile) 30%, transparent),
+        transparent
+      ),
+      linear-gradient(color-mix(in srgb, var(--couleur-voile) 25%, transparent), color-mix(in srgb, var(--couleur-voile) 25%, transparent));
+  }
+
+  .voile {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 70%, transparent);
+    opacity: 0;
+    transition: opacity var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .titre {
+    position: absolute;
+    right: var(--_marge);
+    bottom: var(--_marge);
+    left: var(--_marge);
+    z-index: var(--z-dessus-3);
+    margin: 0;
+    color: var(--couleur-sur-fonce);
+    transform: translateY(10px);
+    transform-origin: left top;
+    transition: transform var(--duree-moyenne-3) var(--courbe-emphase);
+  }
+
+  .contenu {
+    position: absolute;
+    right: var(--_marge);
+    bottom: var(--_marge);
+    left: var(--_marge);
+    z-index: var(--z-dessus-2);
+    max-height: 75%;
+    overflow-y: auto;
+    padding-right: var(--espace-1);
+    color: var(--bleu-100);
+    opacity: 0;
+    transition: opacity var(--duree-longue-2) var(--courbe-standard);
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--couleur-sur-fonce) 40%, transparent) transparent;
+  }
+
+  .sous-titre {
+    margin: 0 0 var(--espace-2);
+    font-size: var(--texte-courant);
+    line-height: 1.2;
+  }
+
+  @media (width >= 900px) {
+    .sous-titre {
+      font-size: var(--texte-moyen);
+    }
+  }
+
+  .description {
+    font-size: var(--texte-courant);
+  }
+
+  .description > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .description > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  .description :global(a:not([class])) {
+    color: var(--couleur-lien);
+  }
+
+  /* Le focus de la description s'affiche sur la carte, à l'intérieur (le
+     bord est rogné par overflow: hidden). Le contour de la carte elle-même
+     était peint sous la photo, le dégradé et le voile (positionnés) : on le
+     dessine sur une couche au-dessus de tout. */
+  .contenu:focus-visible {
+    outline: none;
+  }
+
+  .carte::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    z-index: var(--z-dessus-4);
+    border-radius: calc(var(--rayon-carte) - 6px);
+    pointer-events: none;
+  }
+
+  .carte:has(.contenu:focus-visible)::after {
+    outline: 3px solid var(--couleur-sur-fonce);
+  }
+
+  /* Révélation : le titre monte en haut de la carte (100 % = sa hauteur) */
+  .carte:is(:hover, :focus-within) .titre {
+    transform: translateY(calc(100% + 2 * var(--_marge) - var(--_hauteur))) scale(0.95);
+  }
+
+  .carte:is(:hover, :focus-within) .voile,
+  .carte:is(:hover, :focus-within) .contenu {
+    opacity: 1;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+
+    .photo {
+      forced-color-adjust: none;
+    }
+  }
+</style>

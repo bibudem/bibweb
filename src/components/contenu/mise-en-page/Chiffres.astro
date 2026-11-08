@@ -1,0 +1,387 @@
+---
+/*
+ * Chiffres clés (directive :::chiffres des pages Markdown, ou <Chiffres> dans
+ * le MDX), en deux formes :
+ *
+ * - `barres` : un groupe par titre (« Livres »), son total, et une barre de
+ *   répartition entre ses 2 ou 3 parts (imprimé, électronique). Une barre à
+ *   100 % plutôt qu'un axe commun : les groupes vont de 36 000 à 1,5 million,
+ *   les petites parts disparaîtraient ; ce qui compte ici est la proportion.
+ *   Chaque part est nommée sous la barre avec sa valeur et son pourcentage :
+ *   la couleur n'est jamais seule à porter l'identité. Quand tous les groupes
+ *   ont les mêmes parts dans le même ordre, une légende les rappelle en tête,
+ *   et la couleur suit la part (imprimé est bleu partout).
+ * - `tuiles` : un chiffre par tuile ; des unités différentes (bases de
+ *   données, revues, jeux de données) ne se comparent pas sur un même axe.
+ *
+ * Couleurs des parts (jetons, palette validée : écart sous daltonisme,
+ * contraste de 3:1 au moins sur le blanc) : bleu principal, rouge orangé,
+ * violet. Les nombres restent dans les couleurs du texte.
+ *
+ * Animation (chiffres.ts) : les barres se remplissent de gauche à droite et
+ * les nombres montent de 0 à leur valeur, une seule fois, quand le bloc
+ * entre à l'écran, ou dès le chargement s'il y est déjà. L'état par défaut
+ * est l'état final : sans JS, avec le mouvement réduit ou à l'impression,
+ * tout est affiché tel quel. Le nombre animé est masqué aux lecteurs
+ * d'écran, qui lisent la valeur finale, et une copie invisible de celle-ci
+ * réserve sa largeur : rien ne bouge autour pendant le défilement.
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+type Element = { valeur: number; libelle: string }
+type Groupe = { titre?: string; elements: Element[] }
+
+interface Props {
+  forme?: 'barres' | 'tuiles'
+  groupes: Groupe[]
+  class?: string
+  style?: Style
+}
+
+const { forme = 'barres', groupes, class: classe, style } = Astro.props
+
+const COULEURS = ['var(--bleu-principal)', 'var(--rouge-orange)', 'var(--violet-fonce)']
+const nombre = new Intl.NumberFormat('fr-CA')
+const pourcent = new Intl.NumberFormat('fr-CA', { style: 'percent', maximumFractionDigits: 0 })
+const majuscule = (texte: string) => texte.charAt(0).toLocaleUpperCase('fr-CA') + texte.slice(1)
+
+const total = (groupe: Groupe) => groupe.elements.reduce((somme, e) => somme + e.valeur, 0)
+// Mêmes parts partout (comparé sans casse) : une légende commune
+const libelles = (groupe: Groupe) => groupe.elements.map((e) => e.libelle.toLocaleLowerCase('fr-CA')).join('|')
+const legende = forme === 'barres' && groupes.length > 1 && groupes.every((g) => libelles(g) === libelles(groupes[0])) ? groupes[0].elements.map((e) => majuscule(e.libelle)) : null
+---
+
+{/* Nombre : la valeur pour tous, sa copie animée par-dessus (chiffres.ts) */}
+{
+  forme === 'barres' ? (
+    <div class:list={['chiffres', 'barres', classe]} style={fusionnerStyles(style)} data-chiffres>
+      {legende && (
+        <ul class="legende" aria-hidden="true">
+          {legende.map((libelle, i) => (
+            <li>
+              <span class="pastille" style={`--couleur: ${COULEURS[i]}`} data-part={i} />
+              {libelle}
+            </li>
+          ))}
+        </ul>
+      )}
+      {groupes.map((groupe) => {
+        const somme = total(groupe)
+        return (
+          <figure class="groupe" data-chiffres-unite>
+            <figcaption class="entete">
+              <span class="titre">{groupe.titre}</span>
+              <span class="total nombre">
+                <span class="reserve">{nombre.format(somme)}</span>
+                <span class="compteur" aria-hidden="true" data-compteur={somme}>
+                  {nombre.format(somme)}
+                </span>
+              </span>
+            </figcaption>
+            <div class="barre" aria-hidden="true" data-chiffres-barre>
+              {groupe.elements.map((e, i) => (
+                <span class="part" style={`--couleur: ${COULEURS[i]}; flex-grow: ${e.valeur}`} data-part={i} />
+              ))}
+            </div>
+            <ul class="parts">
+              {groupe.elements.map((e, i) => (
+                <li>
+                  <span class="pastille" style={`--couleur: ${COULEURS[i]}`} data-part={i} aria-hidden="true" />
+                  <span class="libelle">{majuscule(e.libelle)}</span>
+                  <span class="valeur nombre">
+                    <span class="reserve">{nombre.format(e.valeur)}</span>
+                    <span class="compteur" aria-hidden="true" data-compteur={e.valeur}>
+                      {nombre.format(e.valeur)}
+                    </span>
+                  </span>
+                  <span class="proportion">{pourcent.format(e.valeur / somme)}</span>
+                </li>
+              ))}
+            </ul>
+          </figure>
+        )
+      })}
+    </div>
+  ) : (
+    <ul class:list={['chiffres', 'tuiles', classe]} style={fusionnerStyles(style)} data-chiffres>
+      {groupes
+        .flatMap((g) => g.elements)
+        .map((e) => (
+          <li class="tuile" data-chiffres-unite>
+            <span class="valeur nombre">
+              <span class="reserve">{nombre.format(e.valeur)}</span>
+              <span class="compteur" aria-hidden="true" data-compteur={e.valeur}>
+                {nombre.format(e.valeur)}
+              </span>
+            </span>
+            <span class="libelle">{majuscule(e.libelle)}</span>
+          </li>
+        ))}
+    </ul>
+  )
+}
+
+<script>
+  import { animerChiffres } from './chiffres'
+
+  animerChiffres()
+</script>
+
+<style>
+  .chiffres {
+    margin-block: var(--espace-3);
+  }
+
+  /* Les nombres ne changent pas de largeur en montant, et ne se coupent
+     pas (espaces insécables entre les groupes de chiffres). Seul le grand
+     total se coupe, en dernier recours, s'il ne tient pas dans sa carte
+     (320 px avec le texte agrandi). */
+  .nombre {
+    display: inline-grid;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .total {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* La valeur réelle (lue par les lecteurs d'écran) réserve la place ; la
+     copie animée se pose dessus, alignée à droite comme un nombre */
+  .reserve,
+  .compteur {
+    grid-area: 1 / 1;
+    text-align: end;
+  }
+
+  /* Opacité et non visibility : la valeur reste lue par les lecteurs
+     d'écran pendant que sa copie défile */
+  .nombre:has([data-compte]) .reserve {
+    opacity: 0;
+  }
+
+  .compteur {
+    visibility: hidden;
+  }
+
+  [data-compte] {
+    visibility: visible;
+  }
+
+  /* ---- Barres de répartition ---- */
+
+  /* minmax(0, …) : sans lui, une colonne de grille ne rétrécit pas sous la
+     largeur de son contenu, et le bloc débordait à 320 px (WCAG 1.4.10) */
+  .barres {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-3);
+  }
+
+  .legende,
+  .parts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem var(--espace-3);
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-reduit);
+  }
+
+  .legende li {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  .pastille {
+    flex: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--rayon-minuscule);
+    background-color: var(--couleur);
+  }
+
+  .groupe {
+    container-type: inline-size;
+    margin: 0;
+    padding: var(--espace-carte);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-surface);
+  }
+
+  .entete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem var(--espace-2);
+  }
+
+  .entete .titre {
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-forte);
+  }
+
+  .total {
+    font-size: 1.75rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+  }
+
+  /* Parts séparées d'un filet de 2 px de la surface ; bouts arrondis de 4 px.
+     Une part minuscule garde 4 px pour rester visible. */
+  .barre {
+    display: flex;
+    gap: 2px;
+    height: 1rem;
+    margin-block: var(--espace-2) var(--espace-element);
+    overflow: hidden;
+    border-radius: var(--rayon-minuscule);
+  }
+
+  .part {
+    flex-basis: 0;
+    min-width: 4px;
+    background-color: var(--couleur);
+  }
+
+  .parts {
+    display: grid;
+    gap: var(--espace-1);
+  }
+
+  /* Pastille, libellé, valeur, pourcentage sur une ligne */
+  .parts li {
+    display: grid;
+    grid-template-columns: 0.75rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  /* Carte étroite (téléphone, texte agrandi : la largeur est en rem) : le
+     libellé sur sa ligne, la valeur et le pourcentage dessous */
+  @container (width <= 20rem) {
+    .parts li {
+      grid-template-columns: 0.75rem minmax(0, 1fr) auto;
+      row-gap: 0;
+    }
+
+    .parts .libelle {
+      grid-column: 2 / -1;
+    }
+
+    .parts .valeur {
+      grid-column: 2;
+      justify-self: start;
+    }
+
+    .parts .valeur .reserve,
+    .parts .valeur .compteur {
+      text-align: start;
+    }
+  }
+
+  .parts .valeur {
+    font-weight: var(--graisse-forte);
+  }
+
+  .proportion {
+    min-width: 3.5em;
+    color: var(--couleur-texte-secondaire);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  @media (width >= 900px) {
+    .barres:has(.groupe + .groupe) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .legende {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---- Tuiles ---- */
+
+  .tuiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+    gap: var(--espace-element);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tuile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: var(--espace-element);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-surface);
+  }
+
+  .tuile .valeur {
+    justify-self: start;
+    font-size: 1.75rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+  }
+
+  .tuile .reserve,
+  .tuile .compteur {
+    text-align: start;
+  }
+
+  .tuile .libelle {
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-reduit);
+    line-height: 1.4;
+  }
+
+  /* ---- Animation (chiffres.ts pose les classes) ---- */
+
+  /* La barre se dévoile de gauche à droite, toutes parts ensemble */
+  .a-animer [data-chiffres-barre] {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .a-animer.anime [data-chiffres-barre] {
+    clip-path: inset(0);
+    transition: clip-path var(--duree-chiffres) var(--courbe-emphase-deceleree);
+    transition-delay: calc(var(--rang, 0) * var(--duree-courte-1));
+  }
+
+  /* Contraste élevé : les couleurs sont remplacées, les parts se
+     distinguent par leur motif (plein, hachures à 45°, à 135°), dans la
+     barre comme dans la légende */
+  @media (forced-colors: active) {
+    .part,
+    .pastille {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+
+    [data-part='1'] {
+      background: repeating-linear-gradient(45deg, CanvasText 0 2px, Canvas 2px 5px);
+      outline: 1px solid CanvasText;
+      outline-offset: -1px;
+    }
+
+    [data-part='2'] {
+      background: repeating-linear-gradient(135deg, CanvasText 0 2px, Canvas 2px 5px);
+      outline: 1px solid CanvasText;
+      outline-offset: -1px;
+    }
+  }
+</style>

@@ -1,0 +1,335 @@
+---
+/*
+ * Catalogue du menu (PanneauMenu), dès 1200 px : Collections, Boîte à
+ * outils et Studio·bib en onglets (APG), en rangée en haut, près du bouton
+ * Menu ; l'aperçu du service choisi dessous. Sous 1200 px, les mêmes
+ * services sont des cartes repliables (CartesPliables).
+ *
+ * Flèches gauche et droite (haut et bas aussi), Début et Fin entre les
+ * services (tabindex itinérant, activation au focus), Tab mène ensuite aux
+ * liens de l'aperçu. À la souris, le survol d'un service l'affiche après un
+ * court délai : un trajet en diagonale vers l'aperçu, qui frôle un autre
+ * service, ne le change pas. Les rôles sont dans le HTML : le menu ne
+ * s'ouvre de toute façon qu'avec JavaScript.
+ *
+ * PanneauMenu passe `class="groupe"` : sa propre portée de style atteint
+ * ainsi la racine (affichage, placement dans la grille, entrée en décalage).
+ */
+import { Image } from 'astro:assets'
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import { CARTES } from '@/data/navigation'
+import Bouton from '@/components/primitives/Bouton.astro'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  /** id du menu : préfixe des id des onglets et des aperçus */
+  id: string
+  class?: string
+  style?: string
+}
+
+const { id, class: classe, style, ...reste } = Astro.props
+---
+
+<div class:list={[classe, 'catalogue']} style={style} data-catalogue {...reste}>
+  <div class="services" role="tablist" aria-label="Services" aria-orientation="horizontal">
+    {
+      CARTES.map((carte, i) => (
+        <button
+          type="button"
+          class="service"
+          role="tab"
+          id={`${id}-onglet-${carte.cle}`}
+          aria-controls={`${id}-apercu-${carte.cle}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          style={`--couleur-carte: ${carte.couleur}`}
+          data-service
+        >
+          <Image src={carte.image} alt="" width={48} height={48} class="vignette" />
+          <span class="service-titre">
+            {carte.titre}
+            <span class="fonction">{carte.fonction}</span>
+          </span>
+          <IconeSprite icone={CaretDownIcon} size={18} weight="bold" aria-hidden="true" className="service-chevron" />
+        </button>
+      ))
+    }
+  </div>
+  {
+    CARTES.map((carte, i) => (
+      <div class="apercu" role="tabpanel" id={`${id}-apercu-${carte.cle}`} aria-labelledby={`${id}-onglet-${carte.cle}`} hidden={i !== 0} style={`--couleur-carte: ${carte.couleur}`}>
+        <div class="apercu-tete">
+          <Image src={carte.image} alt="" width={72} height={72} class="vignette" />
+          <div>
+            <p class="apercu-titre">{carte.titre}</p>
+            <p class="apercu-description">{carte.description}</p>
+          </div>
+        </div>
+        {/* Bouton du site (Bouton) : même survol, même flèche qui avance */}
+        {carte.appel && (
+          <Bouton class="apercu-appel" href={carte.appel.href}>
+            {carte.appel.libelle}
+          </Bouton>
+        )}
+        <ul class="apercu-liens">
+          {carte.liens.map((lien) => (
+            <li>
+              <a href={lien.href}>
+                {lien.libelle}
+                <IconeSprite icone={ArrowRightIcon} size={16} aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  // Onglets de l'APG, et survol avec délai
+  const DELAI_SURVOL = 120 // ms : le temps de traverser un service sans s'y arrêter
+
+  for (const catalogue of document.querySelectorAll<HTMLElement>('[data-catalogue]')) {
+    const services = [...catalogue.querySelectorAll<HTMLButtonElement>('[data-service]')]
+    let minuterie: number | undefined
+
+    const afficher = (index: number, focus = false) => {
+      services.forEach((service, i) => {
+        const actif = i === index
+        service.setAttribute('aria-selected', String(actif))
+        service.tabIndex = actif ? 0 : -1
+        document.getElementById(service.getAttribute('aria-controls') ?? '')?.toggleAttribute('hidden', !actif)
+      })
+      if (focus) services[index].focus()
+    }
+
+    services.forEach((service, i) => {
+      service.addEventListener('click', () => afficher(i))
+      service.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse' || service.getAttribute('aria-selected') === 'true') return
+        minuterie = window.setTimeout(() => {
+          // Le focus clavier était dans l'aperçu qui se masque : il passe au
+          // service affiché au lieu de retomber au début de la page
+          const actif = document.activeElement
+          afficher(i, !!actif && catalogue.contains(actif) && !services.includes(actif as HTMLButtonElement))
+        }, DELAI_SURVOL)
+      })
+      service.addEventListener('pointerleave', () => window.clearTimeout(minuterie))
+    })
+
+    catalogue.querySelector('[role="tablist"]')?.addEventListener('keydown', (e) => {
+      const evenement = e as KeyboardEvent
+      const index = services.indexOf(document.activeElement as HTMLButtonElement)
+      if (index < 0) return
+      const dernier = services.length - 1
+      const apres = index === dernier ? 0 : index + 1
+      const avant = index === 0 ? dernier : index - 1
+      const suivant = { ArrowRight: apres, ArrowDown: apres, ArrowLeft: avant, ArrowUp: avant, Home: 0, End: dernier }[evenement.key]
+      if (suivant === undefined) return
+      evenement.preventDefault()
+      afficher(suivant, true)
+    })
+  }
+</script>
+
+<style>
+  /* Services : onglets soulignés, sur un filet commun */
+  .services {
+    display: flex;
+    gap: var(--espace-2);
+    border-bottom: 1px solid var(--couleur-bordure);
+  }
+
+  .service {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    min-height: 3.5rem;
+    padding: var(--espace-1) 0.25rem 0.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-moyenne);
+    text-align: start;
+    cursor: pointer;
+    transition:
+      color var(--duree-courte-4) var(--courbe-standard),
+      box-shadow var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .service :global(.vignette) {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .service:hover {
+    box-shadow: inset 0 -3px 0 var(--couleur-bordure);
+  }
+
+  .service-titre {
+    flex: 1 1 auto;
+  }
+
+  /* Flèche vers l'aperçu, dessous ; bleue sur le service choisi */
+  .service :global(.service-chevron) {
+    flex-shrink: 0;
+    color: var(--couleur-texte-secondaire);
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .service[aria-selected='true'] :global(.service-chevron) {
+    color: var(--couleur-accent);
+    translate: 0 2px;
+  }
+
+  /* Service affiché : trait de 3 px à sa couleur, graisse et flèche bleue
+     (pas la seule couleur) */
+  .service[aria-selected='true'] {
+    box-shadow: inset 0 -3px 0 var(--couleur-carte);
+    font-weight: var(--graisse-forte);
+  }
+
+  /* Aperçu : la présentation et le lien « Aller plus loin » sur une ligne,
+     les liens du service dessous, sur toute la largeur */
+  .apercu {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'tete appel'
+      'liens liens';
+    align-content: start;
+    gap: var(--espace-3) var(--espace-4);
+    padding: var(--espace-4);
+    border: 1px solid var(--couleur-bordure);
+    /* Coins du bas droits : le liseré de couleur reste un trait net, il ne
+       remonte pas dans les arrondis */
+    border-radius: var(--rayon-petit) var(--rayon-petit) 0 0;
+    background-color: var(--couleur-surface);
+    box-shadow: inset 0 -4px 0 var(--couleur-carte);
+    grid-row: 2;
+    grid-column: 1;
+    /* Changement de service : fondu court du nouvel aperçu */
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard-deceleree),
+      translate var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  /* Hauteur fixe : les trois aperçus occupent la même case ; le panneau
+     prend la hauteur du plus long et ne saute plus d'un service à l'autre.
+     Masqué (attribut hidden) : invisible, hors de l'arbre d'accessibilité
+     et du parcours au clavier (visibility), mais il garde sa place. */
+  .apercu[hidden] {
+    display: grid;
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 0.375rem;
+    transition: none;
+  }
+
+  .apercu-tete {
+    grid-area: tete;
+    display: flex;
+    align-items: center;
+    gap: var(--espace-3);
+  }
+
+  .apercu-tete :global(.vignette) {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .apercu-titre {
+    margin: 0;
+    font-size: var(--texte-tres-grand);
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+  }
+
+  .apercu-description {
+    margin: 0.25rem 0 0;
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-courant);
+    line-height: 1.5;
+  }
+
+  .apercu-liens {
+    grid-area: liens;
+    align-self: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    /* De l'air entre la présentation du service et ses liens */
+    margin-top: var(--espace-2);
+  }
+
+  .apercu-liens a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-1);
+    min-height: 3rem;
+    padding-block: var(--espace-1);
+    border-bottom: 1px solid var(--couleur-bordure);
+    font-size: var(--texte-courant);
+    line-height: 1.3;
+    transition: color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .apercu-liens a:hover {
+    color: var(--couleur-lien);
+  }
+
+  .apercu-liens :global(svg) {
+    color: var(--couleur-accent);
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .apercu-liens a:focus-visible :global(svg) {
+    translate: 3px 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .apercu-liens a:hover :global(svg) {
+      translate: 3px 0;
+    }
+  }
+
+  /* Bouton plein du site (Bouton) : seule sa place dans l'aperçu est
+     réglée ici */
+  .apercu-appel {
+    grid-area: appel;
+    align-self: center;
+    margin-top: 0;
+  }
+
+  @media (width >= 1200px) {
+    /* Liens de l'aperçu sur deux colonnes : l'aperçu prend la hauteur de
+       l'accès rapide, à côté ; trois colonnes y laissaient un grand vide */
+    .apercu-liens {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--espace-4);
+    }
+
+    /* Aperçu plus compact : marges et liens moins hauts */
+    .apercu {
+      gap: var(--espace-2) var(--espace-4);
+      padding: var(--espace-3) var(--espace-4);
+    }
+
+    .apercu-liens a {
+      min-height: 2.75rem;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .service[aria-selected='true'] {
+      outline: 2px solid Highlight;
+    }
+  }
+</style>

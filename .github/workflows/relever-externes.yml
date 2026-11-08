@@ -1,0 +1,70 @@
+# Relève chaque semaine les pages de Studio·bib et de la Boîte à outils
+# (scripts/indexer-externes.mjs) pour les suggestions de la recherche du
+# menu. Si l'un des relevés a changé, le workflow fait un commit sur main
+# avec src/data/recherche/, puis lance le déploiement de la pré-production
+# (qui ouvre ensuite la PR vers production) : un push fait avec le
+# GITHUB_TOKEN ne déclenche pas les autres workflows, d'où l'appel explicite.
+#
+# Le script ne réécrit pas un fichier dont les pages n'ont pas changé : une
+# semaine sans changement ne produit ni commit ni déploiement. Si un site ne
+# répond pas, le script échoue et GitHub prévient par courriel ; les fichiers
+# versionnés restent tels quels.
+#
+# À noter : GitHub suspend les workflows planifiés d'un dépôt public après
+# 60 jours sans activité ; un commit ou un lancement manuel les réactive.
+name: Relever les sites externes
+
+on:
+  schedule:
+    # Lundi, 6 h UTC (1 h ou 2 h à Montréal)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: relever-externes
+  cancel-in-progress: false
+
+jobs:
+  relever:
+    name: Relever
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Relever Studio·bib et la Boîte à outils
+        run: npm run indexer:externes
+
+      - name: Enregistrer les changements
+        id: commit
+        run: |
+          if git diff --quiet -- src/data/recherche/; then
+            echo "Aucun changement dans les relevés."
+            echo "change=non" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/data/recherche/
+          git commit -m "Recherche : relevé de Studio·bib et de la Boîte à outils du $(date -u +%F)"
+          git push
+          echo "change=oui" >> "$GITHUB_OUTPUT"
+
+      - name: Lancer le déploiement
+        if: steps.commit.outputs.change == 'oui'
+        run: gh workflow run deployer-pages.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

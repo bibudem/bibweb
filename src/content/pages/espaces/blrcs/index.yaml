@@ -1,0 +1,106 @@
+# Page vitrine /espaces/blrcs/ : voir docs/REDACTION.md, section « Vitrines »
+title: Bibliothèque des livres rares et collections spéciales
+crumbLabel: Livres rares et collections spéciales
+description: Près de 175 000 documents anciens, rares ou précieux à explorer, consulter sur place et utiliser pour la recherche, l’enseignement et la création.
+secondaryNav:
+  title: Livres rares et collections spéciales
+
+banniere:
+  titre: Bibliothèque des livres rares et collections spéciales
+  image: blrcs
+  taille: petite
+
+sections:
+  - type: image-texte
+    titre: Près de 175 000 documents à explorer
+    texte: |
+      La Bibliothèque des livres rares et collections spéciales de l’Université de Montréal donne accès à près de 175 000 documents couvrant une multitude de disciplines. Comprenant notamment de remarquables ensembles Canadiana et Americana, elle se compose aussi d’un riche patrimoine documentaire en français : un ancrage dans l’histoire d’ici qui contribue à la singularité de la bibliothèque.
+    image: ./images/rayonnages-livres-anciens.webp
+    positionImage: droite
+
+  - type: image-texte
+    fond: bleu100
+    titre: Un laboratoire de recherche vivant
+    image: ./images/carte-sanson-nouvelle-france.webp
+    legende: Nicolas Sanson d’Abbeville, *Le Canada, ou Nouvelle France*, carte gravée et coloriée à la main, XVIIe siècle. Collections Canadiana et Americana.
+    positionImage: gauche
+    texte: |
+      Manuscrits, livres, images et autres formes d’expression nous invitent à suivre des trajectoires : celles des personnes, des communautés et des idées, mais aussi celles des documents qui ont circulé, changé de mains et traversé les époques. Ils ouvrent des perspectives sur les identités et les rapports aux territoires. Les étudier, c’est découvrir ce qu’ils racontent, mieux comprendre les contextes dans lesquels ils ont été produits et transmis, et porter attention à la diversité des points de vue qu’ils donnent à voir, comme aux voix moins présentes.
+
+      La bibliothèque aspire à être un laboratoire de recherche vivant, ouvert aux échanges entre disciplines, savoirs et communautés. Elle souhaite notamment approfondir ce travail avec les Premiers Peuples, dans le respect de leurs savoirs et de leurs protocoles. Son équipe accompagne la communauté universitaire et les personnes curieuses de découvrir ses collections dans leur exploration, leur consultation sur place et leur utilisation pour des projets de recherche, d’enseignement, de création et de mise en valeur.
+
+  # Tuiles à ajouter quand leur page existera : Visites, expositions et
+  # activités (calendrier UdeM), Initiatives Premiers Peuples, Affiches de
+  # guerre. Nouvelles acquisitions : ajouter son `lien` quand la page existera
+  # sur Collections spéciales.
+  - type: grille-elargissable
+    titre: À découvrir à la bibliothèque
+    cartes:
+      - titre: Plateforme Collections spéciales
+        icone: scroll
+        appel: Explorer la plateforme
+        lien: https://collections-speciales.bib.umontreal.ca/
+      - titre: Nos fonds et collections
+        icone: books
+        appel: Liste des fonds et collections
+        lien: /espaces/blrcs/fonds-collections/
+      - titre: Nouvelles acquisitions
+        icone: sparkle
+        appel: Bientôt sur Collections spéciales
+      - titre: Bourses
+        icone: graduation-cap
+        appel: Découvrir les bourses
+        lien: /nouvelles/2026/bourses-blrcs/
+
+  # Ajouter `transcription` quand la page de transcription existera
+  - type: video
+    fond: rose100
+    titre: Une histoire de cœur
+    youtube: YA-fMF0TLWM
+    titreVideo: Un trésor culturel méconnu accessible à tous (Radio-Canada Info)
+
+  - type: image-texte
+    fond: bleu100
+    titre: On parle de nous
+    texte: |
+      Les collections, les acquisitions et les projets de la bibliothèque suscitent l’intérêt bien au-delà du campus. Découvrez les articles, entrevues et reportages sur nos documents et projets, et les recherches qu’ils inspirent.
+
+      Vous travaillez dans les médias et souhaitez réaliser un reportage sur la bibliothèque, découvrir ses collections ou rencontrer un membre de notre équipe? Communiquez avec l’[équipe des relations avec les médias de l’Université de Montréal](https://nouvelles.umontreal.ca/a-propos).
+    image: ./images/vitrine-reliures.webp
+    positionImage: gauche
+    bouton:
+      texte: Consulter la revue de presse
+      lien: /nouvelles/?sujet=livres-rares
+
+  - type: image-texte
+    fond: vertFonce
+    titre: Ressources complémentaires
+    image: ./images/reliures-cuir.webp
+    positionImage: droite
+    texte: Vous souhaitez poursuivre votre exploration des collections ou préparer une visite à la bibliothèque? Le guide Livres rares et collections spéciales présente notre offre de services ainsi que des ressources numériques et des outils spécialisés. Il vous aide à repérer des documents, à explorer les fonds et à approfondir vos recherches dans le cadre de vos études, de votre enseignement ou de vos travaux de recherche.
+    boutons:
+      - texte: Consulter le guide Livres rares et collections spéciales
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/livres-rares-collections-speciales
+
+  - type: personnel
+    titre: Notre équipe
+    bibliotheque: lrcs
+    ordre:
+      - Maryna Beaulieu
+      - Danny Létourneau
+      - Éric Bouchard
+      - Mathieu Thomas
+      - Diane Moreau
+      - Marie-Josée Lapalme
+    coordonnees:
+      titre: Nous joindre
+      texte: |
+        [Bibliothèque des livres rares et collections spéciales](/horaires/#livres-rares-et-collections-speciales)\
+        Pavillon Samuel-Bronfman\
+        3000, rue Jean-Brillant, 4e étage, salle 4030
+
+        [514 343-6111, poste 39836](tel:+15143436111,39836)\
+        [livresrares@bib.umontreal.ca](mailto:livresrares@bib.umontreal.ca)
+      bouton:
+        texte: Voir la fiche de la bibliothèque
+        lien: /horaires/#livres-rares-et-collections-speciales

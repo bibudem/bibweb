@@ -1,0 +1,280 @@
+---
+/*
+ * Carte-lien pleine couleur avec icône (d'après coquille-web).
+ *
+ * - 353 × 400 px au moins (small : 290 × 332) ; s'élargit de 10 % au survol, comme la
+ *   source. Les textes gardent leur largeur de repos (la source la figeait en
+ *   JS au montage) : ici, une max-width calculée en CSS, sans saut.
+ * - fullWidth : carte compacte en rangée (icône, titre et appel, pastille)
+ *   qui suit sa cellule (GrilleElargissable, rangées de deux dès 600 px),
+ *   au lieu des cartes de 400 px de haut de la source. Rendue par
+ *   CarteLienCompacte, la seule rangée-lien compacte du site.
+ * - Mobile (< 600 px), en carrousel : carte plus petite (78vw, 17rem de
+ *   haut) qui laisse voir la suivante ; dès 600 px, mesures de la source.
+ * - Un seul lien, sur le titre (.lien-etire, .anneau-carte et PastilleFleche :
+ *   motif commun des cartes, global.css) : son ::after couvre la carte, son
+ *   nom accessible est le titre. Le texte d'appel (moreText) devient sa
+ *   description (aria-describedby) et est masqué du parcours des lecteurs
+ *   d'écran, pour ne pas être lu deux fois.
+ * - Couleur posée au build (la source l'appliquait dans un useEffect : carte
+ *   bleue au premier affichage). Contrastes calculés (WCAG 2.x) :
+ *   texte blanc 7,10:1 sur bleu principal, 11,26:1 sur vert foncé, plus au
+ *   survol ; bleu foncé ≥ 11:1 sur rose 300/500 et sur jaune. La flèche (elle
+ *   distingue lien interne et externe) passe de rouge orangé, 2,2:1 sur la
+ *   pastille rose 500, au rouge orangé foncé (3,74:1).
+ * - Sans `href` (vitrine : tuile d'une page à venir) : ni lien ni pastille,
+ *   la carte ne s'élargit pas au survol, et le texte d'appel (« Bientôt »)
+ *   reste lu par les lecteurs d'écran.
+ */
+import CarteLienCompacte from './CarteLienCompacte.astro'
+import PastilleFleche from '@/components/partage/PastilleFleche.astro'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { lienCarte } from '@/lib/liens'
+import { idUnique } from '@/lib/ids'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Couleur = 'primary' | 'bleuPrincipal' | 'vertFonce' | 'rose300' | 'jaune'
+
+interface Props {
+  title: string
+  Icon?: any
+  color?: Couleur
+  moreText?: string
+  /** Sans lien : carte d'annonce, sans flèche */
+  href?: string
+  target?: string
+  rel?: string
+  small?: boolean
+  fullWidth?: boolean
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const COULEURS: Couleur[] = ['primary', 'bleuPrincipal', 'vertFonce', 'rose300', 'jaune']
+const CLAIRES: Couleur[] = ['rose300', 'jaune']
+
+const { title, Icon, color = 'bleuPrincipal', moreText, href, target, rel, small = false, fullWidth = false, class: classe, style, ...reste } = Astro.props
+
+if (title === undefined) throw new Error('CarteIcone : la propriété `title` est obligatoire.')
+if (href !== undefined && typeof href !== 'string') throw new Error('CarteIcone : la propriété `href` doit être une chaîne.')
+
+// Comme la source, une couleur inconnue retombe sur le bleu principal
+const couleur = COULEURS.includes(color) ? color : 'bleuPrincipal'
+const { interne, rel: relFinal, annonce } = href ? lienCarte(href, target, rel) : { interne: true, rel: undefined, annonce: undefined }
+const idPlus = moreText && href ? idUnique('carte-plus') : undefined
+---
+
+{
+  fullWidth ? (
+    <CarteLienCompacte
+      element="div"
+      niveauTitre={null}
+      couleur={couleur === 'primary' ? 'bleuPrincipal' : couleur}
+      titre={title}
+      description={moreText}
+      href={href}
+      target={target}
+      rel={rel}
+      Icone={Icon}
+      class={classe}
+      style={style}
+      {...reste}
+    />
+  ) : (
+    <div
+      class:list={['carte', 'carte-lien', 'anneau-carte', `couleur-${couleur}`, { petite: small, 'surface-claire': CLAIRES.includes(couleur), 'sans-lien': !href }, classe]}
+      style={fusionnerStyles(style)}
+      {...reste}
+    >
+      <div class="icone">{Icon && <IconeSprite icone={Icon} size={55} aria-hidden="true" focusable="false" />}</div>
+      <div class="titre">
+        {href ? (
+          <a class="lien-etire" href={href} target={target} rel={relFinal} aria-describedby={idPlus}>
+            {title}
+            {annonce && <span class="visuellement-masque">{annonce}</span>}
+          </a>
+        ) : (
+          title
+        )}
+      </div>
+      <div class="pied">
+        {moreText && (
+          <div class="plus" id={idPlus} aria-hidden={href ? 'true' : undefined}>
+            {moreText}
+          </div>
+        )}
+        {href && <PastilleFleche class="pastille" externe={!interne} />}
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .carte {
+    --_largeur: min(78vw, 353px);
+    --_hauteur: 17rem;
+    --_marge: 1.25rem;
+    /* Largeur de repos des textes, hors marges (et hors pastille pour moreText) */
+    --_texte: calc(var(--_largeur) - 2 * var(--_marge));
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    width: var(--_largeur);
+    /* Hauteur minimale : avec le texte agrandi à 200 % (WCAG 1.4.4), le titre
+       et l'appel sortaient de la carte et chevauchaient le bloc suivant */
+    min-height: var(--_hauteur);
+    padding: var(--_marge);
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond);
+    color: var(--_encre);
+    /* Exception voulue à « transform et opacity seulement » : l'élargissement
+       de la source déplace les cartes voisines, ce que transform ne fait pas.
+       La règle globale de mouvement réduit coupe cette transition. */
+    transition: width var(--duree-moyenne-1) var(--courbe-emphase);
+  }
+
+  .carte.petite {
+    --_largeur: min(78vw, 290px);
+    --_hauteur: 16rem;
+  }
+
+  @media (width >= 600px) {
+    .carte {
+      --_largeur: 353px;
+      --_hauteur: 400px;
+      --_marge: var(--espace-carte);
+    }
+
+    .carte.petite {
+      --_largeur: 290px;
+      --_hauteur: 332px;
+    }
+  }
+
+  .carte:not(.sans-lien):hover,
+  .carte:not(.sans-lien):focus-within {
+    width: calc(var(--_largeur) * 1.1);
+  }
+
+  /* Fond de survol en calque : on anime son opacité plutôt que la couleur */
+  .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-dessous);
+    border-radius: inherit;
+    background-color: var(--_survol);
+    opacity: 0;
+    transition: opacity var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .carte:not(.sans-lien):hover::before {
+    opacity: 1;
+  }
+
+  .couleur-bleuPrincipal,
+  .couleur-primary {
+    --_fond: var(--bleu-principal);
+    --_survol: var(--bleu-principal-fonce);
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+    --_fleche: var(--couleur-sur-fonce);
+  }
+
+  .couleur-vertFonce {
+    --_fond: var(--vert-fonce);
+    --_survol: color-mix(in srgb, var(--vert-fonce) 70%, var(--couleur-voile));
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+    --_fleche: var(--couleur-sur-fonce);
+  }
+
+  .couleur-rose300 {
+    --_fond: var(--rose-300);
+    --_survol: var(--rose-500);
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
+    --_fleche: var(--rouge-orange-texte-sur-clair);
+  }
+
+  /* Le #ffdb81 et le #bc8800 que la source écrivait en dur, dérivés du jaune */
+  .couleur-jaune {
+    --_fond: var(--jaune);
+    --_survol: color-mix(in srgb, var(--jaune) 68%, var(--couleur-surface));
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--jaune) 74%, var(--couleur-voile));
+    --_fleche: var(--couleur-texte);
+  }
+
+  /* Pastille pleine de la teinte de survol, flèche de la couleur de la carte */
+  .carte {
+    --pastille-fond: var(--_survol);
+    --pastille-encre: var(--_fleche);
+  }
+
+  .pastille {
+    margin-inline-start: auto;
+  }
+
+  .icone {
+    display: flex;
+    height: 2.5rem;
+    color: var(--_icone);
+  }
+
+  .icone > :global(svg) {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .titre {
+    flex-grow: 1;
+    max-width: var(--_texte);
+    padding-block-start: var(--espace-2);
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  @media (width >= 600px) {
+    .icone {
+      height: 55px;
+    }
+
+    .icone > :global(svg) {
+      width: 55px;
+      height: 55px;
+    }
+
+    .titre {
+      padding-block-start: 1.6667rem;
+      font-size: 1.75rem;
+    }
+  }
+
+  .pied {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+    min-height: 55px;
+  }
+
+  .plus {
+    flex-grow: 1;
+    min-width: 0;
+    max-width: calc(var(--_texte) - var(--taille-pastille) - 1rem);
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-normale);
+    line-height: 1.6;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

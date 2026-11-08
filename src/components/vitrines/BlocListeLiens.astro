@@ -1,0 +1,73 @@
+---
+/*
+ * Bloc « liste-liens » : titre, texte et liste de liens décrits (ListeLiens).
+ * Sur un fond vert foncé, les pastilles prennent la variante vertFonce.
+ * Sans titre de bloc, les titres des liens montent d'un niveau (h2) pour
+ * garder une hiérarchie sans trou sous le h1 de la bannière.
+ *
+ * Titre, texte et liste partagent la colonne de texte (ColonneDecalee 0.5) : le
+ * titre était pleine largeur, en avance d'une demi-colonne sur la liste.
+ *
+ * `presentation: cartes` : cartes compactes à icône reprises de studio·bib
+ * (CarteLienCompacte), deux par rangée dès 600 px, sur toute la largeur
+ * (nous-joindre : six liens courts, qu'une seule colonne étirait en long).
+ */
+import ColonneDecalee from '@/components/primitives/ColonneDecalee.astro'
+import ListeLiens from '@/components/contenu/mise-en-page/ListeLiens.astro'
+import ElementListeLiens from '@/components/contenu/mise-en-page/ElementListeLiens.astro'
+import CarteLienCompacte from '@/components/contenu/cartes/CarteLienCompacte.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'liste-liens'> }
+
+const { bloc } = Astro.props
+const couleur = bloc.fond === 'vertFonce' ? 'vertFonce' : 'default'
+const niveauTitre = bloc.titre ? 3 : 2
+const icones = await Promise.all(bloc.liens.map((lien) => (lien.icone ? composantIcone(lien.icone) : undefined)))
+---
+
+{
+  bloc.presentation === 'cartes' ? (
+    <Fragment>
+      {bloc.titre && <Titre texte={bloc.titre} id={bloc.id} />}
+      {bloc.texte && <TexteMarkdown texte={bloc.texte} />}
+      <ul class:list={['cartes', { 'apres-texte': bloc.texte }]} data-revelation="groupe">
+        {bloc.liens.map((lien, i) => <CarteLienCompacte titre={lien.titre} description={lien.description} href={lien.lien} Icone={icones[i]} niveauTitre={niveauTitre} />)}
+      </ul>
+    </Fragment>
+  ) : (
+    <ColonneDecalee offset={0.5}>
+      {bloc.titre && <Titre texte={bloc.titre} id={bloc.id} />}
+      {bloc.texte && <TexteMarkdown texte={bloc.texte} />}
+      <ListeLiens offset={0}>
+        {bloc.liens.map((lien, i) => <ElementListeLiens title={lien.titre} description={lien.description} href={lien.lien} color={couleur} niveauTitre={niveauTitre} linkText={lien.appel} />)}
+      </ListeLiens>
+    </ColonneDecalee>
+  )
+}
+
+<style>
+  .cartes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin: var(--espace-element) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Après un texte d'introduction : un écart de bloc, pour que le texte ne
+     colle pas aux cartes qu'il présente */
+  .cartes.apres-texte {
+    margin-block-start: var(--espace-bloc);
+  }
+
+  @media (width >= 600px) {
+    .cartes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

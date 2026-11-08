@@ -1,0 +1,67 @@
+---
+/*
+ * Groupe d'accordéons exclusif (d'après coquille-web).
+ *
+ * La source tenait l'état « un seul panneau ouvert » dans un contexte React.
+ * Ici, l'exclusivité est native : tous les <details> du groupe partagent un
+ * même `name`. Un composant Astro ne peut pas passer de props à ses enfants :
+ * chaque Accordeon porte un marqueur (data-accordeon-groupe) que le groupe
+ * remplace par son `name` dans le HTML rendu du slot. Un groupe imbriqué est
+ * rendu avant son parent : ses accordéons ont déjà reçu leur nom et ne sont
+ * pas repris par le groupe extérieur.
+ *
+ * Les couleurs passent aux enfants par des variables CSS héritées :
+ * --accordeon-accent (titre ouvert, icône), --accordeon-filet (trait sous le
+ * titre), --accordeon-pastille (rond derrière l'icône), --accordeon-fond
+ * (fond du contenu). Corrections par rapport à la source :
+ * - rose : #b72600 en dur remplacé par le texte orange du thème (#b33410,
+ *   5,5:1 sur rose 100) ;
+ * - vertPale : le fond valait le rose de la palette (copie fautive) et le
+ *   titre vert pâle n'atteignait que 2,5:1 sur le fond. Le titre et l'icône
+ *   passent au vert foncé du thème ; le vert pâle reste pour le trait et
+ *   teinte le fond du contenu.
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { idUnique } from '@/lib/ids'
+
+interface Props {
+  color?: 'bleuPrincipal' | 'rose' | 'vertPale'
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const COULEURS: Record<string, Record<string, string>> = {
+  bleuPrincipal: {
+    '--accordeon-accent': 'var(--bleu-principal)',
+    '--accordeon-filet': 'var(--bleu-principal)',
+    '--accordeon-pastille': 'var(--bleu-100)',
+    '--accordeon-fond': 'var(--bleu-100)',
+  },
+  rose: {
+    '--accordeon-accent': 'var(--rouge-orange-texte-sur-clair)',
+    '--accordeon-filet': 'var(--rouge-orange-texte-sur-clair)',
+    '--accordeon-pastille': 'var(--rose-100)',
+    '--accordeon-fond': 'var(--rose-100)',
+  },
+  vertPale: {
+    '--accordeon-accent': 'var(--vert-fonce)',
+    '--accordeon-filet': 'var(--vert-pale)',
+    '--accordeon-pastille': 'color-mix(in srgb, var(--vert-pale) 25%, var(--couleur-surface))',
+    '--accordeon-fond': 'color-mix(in srgb, var(--vert-pale) 25%, var(--couleur-surface))',
+  },
+}
+
+const { color = 'bleuPrincipal', class: classe, style, ...reste } = Astro.props
+
+const couleurs = COULEURS[color]
+if (!couleurs) throw new Error(`GroupeAccordeons : la couleur « ${color} » n'est pas prise en charge (${Object.keys(COULEURS).join(', ')}).`)
+
+const nom = idUnique('accordeons')
+const contenu = Astro.slots.has('default') ? await Astro.slots.render('default') : ''
+const html = contenu.replace(/\sdata-accordeon-groupe(?:="[^"]*")?/g, ` name="${nom}"`)
+---
+
+<div class:list={['groupe-accordeons', classe]} style={fusionnerStyles(couleurs, style)} {...reste}>
+  <Fragment set:html={html} />
+</div>

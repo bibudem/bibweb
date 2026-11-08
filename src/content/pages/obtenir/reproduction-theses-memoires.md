@@ -1,0 +1,57 @@
+---
+title: Reproduction de thèses et mémoires UdeM
+crumbLabel: Reproduction de thèses et mémoires
+secondaryNav:
+  order: 4
+superHero:
+  imageName: obtenir-mezzanine
+  title: Obtenir un document
+---
+
+## Reproduction de thèses et mémoires UdeM
+
+Le Centre de conservation Lionel-Groulx offre dans certaines circonstances la reproduction des thèses et des mémoires déposés par les étudiants et étudiantes de l’Université de Montréal. Si des frais s’appliquent, la reproduction est effectuée aux frais de la personne qui fait la demande.
+
+À noter que le Centre de conservation n’offre pas l’impression de titres déjà disponibles dans le dépôt institutionnel Papyrus.
+
+Si votre demande concerne une thèse ou un mémoire déposé en 2002 ou avant, contactez le Centre de conservation Lionel-Groulx : [pret-conservation@bib.umontreal.ca](mailto:pret-conservation@bib.umontreal.ca).
+
+Si votre demande concerne une thèse ou un mémoire déposé entre 2003 et 2008 et qu’il n’est pas disponible sur le [dépôt institutionnel Papyrus](https://umontreal.scholaris.ca/), veuillez vous référer aux informations présentées ci-dessous.
+
+### Thèses et mémoires visés (2003-2008)
+
+#### Communauté UdeM
+
+La communauté UdeM inclut le corps professoral, la communauté étudiante et les membres du personnel.
+- Thèses et mémoires dont aucun exemplaire imprimé n’est offert en bibliothèque.
+- Thèses non disponibles dans le [dépôt institutionnel Papyrus](https://umontreal.scholaris.ca/).
+- Mémoires non disponibles dans le [dépôt institutionnel Papyrus](https://umontreal.scholaris.ca/).
+
+#### Institutions et individus externes à l’UdeM
+
+Si vous êtes membre d’une institution (collège, université, etc.), vérifiez si votre institution est abonnée à la base de données Dissertations & Theses Global (ProQuest). Vous pourriez avoir accès aux thèses de l’Université de Montréal, en format PDF. 
+
+Dans le cas où une reproduction est nécessaire, nous offrons la reproduction des thèses et mémoires non disponibles dans le [dépôt institutionnel Papyrus](https://umontreal.scholaris.ca/). 
+
+### Conditions préalables à la reproduction
+
+S’il n’y a pas de restrictions particulières liées aux droits d’auteur ou à l’état du document, la thèse ou le mémoire sera reproduit aux conditions suivantes :
+- Retourner le [formulaire de demande](/obtenir/theses-memoires-demande-reproduction.pdf) complété et signé (signature manuscrite);
+- Si des frais s’appliquent, accepter de débourser les frais de reproduction et d’expédition.
+
+### Format et frais
+
+Nous offrons la reproduction en format PDF, généralement sans frais. 
+
+Une estimation vous sera fournie avant de procéder à la reproduction si des frais doivent s’appliquer.
+
+### Pour nous renvoyer le formulaire
+
+**Par courriel** : faites-nous parvenir une copie numérisée (PDF) du formulaire à l’adresse suivante : [pret-conservation@bib.umontreal.ca](mailto:pret-conservation@bib.umontreal.ca).
+
+**En personne** :\
+Au Centre de conservation Lionel-Groulx\
+Pavillon Lionel-Groulx, 3150, rue Jean-Brillant, salle C-1017-16 via la porte C-1059.\
+Prenez note de nos [heures d’ouverture](/horaires/#centre-de-conservation-lionel-groulx).
+
+Nous communiquerons avec vous dans les meilleurs délais une fois votre formulaire reçu.

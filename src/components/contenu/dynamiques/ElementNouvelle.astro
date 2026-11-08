@@ -1,0 +1,33 @@
+---
+/*
+ * Une nouvelle dans une liste (ElementNouvelle de coquille-web) : ligne
+ * orange « Média · date » pour la revue de presse, « Les bibliothèques ·
+ * date » pour nos communications, puis le titre en lien. La presse s'ouvre
+ * dans un nouvel onglet (pastille ↗), nos nouvelles restent sur le site (→).
+ * `dateEnGrand` (accueil) : la date passe dans une case à gauche (jour,
+ * mois, année), la ligne orange ne garde que la source.
+ */
+import Element from './Element.astro'
+import { TYPE_PRESSE, type Actualite } from './actualites'
+
+interface Props {
+  item: Actualite
+  compact?: boolean
+  dateEnGrand?: boolean
+  class?: string
+}
+
+const { item, compact = false, dateEnGrand = false, class: classe, ...reste } = Astro.props
+const source = item.type === TYPE_PRESSE ? item.source : 'Les bibliothèques'
+---
+
+<Element href={item.url} externe={item.externe} compact={compact} date={dateEnGrand ? item.date : undefined} lang={item.lang} class={classe} {...reste}>
+  {
+    dateEnGrand ? (
+      <span slot="ligne"><strong>{source}</strong></span>
+    ) : (
+      <span slot="ligne"><strong>{source}</strong>&nbsp;·&nbsp;<time datetime={item.date}>{item.dateTexte}</time></span>
+    )
+  }
+  {item.title}
+</Element>

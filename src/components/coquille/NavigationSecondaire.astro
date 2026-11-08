@@ -1,0 +1,211 @@
+---
+/*
+ * Navigation de la section courante. Liste imbriquée de liens ; la page
+ * courante porte aria-current="page" et la branche qui la contient est
+ * ouverte.
+ *
+ * Deux variantes, rendues toutes les deux en HTML et basculées en CSS :
+ * - « colonne » : colonne de gauche à partir de 1200 px (GabaritPage) ;
+ * - « repliable » : sous 1200 px, un <details> « Dans cette section » placé
+ *   sous le fil d'Ariane, fermé par défaut. Sans lui, la colonne disparaissait
+ *   et les pages sœurs n'étaient plus accessibles que par le menu principal.
+ * Une seule des deux est affichée à une largeur donnée : il n'y a donc jamais
+ * deux repères <nav> du même nom dans l'arbre d'accessibilité.
+ *
+ * Le titre d'une page dans une autre langue porte son lang ; `lang` sur la
+ * racine remet la navigation en français sur une telle page.
+ *
+ * `racine` remplace l'arbre de la section : groupe de pages sans section
+ * (navigationDeGroupe) ou sommaire de la page. Une racine sans `url` a un
+ * titre qui n'est pas un lien. Quand ce titre est aussi le libellé du
+ * repliable (« Sur cette page »), on ne le répète pas dans le volet : le
+ * libellé nomme alors la navigation.
+ *
+ * Un lien vers un autre site (Confidentialité, dans « À propos du site »)
+ * porte la flèche oblique du menu principal.
+ *
+ * Sommaire « Sur cette page » (racine `sommaire`, comme studio·bib) : la
+ * section en cours de lecture porte aria-current="true" (GabaritPage), en
+ * gras, avec le trait épais et un fond pâle.
+ */
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import { navigationDeSection, type NoeudNavigation, type RacineNavigation } from '@/lib/contenu'
+import { estExterne } from '@/data/navigation'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  section?: string
+  racine?: RacineNavigation | null
+  courante: string
+  variante?: 'colonne' | 'repliable'
+  /** Libellé du repliable */
+  resume?: string
+  lang?: string
+  /** Id du titre, à donner quand la page a plusieurs navigations de même variante (sommaire) */
+  idTitre?: string
+}
+
+const { section, courante, variante = 'colonne', resume = 'Dans cette section', lang } = Astro.props
+const racine: RacineNavigation | null = Astro.props.racine ?? (section ? await navigationDeSection(section) : null)
+const contient = (n: NoeudNavigation): boolean => n.url === courante || n.enfants.some(contient)
+const repliable = variante === 'repliable'
+const titreDansResume = repliable && !racine?.url && racine?.titre === resume
+const estSommaire = racine?.sommaire === true
+const idTitre = Astro.props.idTitre ?? (repliable ? 'titre-navigation-section' : 'titre-navigation-secondaire')
+const Enveloppe = repliable ? 'details' : Fragment
+const attributsEnveloppe = repliable ? { class: 'section-repliable', lang } : {}
+---
+
+{
+  racine && (
+    <Enveloppe {...attributsEnveloppe}>
+      {repliable && (
+        <summary>
+          <span id={titreDansResume ? idTitre : undefined}>{resume}</span>
+          <span class="chevron" aria-hidden="true" />
+        </summary>
+      )}
+      <nav class:list={['navigation-secondaire', { 'dans-repliable': repliable, 'est-sommaire': estSommaire }]} aria-labelledby={idTitre} lang={repliable ? undefined : lang}>
+        {racine.url ? (
+          <a id={idTitre} class="titre" href={racine.url} lang={racine.lang} aria-current={racine.url === courante ? 'page' : undefined}>
+            {racine.titre}
+          </a>
+        ) : (
+          !titreDansResume && (
+            <p id={idTitre} class="titre" lang={racine.lang}>
+              {racine.titre}
+            </p>
+          )
+        )}
+        <ul>
+          {racine.enfants.map(function rendre(n: NoeudNavigation) {
+            return (
+              <li>
+                <a href={n.url} lang={n.lang} aria-current={n.url === courante ? 'page' : undefined}>
+                  {n.titre}
+                  {estExterne(n.url) && <IconeSprite icone={ArrowUpRightIcon} size={14} aria-hidden="true" className="externe" />}
+                </a>
+                {n.enfants.length > 0 && contient(n) && <ul>{n.enfants.map(rendre)}</ul>}
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
+    </Enveloppe>
+  )
+}
+
+<style>
+  .navigation-secondaire {
+    font-size: var(--texte-reduit);
+  }
+
+  .titre {
+    display: block;
+    margin-block-start: 0;
+    margin-block-end: var(--espace-element);
+    color: var(--couleur-texte);
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-forte);
+    text-decoration: none;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  ul ul {
+    padding-inline-start: var(--espace-2);
+  }
+
+  li a {
+    display: block;
+    padding: var(--espace-1) 0.75rem;
+    border-inline-start: 2px solid var(--couleur-bordure);
+    color: var(--couleur-texte);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  li a :global(.externe) {
+    margin-inline-start: 0.25em;
+    vertical-align: -0.1em;
+  }
+
+  li a:hover {
+    color: var(--couleur-lien);
+    border-inline-start-color: var(--couleur-lien);
+  }
+
+  [aria-current='page'],
+  [aria-current='true'] {
+    font-weight: var(--graisse-forte);
+  }
+
+  li [aria-current='page'],
+  li [aria-current='true'] {
+    color: var(--couleur-lien);
+    border-inline-start: 4px solid var(--couleur-lien);
+  }
+
+  /* « Sur cette page » : la section en cours a aussi un fond pâle */
+  .est-sommaire li [aria-current='true'] {
+    background-color: var(--couleur-teinte);
+  }
+
+  /* ---- Variante repliable (< 1200 px) ---- */
+  .section-repliable {
+    margin-block-end: var(--espace-4);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-petit);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-2);
+    min-height: 48px;
+    padding: var(--espace-1) var(--espace-2);
+    font-weight: var(--graisse-forte);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    width: 0.5em;
+    height: 0.5em;
+    margin-block-start: -0.25em;
+    border-block-end: 2px solid currentColor;
+    border-inline-end: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  [open] > summary .chevron {
+    margin-block-start: 0.25em;
+    transform: rotate(-135deg);
+  }
+
+  .dans-repliable {
+    padding: var(--espace-1) var(--espace-2) var(--espace-2);
+  }
+
+  .dans-repliable .titre {
+    font-size: var(--texte-courant);
+    overflow-wrap: anywhere;
+  }
+
+  @media (width >= 1200px) {
+    .section-repliable {
+      display: none;
+    }
+  }
+</style>

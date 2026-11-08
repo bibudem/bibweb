@@ -1,0 +1,41 @@
+---
+/*
+ * Bloc centré avec marges latérales symétriques, en colonnes de grille
+ * (d'après coquille-web) : largeur (12 − 2 × offset) / 12, décalé de
+ * offset / 12, à tous les seuils.
+ * Corrigé : la source rendait d'abord une largeur fausse puis la corrigeait
+ * dans un effet (saut de mise en page) ; ici, c'est du CSS au build.
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  offset?: number | string
+  class?: string
+  style?: Style
+}
+
+const { offset = 0, class: classe, style, ...reste } = Astro.props
+const valeur = Number(offset)
+const decalage = Number.isFinite(valeur) ? Math.min(Math.max(valeur, 0), 6) : 0
+---
+
+<div class:list={['decale', classe]} style={fusionnerStyles({ '--decalage': decalage }, style)} {...reste}>
+  <div class="colonne"><slot /></div>
+</div>
+
+<style>
+  .decale {
+    display: flex;
+    flex-flow: row wrap;
+    min-width: 0;
+  }
+
+  .colonne {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: calc(100% * (12 - 2 * var(--decalage)) / 12);
+    min-width: 0;
+    margin-left: calc(100% * var(--decalage) / 12);
+  }
+</style>

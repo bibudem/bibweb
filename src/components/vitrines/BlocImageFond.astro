@@ -1,0 +1,68 @@
+---
+/*
+ * Bloc « image-fond » (accueil, « S'engager pour une science ouverte ») :
+ * titre, texte et bouton dans la moitié droite dès 900 px. La photo est le
+ * fond de la bande (Section `image`, posée par GabaritVitrine) : elle est
+ * décorative. Dès 900 px, deux colonnes : la photo, intacte, à gauche ; le
+ * texte blanc sur le bleu UdeM uni de la moitié droite (Section, voile
+ * « droite »). Plus étroit, le texte couvre la photo et la Section la voile
+ * en entier.
+ */
+import BoutonVitrine from './BoutonVitrine.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'image-fond'> }
+
+const { bloc } = Astro.props
+---
+
+<div class="image-fond">
+  <div class="colonne">
+    <div class="panneau">
+      <Titre texte={bloc.titre} id={bloc.id} />
+      <TexteMarkdown texte={bloc.texte} brut />
+      {
+        bloc.bouton && (
+          <div class="pied">
+            <BoutonVitrine bouton={bloc.bouton} surFonce />
+          </div>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .image-fond {
+    padding-block: var(--espace-6);
+  }
+
+  .pied {
+    margin-top: var(--espace-4);
+  }
+
+  /* Dès 900 px, le texte prend sa colonne avec de l'air autour, sans
+     coller au bord de la photo. La colonne est la moitié droite moins la
+     moitié de l'écart de 16 px de la grille 6/12 de la source. */
+  @media (width >= 900px) {
+    .colonne {
+      width: calc(50% - 8px);
+      margin-inline-start: auto;
+    }
+
+    .panneau {
+      padding-inline: var(--espace-5) 0;
+    }
+
+    .panneau > :global(:first-child) {
+      margin-top: 0;
+    }
+  }
+
+  /* L'écart vient du pied, sans la marge haute propre à Bouton */
+  .pied > :global(.bouton) {
+    margin-top: 0;
+  }
+</style>

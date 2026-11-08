@@ -1,0 +1,383 @@
+---
+/*
+ * Bandeau « Horaires du jour », sous l'en-tête, sur toutes les pages :
+ * une bibliothèque à choisir dans une liste, son statut (« Ouvert jusqu'à
+ * 22 h », « Fermé, ouvre demain à 8 h »), puis un lien vers tous les
+ * horaires.
+ *
+ * - Données de l'API horaires (deux jours, pour « ouvre demain »), lues dans
+ *   le navigateur avec les fonctions de la page Horaires
+ *   (src/data/horaires/horaires.ts). La liste des bibliothèques est écrite au
+ *   build depuis lieux.ts : le script n'a besoin que de leurs codes.
+ * - La bibliothèque choisie est gardée d'une page à l'autre (localStorage,
+ *   facultatif) ; par défaut, la BLSH.
+ * - Le statut devient une région role="status" une fois rempli : un
+ *   changement de bibliothèque est annoncé sans déplacer le focus, mais le
+ *   remplissage au chargement ne l'est pas (sinon, une annonce à chaque page). Le texte dit l'état ; la pastille de
+ *   couleur ne fait que le doubler.
+ * - Au défilement, il s'estompe à mesure qu'il passe sous l'en-tête
+ *   collant (opacité liée au défilement) et revient en remontant ; il
+ *   reste affiché si le focus y est.
+ * - Placement : rangée ordinaire sous l'en-tête. Dès 1200 px, sur une page
+ *   à grande bannière (qui glisse sous l'en-tête transparent), il se pose sur
+ *   le haut de la photo sans pousser la page (position absolue à sa place
+ *   normale). Il défile avec la page : il n'occupe pas l'écran ensuite.
+ * - Sans JavaScript : seul le lien vers tous les horaires reste.
+ */
+import { ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock'
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import { lieux } from '@/data/horaires/lieux'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+const PAR_DEFAUT = 'ss'
+
+// La liste est sous « Horaires du jour » : « Bibliothèque de kinésiologie »
+// devient « Kinésiologie », pour que le nom tienne dans la liste sur mobile
+const nomCourt = (nom: string) => {
+  const court = nom.replace(/^Bibliothèque (de la |de l'|des |du |de |d')?/, '')
+  return court.charAt(0).toLocaleUpperCase('fr') + court.slice(1)
+}
+const bibliotheques = lieux
+  .filter((lieu) => lieu.zone === 'library' && lieu.codeBib)
+  .map((lieu) => ({ code: lieu.codeBib!, nom: nomCourt(lieu.name) }))
+  .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
+---
+
+<section class="bandeau theme-clair" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
+  <div class="rangee">
+    <div class="choix">
+      <IconeSprite icone={ClockIcon} size={20} aria-hidden="true" className="icone" />
+      <label id="bandeau-horaires-titre" class="titre" for="bandeau-horaires-choix">Horaires du jour</label>
+      <span class="selecteur">
+      <select id="bandeau-horaires-choix" class="liste" data-choix>
+        {
+          bibliotheques.map(({ code, nom }) => (
+            <option value={code} selected={code === PAR_DEFAUT}>
+              {nom}
+            </option>
+          ))
+        }
+      </select>
+      <IconeSprite icone={CaretDownIcon} size={16} weight="bold" aria-hidden="true" className="chevron" />
+      </span>
+    </div>
+    <p class="statut" data-statut>
+      <span class="pastille" aria-hidden="true" data-pastille></span>
+      <span data-texte>Chargement des horaires…</span>
+    </p>
+    <a class="tous" href="/horaires/">
+      Tous les horaires
+      <IconeSprite icone={ArrowRightIcon} size={16} aria-hidden="true" />
+    </a>
+  </div>
+</section>
+
+<script>
+  import { analyserHoraires, ajouterJours, maintenantMontreal, statutDe, urlHoraires, type Horaires } from '@/data/horaires/horaires'
+  import type { Lieu } from '@/data/horaires/lieux'
+
+  const MEMOIRE = 'bandeauHoraires:bibliotheque'
+  const bandeau = document.querySelector<HTMLElement>('[data-bandeau-horaires]')
+
+  if (bandeau) {
+    // Au défilement, le bandeau s'estompe au lieu de glisser sous l'en-tête
+    // collant : son opacité suit la part passée sous l'en-tête, et il est
+    // effacé quand il en est aux trois quarts couvert (FONDU). Lié au défilement, le
+    // fondu suit le geste, dans un sens comme dans l'autre. Il reste affiché
+    // tant que le focus y est (WCAG 2.4.7). Opacité seule : il garde sa
+    // place, la page ne bouge pas.
+    const FONDU = 0.75
+    const entete = document.querySelector<HTMLElement>('[data-entete]')
+    let enAttente = false
+    const majVisibilite = () => {
+      enAttente = false
+      const sous = entete ? entete.getBoundingClientRect().bottom : 0
+      const { top, height } = bandeau.getBoundingClientRect()
+      const couvert = Math.min(1, Math.max(0, (sous - top) / (height * FONDU)))
+      const opacite = bandeau.contains(document.activeElement) ? 1 : 1 - couvert
+      bandeau.style.opacity = opacite < 1 ? String(opacite) : ''
+      bandeau.toggleAttribute('data-masque', opacite === 0)
+    }
+    const planifier = () => {
+      if (enAttente) return
+      enAttente = true
+      requestAnimationFrame(majVisibilite)
+    }
+    majVisibilite()
+    window.addEventListener('scroll', planifier, { passive: true })
+    window.addEventListener('resize', planifier, { passive: true })
+    bandeau.addEventListener('focusout', planifier)
+
+    const choix = bandeau.querySelector<HTMLSelectElement>('[data-choix]')!
+    const texte = bandeau.querySelector<HTMLElement>('[data-texte]')!
+    const pastille = bandeau.querySelector<HTMLElement>('[data-pastille]')!
+    // Jour des horaires chargés : la page peut rester ouverte toute la nuit
+    let jourCharge = ''
+    let horaires: Horaires | null | undefined
+
+    try {
+      const garde = window.localStorage.getItem(MEMOIRE)
+      if (garde && [...choix.options].some((o) => o.value === garde)) choix.value = garde
+    } catch {
+      // Stockage indisponible (navigation privée) : la valeur par défaut suffit
+    }
+
+    // L'heure est relue à chaque affichage : un onglet ouvert à 21 h 50 ne dit
+    // plus « Ferme bientôt » le lendemain matin.
+    const afficher = () => {
+      if (horaires === undefined) return
+      const maintenant = maintenantMontreal()
+      if (maintenant.date !== jourCharge) return charger(maintenant.date)
+      const dates = [maintenant.date, ajouterJours(maintenant.date, 1)]
+      const statut = statutDe({ codeBib: choix.value } as Lieu, horaires, maintenant, dates)
+      // Même texte : on n'y touche pas, la région d'annonce resterait muette
+      // pour rien ou répéterait le statut chaque minute
+      if (texte.textContent !== statut.texte) texte.textContent = statut.texte
+      pastille.dataset.etat = statut.etat
+    }
+
+    choix.addEventListener('change', () => {
+      afficher()
+      try {
+        window.localStorage.setItem(MEMOIRE, choix.value)
+      } catch {
+        // idem
+      }
+    })
+
+    const charger = (date: string) => {
+      jourCharge = date
+      fetch(urlHoraires(date, 2))
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`API horaires : HTTP ${r.status}`))))
+        .then((donnees) => (horaires = analyserHoraires(donnees)))
+        .catch(() => (horaires = null))
+        .finally(() => {
+          afficher()
+          // Région d'annonce seulement après le premier remplissage
+          bandeau.querySelector('[data-statut]')!.setAttribute('role', 'status')
+        })
+    }
+
+    charger(maintenantMontreal().date)
+    setInterval(afficher, 60 * 1000)
+  }
+</script>
+
+<style>
+  .bandeau {
+    position: relative;
+    z-index: var(--z-dessus-2);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+  }
+
+  /* Tout à fait effacé au défilement (voir le script : l'opacité suit le
+     défilement) ; visibility le retire aussi du clavier et des lecteurs
+     d'écran pendant qu'il est invisible */
+  .bandeau[data-masque] {
+    visibility: hidden;
+  }
+
+  .rangee {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem var(--espace-3);
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: var(--espace-1) 16px;
+    font-size: var(--texte-petit);
+    line-height: 1.3;
+  }
+
+  /* Avec le texte agrandi, la liste passe sous l'étiquette au lieu de
+     déborder de l'écran */
+  .choix {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espace-1);
+    min-width: 0;
+  }
+
+  .choix :global(.icone) {
+    flex-shrink: 0;
+  }
+
+  .titre {
+    flex-shrink: 0;
+    font-weight: var(--graisse-forte);
+  }
+
+  /* Liste : capsule à contour clair sur le bandeau, chevron du site à la
+     place de la flèche du navigateur. Contour blanc à 55 % : 6,05:1 sur le
+     bleu foncé (WCAG 1.4.11). La liste ouverte reste celle du système. */
+  .selecteur {
+    position: relative;
+    display: flex;
+    flex: 1 1 10rem;
+    align-items: center;
+    min-width: 0;
+    max-width: 22rem;
+  }
+
+  .liste {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: 0.25rem 2.25rem 0.25rem 0.875rem;
+    border: 1px solid color-mix(in srgb, var(--couleur-surface) 55%, transparent);
+    border-radius: var(--rayon-plein);
+    background-color: color-mix(in srgb, var(--couleur-surface) 8%, transparent);
+    color: var(--couleur-sur-fonce);
+    font: inherit;
+    font-weight: var(--graisse-forte);
+    text-overflow: ellipsis;
+    appearance: none;
+    cursor: pointer;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .liste:hover {
+    background-color: color-mix(in srgb, var(--couleur-surface) 16%, transparent);
+  }
+
+  .liste:focus-visible {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  /* Options de la liste ouverte : lisibles quel que soit le système */
+  .liste option {
+    background-color: var(--couleur-surface);
+    color: var(--couleur-texte);
+    font-weight: var(--graisse-normale);
+  }
+
+  .selecteur :global(.chevron) {
+    position: absolute;
+    right: 0.875rem;
+    pointer-events: none;
+  }
+
+  .statut {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--espace-1);
+    min-width: 0;
+    margin: 0;
+  }
+
+  /* Pastille d'état : double le texte, qui dit l'état */
+  .pastille {
+    flex-shrink: 0;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background-color: var(--couleur-texte-secondaire);
+  }
+
+  .pastille[data-etat='open'] {
+    background-color: var(--vert-pale);
+  }
+
+  .pastille[data-etat='closing-soon'] {
+    background-color: var(--jaune);
+  }
+
+  .pastille[data-etat='closed'] {
+    background-color: var(--rouge-orange);
+  }
+
+  .tous {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.5rem;
+    color: inherit;
+    font-weight: var(--graisse-moyenne);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .tous:hover {
+    color: inherit;
+    text-decoration-thickness: 2px;
+  }
+
+  /* Sans JavaScript : ni liste ni statut, seulement le lien */
+  @media (scripting: none) {
+    .selecteur,
+    .statut {
+      display: none;
+    }
+  }
+
+  @media (width >= 600px) {
+    .rangee {
+      padding-inline: 24px;
+    }
+  }
+
+  @media (width >= 900px) {
+    .choix {
+      flex: 0 1 auto;
+    }
+
+    .liste {
+      min-height: 2.25rem;
+    }
+
+    .selecteur {
+      flex: 0 1 auto;
+      min-width: 16rem;
+    }
+
+    .tous {
+      margin-left: auto;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .rangee {
+      padding-inline: 1.25rem;
+    }
+
+    /* Bannière photo sous l'en-tête transparent : le bandeau se pose sur le
+       haut de la photo, à sa place normale, sans pousser la page. Les
+       bannières ajoutent sa hauteur (3rem) à leur retrait sous l'en-tête :
+       leur titre reste visible. */
+    .rangee {
+      min-height: 3rem;
+      padding-block: 0;
+    }
+
+    :global(body:has(.super-hero, .super-hero-2, .banniere)) .bandeau {
+      position: absolute;
+      right: 0;
+      left: 0;
+      background-color: color-mix(in srgb, var(--bleu-fonce) 88%, transparent);
+    }
+
+    :global(body:has(.bandeau) .banniere),
+    :global(body:has(.bandeau) .super-hero-2),
+    :global(body:has(.bandeau) .super-hero) {
+      padding-top: calc(5rem + 3rem);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .bandeau {
+      border-block: 1px solid CanvasText;
+    }
+
+    .pastille {
+      forced-color-adjust: none;
+    }
+  }
+</style>

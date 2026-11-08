@@ -1,0 +1,42 @@
+/*
+ * Clavardage et horaire côte à côte dès 900 px : 8/12 et 4/12, puis 9/12 et
+ * 3/12 dès 1536 px, avec l'écart de 32 px de la grille de la source (Grid2 :
+ * chaque colonne retranche sa part de l'écart, (12 − n) / 12).
+ */
+.clavarder-colonnes {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.clavarder-colonnes > * {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Le titre « Horaire » ne descend pas sous le haut du clavardage */
+.clavarder-colonnes > * > :first-child {
+  margin-block-start: 0;
+}
+
+@media (width >= 900px) {
+  .clavarder-clavardage {
+    width: calc(100% * 8 / 12 - 32px * 4 / 12);
+  }
+
+  .clavarder-horaire {
+    width: calc(100% * 4 / 12 - 32px * 8 / 12);
+  }
+}
+
+@media (width >= 1536px) {
+  .clavarder-clavardage {
+    width: calc(100% * 9 / 12 - 32px * 3 / 12);
+  }
+
+  .clavarder-horaire {
+    width: calc(100% * 3 / 12 - 32px * 9 / 12);
+  }
+}

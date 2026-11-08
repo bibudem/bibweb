@@ -1,0 +1,25 @@
+---
+/*
+ * Directive :::galerie (RenduDirectives) : figures côte à côte
+ * (FigureGalerie), rendues dans le slot.
+ */
+---
+
+<div class="galerie">
+  <slot />
+</div>
+
+<style>
+  /* Galerie : figures de 170 px au moins, côte à côte (fonds-livres-rares) */
+  .galerie {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  .galerie :global(.galerie-legende) {
+    margin-top: 8px;
+  }
+</style>

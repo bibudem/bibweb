@@ -1,0 +1,84 @@
+/*
+ * Champ « Trouver un lieu » et ses suggestions (RechercheLieu.tsx). Importée
+ * par CarteHoraires.tsx, après carte-horaires.css.
+ */
+
+.ch-recherche {
+  position: relative;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.ch-recherche-icone {
+  position: absolute;
+  top: 50%;
+  left: 0.875rem;
+  color: var(--couleur-texte-secondaire);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ch-recherche input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--espace-1) var(--espace-2) var(--espace-1) var(--espace-5);
+  /* Bordure d'un champ : 3:1 au moins (WCAG 1.4.11) ; --couleur-bordure ne
+     fait que 1,41:1 sur le bleu 100 (6,88:1 ici, 7,96:1 sur blanc). */
+  border: 1px solid var(--couleur-texte-secondaire);
+  border-radius: var(--rayon-plein);
+  background-color: var(--couleur-surface);
+  color: var(--couleur-texte);
+  font: inherit;
+}
+
+/* Le texte indicatif sert d'étiquette visible : contraste AA */
+.ch-recherche input::placeholder {
+  color: var(--couleur-texte-secondaire);
+  opacity: 1;
+}
+
+.ch-suggestions {
+  position: absolute;
+  z-index: var(--z-suggestions);
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 0.25rem 0;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--couleur-surface);
+  box-shadow: var(--ombre-2);
+  list-style: none;
+}
+
+.ch-suggestions[hidden] {
+  display: none;
+}
+
+.ch-suggestions li {
+  padding: var(--espace-1) var(--espace-2);
+  cursor: pointer;
+}
+
+.ch-suggestions li:hover,
+.ch-option-active {
+  background-color: var(--couleur-teinte);
+}
+
+/* L'option active ne repose pas sur le seul fond (couleurs forcées) */
+.ch-option-active {
+  outline: 2px solid var(--couleur-accent);
+  outline-offset: -2px;
+}
+
+.ch-option-nom {
+  display: block;
+  font-weight: var(--graisse-forte);
+}
+
+.ch-option-adresse {
+  display: block;
+  color: var(--couleur-texte-secondaire);
+  font-size: var(--texte-petit);
+}

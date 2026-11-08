@@ -1,0 +1,128 @@
+---
+/*
+ * Encadré d'information (d'après coquille-web : MUI Alert, variante
+ * « outlined » du thème). Icône Phosphor 24 px sur un bandeau coloré à gauche,
+ * coins arrondis à droite seulement, comme studio·bib.
+ *
+ * Corrigé : pas de role="alert". MUI l'ajoutait à un contenu statique, que
+ * les lecteurs d'écran lisaient au chargement comme une urgence. La sévérité,
+ * que seuls l'icône et la couleur portaient, est dite en texte masqué.
+ */
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle'
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
+import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning'
+import { WarningDiamondIcon } from '@phosphor-icons/react/dist/ssr/WarningDiamond'
+import { fusionnerStyles } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Severite = 'success' | 'info' | 'warning' | 'error'
+
+interface Props {
+  severity?: Severite
+  /** false retire l'icône (nous-joindre/clavarder) */
+  icon?: boolean
+  class?: string
+  style?: string | Record<string, string | number>
+}
+
+const { severity = 'info', icon = true, class: classe, style, ...reste } = Astro.props
+
+const SEVERITES = {
+  success: { Icone: CheckCircleIcon, libelle: 'Succès' },
+  info: { Icone: InfoIcon, libelle: 'Information' },
+  warning: { Icone: WarningIcon, libelle: 'Avertissement' },
+  error: { Icone: WarningDiamondIcon, libelle: 'Erreur' },
+}
+const severite = severity in SEVERITES ? severity : 'info'
+const { Icone, libelle } = SEVERITES[severite]
+---
+
+<div class:list={['alerte', `severite-${severite}`, { 'sans-icone': icon === false }, classe]} style={fusionnerStyles(style)} {...reste}>
+  {
+    icon !== false && (
+      <div class="icone">
+        <IconeSprite icone={Icone} size={24} color="currentColor" aria-hidden="true" focusable="false" />
+      </div>
+    )
+  }
+  <div class="message">
+    <span class="visuellement-masque">{libelle} : </span>
+    <slot />
+  </div>
+</div>
+
+<style>
+  /* La boîte épouse son texte : le message s'arrête à la largeur de lecture
+     (--mesure-texte, global.css), la boîte aussi, au lieu d'un grand vide à
+     droite ; jamais plus large que la colonne. */
+  .alerte {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin-block: var(--espace-element);
+    padding: 0;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 0 var(--rayon-petit) var(--rayon-petit) 0;
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.43;
+  }
+
+  .icone {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    box-sizing: content-box;
+    width: 35px;
+    padding: 16px 4px;
+    border-radius: 0;
+    background-color: var(--fond-icone);
+    color: var(--couleur-icone);
+  }
+
+  .severite-success {
+    --fond-icone: var(--alerte-succes-fond);
+    --couleur-icone: var(--alerte-succes-icone);
+  }
+
+  .severite-info {
+    --fond-icone: var(--alerte-info-fond);
+    --couleur-icone: var(--alerte-info-icone);
+  }
+
+  .severite-warning {
+    --fond-icone: var(--alerte-avertissement-fond);
+    --couleur-icone: var(--alerte-avertissement-icone);
+  }
+
+  .severite-error {
+    --fond-icone: var(--alerte-erreur-fond);
+    --couleur-icone: var(--alerte-erreur-icone);
+  }
+
+  .message {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 16px;
+    border-radius: 0 var(--rayon-petit) var(--rayon-petit) 0;
+    background-color: var(--alerte-fond);
+    color: var(--couleur-neutre-700);
+    overflow-wrap: anywhere;
+  }
+
+  .sans-icone .message {
+    border-radius: 0 var(--rayon-petit) var(--rayon-petit) 0;
+  }
+
+  .message > :global(*:first-child) {
+    margin-top: 0;
+  }
+
+  .message > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  .message :global(p) {
+    margin-block: 0 0.75em;
+  }
+</style>

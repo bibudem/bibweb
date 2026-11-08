@@ -1,0 +1,28 @@
+---
+title: Réserve de cours
+crumbLabel: Réserve de cours
+secondaryNav:
+  order: 3
+superHero:
+  imageName: enseignement
+  title: 'Épauler l’enseignement, c’est notre rayon'
+---
+## Réserve de cours
+
+Si vous donnez un cours, vous pouvez demander la mise en réserve de certains documents en complétant le [formulaire de réserve de cours](/enseignement/formulaire-reserve/), ou en [communiquant avec votre bibliothèque](/nous-joindre/notre-equipe/). La mise à la réserve dure un trimestre.
+
+::bouton[Mettre à la réserve]{lien=/enseignement/formulaire-reserve/ alignement=centre}
+
+**Pour assurer un meilleur service**
+
+- Faites-nous parvenir le formulaire avant le début des cours. Les documents seront traités à temps pour le début de la session;
+- Les informations fournies dans le formulaire doivent être identiques à celles retrouvées dans la bibliographie remise dans le cadre de votre cours (incluant la cote).
+- Les photocopies et les notes de cours doivent être insérées dans une chemise ou dans un cahier à anneaux et remises au comptoir de prêt.
+
+En raison de l’espace restreint dans certaines bibliothèques, une limite de documents pourrait être imposée.
+
+**À la fin de chaque trimestre**, les documents personnels sont retournés à leur propriétaire et les livres appartenant à la bibliothèque sont replacés sur les rayons.
+
+Si la bibliothèque ne possède pas le document que vous voulez déposer à la réserve, contactez le ou la [bibliothécaire responsable de votre discipline](/nous-joindre/notre-equipe/).
+
+Des questions? Consultez la personne responsable de la [réserve de votre bibliothèque](/nous-joindre/notre-equipe/).

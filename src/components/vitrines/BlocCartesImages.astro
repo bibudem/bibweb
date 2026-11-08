@@ -1,0 +1,26 @@
+---
+/*
+ * Bloc « cartes-images » : grille de cartes-liens à photo. Sans titre de
+ * bloc, le titre de chaque carte est un h2 (nous-soutenir : « Fonds des
+ * livres rares de l'UdeM ») ; --espace-bloc au-dessus et au-dessous (4rem
+ * dans la source), annulé en début et en fin de bande.
+ */
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import GrilleCartesImages from './GrilleCartesImages.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'cartes-images'> }
+
+const { bloc } = Astro.props
+---
+
+{bloc.titre && <Titre texte={bloc.titre} id={bloc.id} />}
+{bloc.texte && <TexteMarkdown texte={bloc.texte} />}
+<GrilleCartesImages cartes={bloc.cartes} niveauTitre={bloc.titre ? 3 : 2} class="grille-bloc" />
+
+<style>
+  .grille-bloc {
+    margin-block: var(--espace-bloc);
+  }
+</style>

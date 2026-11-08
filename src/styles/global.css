@@ -1,0 +1,828 @@
+/*
+ * Styles de base. Reprend la base de coquille-web (modern-normalize, racine à
+ * 17 px puis 18 px dès 900 px, typographie du thème) et corrige au passage
+ * ce que l'inventaire a relevé : focus visible partout, ancres non masquées
+ * par l'en-tête collant, mouvement réduit respecté.
+ */
+@import '@fontsource-variable/figtree/wght.css';
+@import '@fontsource-variable/lora/wght.css';
+@import './tokens.css';
+
+/* Polices de repli ajustées pour limiter le décalage au chargement (CLS).
+   Une face par plage de graisse : Figtree et Lora s'élargissent avec la
+   graisse, alors que le gras synthétique d'Arial ou de Georgia garde la
+   chasse du romain. Avec une seule face, un titre en 600 ou 700 était 2 à
+   3 % plus étroit en repli et gagnait une ligne au chargement de la police
+   (conditions-utilisation : CLS 0,19 à 900 px). size-adjust = rapport des
+   largeurs mesuré sur le texte du site ; ascent et descent de la police web
+   divisés par size-adjust (Figtree 0,95 / 0,25, Lora 1,006 / 0,274). */
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial');
+  font-weight: 100 349;
+  size-adjust: 98.94%;
+  ascent-override: 96.02%;
+  descent-override: 25.27%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial');
+  font-weight: 350 449;
+  size-adjust: 100.05%;
+  ascent-override: 94.95%;
+  descent-override: 24.99%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial');
+  font-weight: 450 549;
+  size-adjust: 100.85%;
+  ascent-override: 94.20%;
+  descent-override: 24.79%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 550 649;
+  size-adjust: 94.68%;
+  ascent-override: 100.34%;
+  descent-override: 26.40%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 650 749;
+  size-adjust: 95.73%;
+  ascent-override: 99.24%;
+  descent-override: 26.12%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  font-weight: 750 1000;
+  size-adjust: 97.14%;
+  ascent-override: 97.80%;
+  descent-override: 25.74%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Lora Fallback';
+  src: local('Georgia');
+  font-weight: 100 449;
+  size-adjust: 104.91%;
+  ascent-override: 95.89%;
+  descent-override: 26.12%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Lora Fallback';
+  src: local('Georgia');
+  font-weight: 450 549;
+  size-adjust: 105.88%;
+  ascent-override: 95.01%;
+  descent-override: 25.88%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Lora Fallback';
+  src: local('Georgia Bold'), local('Georgia-Bold');
+  font-weight: 550 649;
+  size-adjust: 91.88%;
+  ascent-override: 109.49%;
+  descent-override: 29.82%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Lora Fallback';
+  src: local('Georgia Bold'), local('Georgia-Bold');
+  font-weight: 650 1000;
+  size-adjust: 92.72%;
+  ascent-override: 108.50%;
+  descent-override: 29.55%;
+  line-gap-override: 0%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* La racine du site est à 17 px (18 px dès 900 px) : toutes les valeurs en
+     rem en dépendent, comme dans coquille-web. En pourcentage de la taille
+     du navigateur (16 px par défaut) plutôt qu'en px : le réglage « taille du
+     texte » du navigateur s'applique (WCAG 1.4.4), le rendu par défaut est
+     le même. */
+  font-size: 106.25%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--hauteur-entete);
+  /* Garde la barre de défilement pour éviter un saut de mise en page */
+  scrollbar-gutter: stable;
+}
+
+@media (width >= 900px) {
+  html {
+    font-size: 112.5%;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--couleur-fond);
+  color: var(--couleur-texte);
+  font-family: var(--police-sans);
+  font-size: var(--texte-courant);
+  font-weight: var(--graisse-moyenne);
+  line-height: 1.5;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-variant-numeric: lining-nums tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Titres (typographie du thème, variantes h1 à h6) ---- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--police-sans);
+  /* Les titres prennent toute la largeur de leur colonne : « balance »
+     égalisait les lignes et les rétrécissait (jusqu'à 55 % de la place) ;
+     « pretty » évite seulement un mot seul sur la dernière ligne */
+  text-wrap: pretty;
+  /* Avec le texte à 200 % (WCAG 1.4.4), un long mot des grands titres
+     (« d'enseignement », « bibliothèques ») dépassait la largeur d'un
+     téléphone et faisait défiler la page de côté : on le coupe plutôt. */
+  overflow-wrap: break-word;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: var(--graisse-forte);
+  line-height: 1.1;
+  margin-block: 0.5em;
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-weight: var(--graisse-forte);
+  line-height: 1.1;
+  margin-block: 0.83em 0.5em;
+}
+
+h3 {
+  font-size: var(--texte-tres-grand);
+  font-weight: var(--graisse-grasse);
+  line-height: 1.2;
+  margin-block: 1em 0.5em;
+}
+
+h4 {
+  font-family: var(--police-serif);
+  /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
+     l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
+  font-variant-numeric: lining-nums proportional-nums;
+  font-size: var(--texte-grand);
+  font-weight: var(--graisse-normale);
+  line-height: 1.2;
+  margin-block: 1.33em 0.5em;
+}
+
+h5 {
+  font-size: var(--texte-moyen);
+  font-weight: var(--graisse-grasse);
+  line-height: 1.1;
+}
+
+h6 {
+  font-size: var(--texte-courant);
+  font-weight: var(--graisse-normale);
+  line-height: 1.2;
+}
+
+@media (width >= 900px) {
+  h1 {
+    font-size: 6.875rem;
+  }
+
+  h2 {
+    font-size: 3.5rem;
+  }
+
+  h3 {
+    font-size: 2.25rem;
+    font-weight: var(--graisse-forte);
+  }
+
+  h4 {
+    font-size: 1.875rem;
+  }
+
+  h6 {
+    font-size: var(--texte-moyen);
+  }
+}
+
+/* ---- Apparence d'un niveau de titre sur une autre balise ----
+   plugins/rehype-titre-principal.mjs monte d'un niveau les titres des pages
+   sans h1 (## → h1…) : ces classes leur gardent l'apparence de la source.
+   La classe (0,1,0) l'emporte sur le sélecteur de balise (0,0,1). */
+.apparence-h2 {
+  font-family: var(--police-sans);
+  font-size: 2.5rem;
+  font-weight: var(--graisse-forte);
+  line-height: 1.1;
+  margin-block: 0.83em 0.5em;
+}
+
+.apparence-h3 {
+  font-family: var(--police-sans);
+  font-size: var(--texte-tres-grand);
+  font-weight: var(--graisse-grasse);
+  line-height: 1.2;
+  margin-block: 1em 0.5em;
+}
+
+.apparence-h4 {
+  font-family: var(--police-serif);
+  /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
+     l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
+  font-variant-numeric: lining-nums proportional-nums;
+  font-size: var(--texte-grand);
+  font-weight: var(--graisse-normale);
+  line-height: 1.2;
+  margin-block: 1.33em 0.5em;
+}
+
+.apparence-h5 {
+  font-family: var(--police-sans);
+  font-size: var(--texte-moyen);
+  font-weight: var(--graisse-grasse);
+  line-height: 1.1;
+  margin-block: 0;
+}
+
+.apparence-h6 {
+  font-family: var(--police-sans);
+  font-size: var(--texte-courant);
+  font-weight: var(--graisse-normale);
+  line-height: 1.2;
+  margin-block: 0;
+}
+
+@media (width >= 900px) {
+  .apparence-h2 {
+    font-size: 3.5rem;
+  }
+
+  .apparence-h3 {
+    font-size: 2.25rem;
+    font-weight: var(--graisse-forte);
+  }
+
+  .apparence-h4 {
+    font-size: 1.875rem;
+  }
+
+  .apparence-h6 {
+    font-size: var(--texte-moyen);
+  }
+}
+
+p {
+  margin-block: 0 1em;
+}
+
+/* Longueur de ligne du texte courant (jeton --mesure-texte) : paragraphes,
+   citations, légendes et éléments des listes de contenu. Spécificité nulle :
+   un composant qui fixe sa propre largeur l'emporte. */
+:where(main) :where(p, blockquote, figcaption, dd, ul:not([class]) > li, ol:not([class]) > li) {
+  max-inline-size: var(--mesure-texte);
+}
+
+/* Une adresse courriel ou une URL sans espace ne fait pas défiler la page
+   de côté sur un téléphone, ni avec le texte agrandi à 200 % (WCAG 1.4.10) :
+   elle se coupe seulement si elle ne tient pas sur la ligne. */
+main {
+  overflow-wrap: break-word;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  display: block;
+}
+
+/* ---- Liens ---- */
+a {
+  color: var(--couleur-lien);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--couleur-lien-survol);
+}
+
+/* Icône PDF après les liens vers un PDF (le lien annonce aussi « PDF » aux
+   lecteurs d'écran via le composant Lien ; ici, seulement le visuel). */
+main a:not(.sans-icone-pdf, .no-pdf-icon)[href$='.pdf']::after,
+main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf#']::after,
+main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 0.35em;
+  vertical-align: text-bottom;
+  background-color: var(--rouge-orange);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M224 152a8 8 0 0 1-8 8h-24v16h16a8 8 0 0 1 0 16h-16v16a8 8 0 0 1-16 0v-56a8 8 0 0 1 8-8h32a8 8 0 0 1 8 8M92 172a28 28 0 0 1-28 28h-8v8a8 8 0 0 1-16 0v-56a8 8 0 0 1 8-8h16a28 28 0 0 1 28 28m-16 0a12 12 0 0 0-12-12h-8v24h8a12 12 0 0 0 12-12m88 8a36 36 0 0 1-36 36h-16a8 8 0 0 1-8-8v-56a8 8 0 0 1 8-8h16a36 36 0 0 1 36 36m-16 0a20 20 0 0 0-20-20h-8v40h8a20 20 0 0 0 20-20M40 112V40a16 16 0 0 1 16-16h96a8 8 0 0 1 5.66 2.34l56 56A8 8 0 0 1 216 88v24a8 8 0 0 1-16 0V96h-48a8 8 0 0 1-8-8V40H56v72a8 8 0 0 1-16 0m120-32h28.69L160 51.31Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* ---- Lien d'ancre des titres (plugins/rehype-ancres-titres.mjs) ----
+   Discret comme dans la source : visible au survol du titre ou quand il a
+   le focus clavier, pour ne pas encombrer la lecture. */
+.ancre-titre {
+  display: inline-flex;
+  margin-inline-start: 0.35em;
+  vertical-align: middle;
+  color: inherit;
+  font-size: 0.6em;
+  opacity: 0;
+  transition: opacity var(--duree-courte-3) var(--courbe-standard);
+}
+
+.titre-ancre:hover .ancre-titre,
+.ancre-titre:focus-visible {
+  opacity: 0.7;
+}
+
+/* Adresse copiée (src/lib/ancres-copie.ts) : l'icône reste visible le temps
+   de la bulle. Texte de remplacement vide (« / "" ») : la bulle est
+   décorative, l'annonce passe par une région role="status". */
+.ancre-titre {
+  position: relative;
+}
+
+.ancre-titre[data-copie] {
+  opacity: 1;
+}
+
+.ancre-titre[data-copie]::after {
+  content: "Lien copié" / "";
+  position: absolute;
+  /* Alignée à droite de l'icône : centrée, elle débordait de l'écran quand
+     le titre finit au bord (défilement horizontal sur mobile) */
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--rayon-minuscule);
+  background-color: var(--bleu-fonce);
+  color: var(--couleur-sur-fonce);
+  font-family: var(--police-sans);
+  font-size: var(--texte-petit);
+  font-weight: var(--graisse-normale);
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- Focus : toujours visible au clavier (WCAG 2.4.7 et 2.4.11) ---- */
+:focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 2px;
+  border-radius: var(--rayon-minuscule);
+}
+
+/* Les cibles d'ancres et les éléments focalisés ne passent pas sous l'en-tête
+   collant (scroll-padding-top sur html) */
+[id] {
+  scroll-margin-top: var(--hauteur-entete);
+}
+
+/* ---- Carte-lien : lien étiré, anneau de focus, pastille fléchée ----
+   Un seul motif pour toutes les cartes et rangées-liens du site (CarteTexte,
+   CarteIcone, CarteImage, CarteLienCompacte, ElementListeLiens,
+   Element, EquipeBibliotheque) :
+   - `.lien-etire` : le seul lien de la carte, sur son titre ; son ::after
+     couvre la carte (`--rayon-lien-etire` pour l'arrondi). Son nom accessible
+     reste court (le titre) ;
+   - `.carte-lien` : la carte qui le contient (position: relative). Avec
+     `.anneau-carte`, le focus du lien est tracé sur toute la carte : anneau
+     double (contour de focus de la bande, liseré `--carte-anneau-interieur`),
+     lisible sur tout fond ;
+   - `.pastille-fleche` (PastilleFleche.astro) : au survol (pointeurs fins
+     seulement : au toucher, il resterait après le tapotement) et au focus, la
+     flèche avance d'un cran vers sa destination (→, ou ↗ pour un lien
+     externe), et la pastille prend ses couleurs « actives » si la carte en
+     définit (`--pastille-fond-actif`, `--pastille-contour-actif`,
+     `--pastille-encre-actif`, `--pastille-echelle-active`). */
+.carte-lien {
+  position: relative;
+}
+
+/* :hover compris : la règle des liens (a:hover, plus loin dans la cascade
+   des composants) ne doit pas recolorer ni souligner le titre d'une carte */
+.lien-etire,
+.lien-etire:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lien-etire::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rayon-lien-etire, var(--rayon-carte));
+}
+
+.anneau-carte .lien-etire:focus-visible {
+  outline: none;
+}
+
+.anneau-carte:has(.lien-etire:focus-visible) {
+  outline: 3px solid var(--couleur-focus-bande, var(--couleur-focus));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--carte-anneau-interieur, var(--couleur-surface));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carte-lien:hover .pastille-fleche {
+    border-color: var(--pastille-contour-actif, var(--pastille-contour, transparent));
+    background-color: var(--pastille-fond-actif, var(--pastille-fond, transparent));
+    color: var(--pastille-encre-actif, var(--pastille-encre, currentColor));
+    scale: var(--pastille-echelle-active, 1);
+  }
+
+  .carte-lien:hover .pastille-fleche > svg {
+    transform: translateX(3px);
+  }
+
+  .carte-lien:hover .pastille-fleche.externe > svg {
+    transform: translate(2px, -2px);
+  }
+}
+
+.carte-lien:has(.lien-etire:focus-visible) .pastille-fleche {
+  border-color: var(--pastille-contour-actif, var(--pastille-contour, transparent));
+  background-color: var(--pastille-fond-actif, var(--pastille-fond, transparent));
+  color: var(--pastille-encre-actif, var(--pastille-encre, currentColor));
+}
+
+.carte-lien:has(.lien-etire:focus-visible) .pastille-fleche > svg {
+  transform: translateX(3px);
+}
+
+.carte-lien:has(.lien-etire:focus-visible) .pastille-fleche.externe > svg {
+  transform: translate(2px, -2px);
+}
+
+/* ---- Utilitaires ---- */
+.visuellement-masque {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Infobulle : pilule bleu foncé au survol (après un court délai) et au
+   focus clavier, texte dans data-infobulle. Texte d'appoint : le nom de
+   l'élément est déjà porté par son texte ou son aria-label, d'où le texte
+   de remplacement vide (pas de double lecture). L'élément porte aussi la
+   position (`.infobulle-gauche`, `.infobulle-dessous`), et son propre
+   `position` (relative, fixed). Une bande transparente (::before) relie la
+   bulle à l'élément : le pointeur passe de l'un à l'autre sans la faire
+   disparaître (WCAG 1.4.13). Échap pose data-infobulle-fermee (script du
+   composant). Un composant qui doit la taire dans un état (rangée ouverte,
+   bouton masqué) y pose --infobulle-visibilite: hidden et
+   --infobulle-opacite: 0. */
+.infobulle::before {
+  content: '';
+  position: absolute;
+}
+
+.infobulle::after {
+  content: attr(data-infobulle) / '';
+  position: absolute;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--rayon-tres-petit);
+  background: var(--bleu-fonce);
+  /* Liseré clair : la bulle reste détachée sur les bandes bleu foncé */
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--couleur-surface) 35%, transparent);
+  color: var(--couleur-sur-fonce);
+  font-size: var(--texte-petit);
+  font-weight: var(--graisse-moyenne);
+  line-height: 1.4;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--duree-courte-4) var(--courbe-standard),
+    visibility 0s linear var(--duree-courte-4);
+}
+
+.infobulle:is(:hover, :focus-visible):not([data-infobulle-fermee])::after {
+  visibility: var(--infobulle-visibilite, visible);
+  opacity: var(--infobulle-opacite, 1);
+  transition:
+    opacity var(--duree-courte-4) var(--courbe-standard) 80ms,
+    visibility 0s linear 80ms;
+}
+
+.infobulle:focus-visible:not([data-infobulle-fermee])::after {
+  transition: none;
+}
+
+/* À gauche de l'élément, centrée en hauteur (boutons du bord droit) */
+.infobulle-gauche::before {
+  top: 0;
+  right: 100%;
+  bottom: 0;
+  width: 8px;
+}
+
+.infobulle-gauche::after {
+  top: 50%;
+  right: calc(100% + 8px);
+  translate: 0 -50%;
+}
+
+/* Sous l'élément, alignée à gauche (liens de l'en-tête) */
+.infobulle-dessous::before {
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 8px;
+}
+
+.infobulle-dessous::after {
+  top: calc(100% + 8px);
+  left: 0;
+}
+
+/* Photo de fond sous un voile noir : bannières (BannierePage,
+   BanniereSection) et bandes à image (Section). Le conteneur porte
+   `.fond-photo` (avec son propre position et son isolation), la photo
+   `.fond-photo-image`, recadrée par --cadrage (hauteur gardée, 50 % par
+   défaut). Le voile se dose par --voile-opacite (50 % par défaut) ; un
+   composant peut le remplacer par un dégradé. */
+.fond-photo::before {
+  content: '';
+  position: absolute;
+  z-index: var(--z-dessous);
+  inset: 0;
+  background-color: color-mix(in srgb, var(--couleur-voile) var(--voile-opacite, 50%), transparent);
+}
+
+/* Vague bleu foncé (style de la bannière de l'accueil) à la place du voile
+   uniforme : un dégradé radial qui monte du coin du titre (--vague-x : 0 %
+   à gauche, 100 % à droite) et s'efface sur la photo, et une ombre diffuse
+   sous les lettres. --vague-taille règle l'ellipse (largeur, hauteur) selon
+   la forme de la bannière. */
+.fond-photo.vague::before {
+  background-color: transparent;
+  background-image: radial-gradient(
+    ellipse var(--vague-taille, 90% 160%) at var(--vague-x, 0%) 100%,
+    color-mix(in srgb, var(--bleu-fonce) 74%, transparent),
+    color-mix(in srgb, var(--bleu-fonce) 70%, transparent) 50%,
+    color-mix(in srgb, var(--bleu-fonce) 58%, transparent) 68%,
+    color-mix(in srgb, var(--bleu-fonce) 34%, transparent) 83%,
+    color-mix(in srgb, var(--bleu-fonce) 12%, transparent) 94%,
+    transparent
+  );
+}
+
+.fond-photo.vague {
+  text-shadow:
+    0 0 2px color-mix(in srgb, var(--couleur-voile) 45%, transparent),
+    0 1px 12px color-mix(in srgb, var(--couleur-voile) 55%, transparent),
+    0 2px 32px color-mix(in srgb, var(--couleur-voile) 45%, transparent);
+}
+
+/* L'ombre est pour le texte blanc posé sur la photo : les surfaces claires
+   (sommaire « Aller à une section », boutons) n'en héritent pas, leur texte
+   foncé paraissait flou */
+.fond-photo.vague :where(.theme-clair, .surface-claire, .bouton, button) {
+  text-shadow: none;
+}
+
+.fond-photo-image {
+  position: absolute;
+  z-index: var(--z-fond);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% var(--cadrage, 50%);
+}
+
+/* Volet <details> qui s'ouvre et se ferme en hauteur et en opacité
+   (accordéons, cartes dépliables, cartes du menu, volets des fiches
+   Horaires) : --duree-moyenne-1, --courbe-emphase. Court : la hauteur
+   coûte une mise en page à chaque image. Sans content-visibility en
+   allow-discrete, le contenu disparaîtrait avant la fin de la fermeture.
+   Sans prise en charge, le volet s'ouvre d'un coup ; le mouvement réduit
+   coupe la transition (plus bas). */
+@supports (interpolate-size: allow-keywords) and selector(::details-content) {
+  .volet-anime {
+    interpolate-size: allow-keywords;
+  }
+
+  .volet-anime::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    opacity: 0;
+    transition:
+      block-size var(--duree-moyenne-1) var(--courbe-emphase),
+      opacity var(--duree-moyenne-1) var(--courbe-emphase),
+      content-visibility var(--duree-moyenne-1) allow-discrete;
+  }
+
+  .volet-anime[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+
+  /* Impression : pas d'état intermédiaire figé */
+  @media print {
+    .volet-anime::details-content {
+      transition: none;
+    }
+  }
+}
+
+/* « Chargement… » d'un contenu tiers (clavardage, formulaire) : posé
+   en haut de la place réservée (la zone est en position: relative), son
+   retrait ne déplace rien */
+.message-chargement {
+  position: absolute;
+  inset: 0 0 auto;
+  margin: 0;
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Lien d'évitement : premier élément focalisable de la page (WCAG 2.4.1) */
+.lien-evitement {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: calc(var(--z-modale) + 1);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--rayon-plein);
+  background: var(--bleu-fonce);
+  color: var(--couleur-sur-fonce);
+  font-weight: var(--graisse-forte);
+  text-decoration: none;
+  transform: translateY(-150%);
+  transition: transform var(--duree-courte-4) var(--courbe-standard);
+}
+
+.lien-evitement:focus {
+  transform: none;
+  color: var(--couleur-sur-fonce);
+}
+
+/* Surface claire (carte, papier) posée dans une Section foncée : Section y
+   redéfinit les couleurs de lien, de focus et d’orange pour le fond foncé ;
+   la carte reprend celles du thème en cours (tokens.css, rôles des
+   couleurs), sinon les liens seraient blancs sur blanc. */
+.surface-claire {
+  color: var(--couleur-texte);
+}
+
+/* Conteneur centré, gouttières du thème (20 px puis 64 px dès md) */
+.conteneur {
+  width: 100%;
+  max-width: var(--largeur-max);
+  margin-inline: auto;
+  padding-inline: var(--gouttiere);
+}
+
+/* ---- Mouvement réduit : on coupe les animations et le défilement doux ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* ::backdrop n'hérite pas de * : le fond des <dialog> s'y ajoute */
+  *,
+  *::before,
+  *::after,
+  *::backdrop {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Ni ::details-content (volets des accordéons) : à part, car un sélecteur
+     inconnu d'un navigateur invaliderait toute la liste ci-dessus */
+  @supports selector(::details-content) {
+    *::details-content {
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Passage d'une page à l'autre sur mobile, comme les écrans d'une
+   application (transitions de vue entre documents, sans routeur JS : chaque
+   page reste une vraie page). La nouvelle page glisse depuis la droite et
+   recouvre l'ancienne ; au retour (bouton Précédent, page plus haute dans
+   l'arborescence : type « retour », posé dans Base.astro), le mouvement
+   s'inverse. L'en-tête et la barre des liens rapides restent en place.
+   Seulement sous 900 px et sans demande de mouvement réduit ; les
+   navigateurs qui ne connaissent pas @view-transition naviguent comme
+   avant. */
+@media (width < 900px) and (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  .entete {
+    view-transition-name: entete;
+  }
+
+  [data-liens-rapides-mobile] {
+    view-transition-name: liens-rapides;
+  }
+
+  /* Précédent / Suivant : la position de défilement est rétablie pendant
+     la transition ; en défilement doux, la page glissait aussi vers le bas
+     (voir Base.astro) */
+  :root[data-vt-historique] {
+    scroll-behavior: auto;
+  }
+
+  ::view-transition-old(root) {
+    animation: page-sortie-gauche var(--duree-moyenne-4) var(--courbe-emphase-deceleree) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: page-entree-droite var(--duree-moyenne-4) var(--courbe-emphase-deceleree) both;
+  }
+
+  /* Retour : l'ancienne page part vers la droite, par-dessus la nouvelle */
+  :root:active-view-transition-type(retour)::view-transition-old(root) {
+    z-index: var(--z-dessus-1);
+    animation-name: page-sortie-droite;
+  }
+
+  :root:active-view-transition-type(retour)::view-transition-new(root) {
+    animation-name: page-entree-gauche;
+  }
+}
+
+@keyframes page-entree-droite {
+  from {
+    translate: 100% 0;
+  }
+}
+
+@keyframes page-sortie-gauche {
+  to {
+    translate: -30% 0;
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes page-entree-gauche {
+  from {
+    translate: -30% 0;
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes page-sortie-droite {
+  to {
+    translate: 100% 0;
+  }
+}

@@ -1,0 +1,254 @@
+---
+/*
+ * Gabarit par défaut des pages (PageTemplate de coquille-web).
+ *
+ * - Niveau 0-1 (accueil, /obtenir/…) : contenu pleine largeur ; le MDX gère
+ *   sa propre mise en page avec BannierePage, Section, etc.
+ * - Niveau 2 et plus : bannière (superHero du frontmatter), fil d'Ariane, et
+ *   à partir de 1200 px une colonne de navigation secondaire à gauche.
+ *   Sous 1200 px, la même navigation devient un bloc repliable « Dans cette
+ *   section » sous le fil d'Ariane. Les variantes sont rendues en HTML et
+ *   basculées en CSS : plus de saut à l'hydratation comme avec useMediaQuery.
+ * - Page autonome : une page de texte (.md) de niveau 1 qui n'est la racine
+ *   d'aucune section (/accessibilite-web/, /service-accessibilite/). La
+ *   source lui donnait une grande bannière et rien d'autre : ni fil d'Ariane
+ *   ni navigation, et une moitié d'écran vide. Elle prend la mise en page du
+ *   niveau 2, h1 en tête du contenu. Sa colonne de gauche est la navigation
+ *   de son groupe (GROUPES_DE_PAGES, dont le titre va dans la bannière), à
+ *   défaut un sommaire « Sur cette page » de ses sections, dès qu'il y en a
+ *   assez pour qu'il serve.
+ *
+ * - Sommaire « Sur cette page » (comme studio·bib) : sur une page de niveau 2
+ *   et plus, dès qu'elle a trois sections, une colonne à droite dès 1200 px,
+ *   qui reste à l'écran et marque la section en cours de lecture. Sous
+ *   1200 px, un volet repliable sous « Dans cette section ». Les colonnes ne
+ *   bougent pas d'une page à l'autre : sans sommaire, le contenu prend aussi
+ *   la troisième.
+ *
+ * `lang` (frontmatter, ex. `en`) : langue du contenu. Elle va sur <html>
+ * (Base), donc sur le contenu principal et la bannière ; le fil d'Ariane, la
+ * navigation de section et la rétroaction, qui sont des éléments du site,
+ * restent en français.
+ */
+import type { MarkdownHeading } from 'astro'
+import { texteSansAncre } from '@/lib/ancres'
+import { sansBase } from '@/lib/chemin'
+import Base from './Base.astro'
+import FilAriane from '@/components/coquille/FilAriane.astro'
+import NavigationSecondaire from '@/components/coquille/NavigationSecondaire.astro'
+import BanniereSection from '@/components/coquille/BanniereSection.astro'
+import Retroaction from '@/components/coquille/Retroaction.astro'
+import { LANGUE_SITE, TITRE_SOMMAIRE, estEnFrancais, navigationDeGroupe, niveauDe, pageParUrl, type RacineNavigation } from '@/lib/contenu'
+
+interface Props {
+  titre?: string
+  description?: string
+  noindex?: boolean
+  niveau?: number
+  superHero?: { imageName: string; title?: string; cadrage?: string }
+  /** Langue du contenu ; à défaut, celle du frontmatter de la page */
+  lang?: string
+  /** Titres du contenu (render() d'astro:content), pour le sommaire d'une page autonome */
+  titres?: MarkdownHeading[]
+}
+
+/** En dessous, un sommaire n'apprend rien qu'un coup d'œil à la page ne donne */
+const SECTIONS_MIN_SOMMAIRE = 3
+
+const url = sansBase(Astro.url.pathname)
+const { titre, description, noindex, superHero, titres = [] } = Astro.props
+const pageSource = await pageParUrl(url)
+// Langue transmise par la route ; à défaut (pages appelées autrement), celle de la collection
+const lang = Astro.props.lang ?? pageSource?.data.lang
+const langSite = estEnFrancais(lang) ? undefined : LANGUE_SITE
+const niveau = Astro.props.niveau ?? niveauDe(url)
+const estAccueil = url === '/'
+// La rétroaction (« Cette page vous a-t-elle été utile? ») ne sert que sur
+// les pages de contenu : pas sur l'accueil ni sur les pages de section de
+// niveau 1 (le fichier index d'un dossier : /engagements/, /espaces/…). Les
+// pages de contenu de niveau 1 (/accessibilite-web/…) la gardent.
+const fichierSource = pageSource?.filePath ?? ''
+// Une vitrine (.yaml) est toujours une page principale
+const estPagePrincipale = estAccueil || /\.ya?ml$/.test(fichierSource) || (niveau <= 1 && /(^|\/)index\.mdx?$/.test(fichierSource))
+const autonome = niveau === 1 && !estPagePrincipale && fichierSource.endsWith('.md')
+const section = autonome ? undefined : url.split('/').filter(Boolean)[0]
+const groupe = autonome ? await navigationDeGroupe(url) : null
+
+// Sections de la page : les titres juste sous le h1 (le plus haut des titres)
+const plusHaut = Math.min(...titres.map((t) => t.depth))
+const sections = titres.filter((t) => t.depth === plusHaut + 1)
+// Sommaire « Sur cette page » : à gauche pour une page autonome sans groupe,
+// à droite pour une page de niveau 2 et plus ; le même, suivi au défilement
+const sommaireDeLaPage: RacineNavigation | null =
+  sections.length >= SECTIONS_MIN_SOMMAIRE
+    ? { titre: TITRE_SOMMAIRE, sommaire: true, enfants: sections.map((t, i) => ({ titre: texteSansAncre(t.text), url: `#${t.slug}`, ordre: i, enfants: [] })) }
+    : null
+const sommaire = autonome && !groupe ? sommaireDeLaPage : null
+const racine = groupe ?? sommaire
+const resume = sommaire?.titre
+const nomColonne = sommaire ? 'Sommaire de la page' : 'Navigation de la section'
+const sommaireDroite = niveau > 1 && !sommaire ? sommaireDeLaPage : null
+---
+
+<Base titre={titre} description={description} noindex={noindex} niveau={niveau} lang={lang}>
+  {(niveau > 1 || autonome) && superHero && <BanniereSection slot="avant-contenu" imageName={superHero.imageName} titre={groupe?.titre ?? superHero.title} cadrage={superHero.cadrage} />}
+  {
+    niveau > 1 || autonome ? (
+      <div class:list={['conteneur', 'page-niveau-n', { 'avec-sommaire': sommaireDroite }]}>
+        <aside class="colonne-navigation" aria-label={nomColonne} lang={langSite}>
+          <NavigationSecondaire section={section} racine={racine} courante={url} />
+        </aside>
+        <div class="colonne-contenu">
+          <FilAriane url={url} lang={langSite} />
+          <NavigationSecondaire section={section} racine={racine} courante={url} variante="repliable" resume={resume} lang={langSite} />
+          {sommaireDroite && (
+            <div class="sommaire-repliable" lang={langSite}>
+              <NavigationSecondaire racine={sommaireDroite} courante={url} variante="repliable" resume={TITRE_SOMMAIRE} idTitre="titre-sommaire-repliable" />
+            </div>
+          )}
+          <main id="contenu-principal">
+            <slot />
+          </main>
+          <Retroaction lang={langSite} />
+        </div>
+        {sommaireDroite && (
+          <aside class="colonne-sommaire" aria-label="Sommaire de la page" lang={langSite}>
+            <NavigationSecondaire racine={sommaireDroite} courante={url} idTitre="titre-sommaire" />
+          </aside>
+        )}
+      </div>
+    ) : (
+      <>
+        <main id="contenu-principal">
+          <slot />
+        </main>
+        {!estPagePrincipale && (
+          <div class="conteneur">
+            <Retroaction lang={langSite} />
+          </div>
+        )}
+      </>
+    )
+  }
+</Base>
+
+<script>
+  // « Sur cette page » suit le défilement (studio·bib) : le lien de la section
+  // en cours est marqué (aria-current="true"), dans la colonne comme dans le
+  // volet repliable. Un titre est « en cours » une fois monté dans les 40 %
+  // supérieurs de l'écran ; en haut de page, aucun.
+  const liens = [...document.querySelectorAll<HTMLAnchorElement>('nav.est-sommaire a[href^="#"]')]
+  const titres = [...new Set(liens.map((a) => decodeURIComponent(a.hash.slice(1))))]
+    .map((id) => document.getElementById(id))
+    .filter((e): e is HTMLElement => !!e)
+  if (titres.length) {
+    let attente = false
+    const maj = () => {
+      attente = false
+      const seuil = window.innerHeight * 0.4
+      let actuel: HTMLElement | undefined
+      // Un titre dans un volet fermé n'a pas de position : on prend son volet
+      const haut = (t: HTMLElement) => (t.closest('details:not([open])') ?? t).getBoundingClientRect().top
+      for (const t of titres) if (haut(t) <= seuil) actuel = t
+      // Tout en bas de la page, la dernière section est celle en cours même si
+      // son titre n'a pas atteint le seuil ; pas sur une page qui tient à
+      // l'écran (en haut de page, aucune section n'est en cours)
+      const defile = document.documentElement.scrollHeight > window.innerHeight + 2
+      if (defile && window.scrollY > 0 && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) actuel = titres.at(-1)
+      for (const a of liens) {
+        if (actuel && decodeURIComponent(a.hash.slice(1)) === actuel.id) a.setAttribute('aria-current', 'true')
+        else if (a.getAttribute('aria-current') === 'true') a.removeAttribute('aria-current')
+      }
+      // La colonne garde le lien en cours à l'écran quand le sommaire défile lui-même
+      const colonne = document.querySelector<HTMLElement>('.colonne-sommaire') ?? document.querySelector<HTMLElement>('.colonne-navigation:has(nav.est-sommaire)')
+      const courant = colonne?.querySelector<HTMLElement>('[aria-current="true"]')
+      if (colonne && courant && colonne.scrollHeight > colonne.clientHeight) {
+        const c = colonne.getBoundingClientRect()
+        const l = courant.getBoundingClientRect()
+        if (l.top < c.top || l.bottom > c.bottom) colonne.scrollTop += l.top - c.top - c.height / 2
+      }
+    }
+    const planifier = () => {
+      if (!attente) {
+        attente = true
+        requestAnimationFrame(maj)
+      }
+    }
+    addEventListener('scroll', planifier, { passive: true })
+    addEventListener('resize', planifier)
+    maj()
+  }
+</script>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+
+  /* Entre la bannière et le fil d'Ariane (60 px auparavant) */
+  .page-niveau-n {
+    padding-block-start: var(--espace-6);
+  }
+
+  .colonne-navigation,
+  .colonne-sommaire {
+    display: none;
+  }
+
+  @media (width >= 1200px) {
+    .sommaire-repliable {
+      display: none;
+    }
+
+    .page-niveau-n {
+      /* Repère des unités cqi (largeur des accordéons sans sommaire) */
+      container-type: inline-size;
+      display: grid;
+      /* minmax(0, …) : une colonne en fr ne descend pas sous la largeur de
+         son contenu ; avec le texte à 200 % (WCAG 1.4.4), le fil d'Ariane et
+         les tableaux élargissaient la page au-delà de l'écran */
+      grid-template-columns: minmax(0, 3fr) minmax(0, 7fr) minmax(0, 2fr);
+      gap: var(--espace-4);
+      align-items: start;
+    }
+
+    /* Mêmes colonnes avec ou sans sommaire : le menu et le début du contenu
+       ne bougent pas d'une page à l'autre ; sans sommaire, le contenu prend
+       aussi la troisième colonne */
+    .page-niveau-n:not(.avec-sommaire) .colonne-contenu {
+      grid-column: 2 / -1;
+      /* Largeur de la colonne de contenu quand il y a un sommaire (7 parts
+         sur 12, moins les deux gouttières), mesurée sur la grille */
+      --largeur-avec-sommaire: calc((100cqi - 2 * var(--espace-4)) * 7 / 12);
+    }
+
+    /* Les accordéons gardent cette largeur sans sommaire : leurs titres
+       restent des lignes courtes, comme sur les pages qui en ont un */
+    .page-niveau-n:not(.avec-sommaire) .colonne-contenu :global(:is(.groupe-accordeons, details.accordeon)) {
+      max-width: var(--largeur-avec-sommaire);
+    }
+
+    .colonne-navigation {
+      display: block;
+      position: sticky;
+      top: calc(var(--hauteur-entete) + 1rem);
+    }
+
+    /* Le sommaire reste à l'écran pendant le défilement ; plus haut que
+       l'écran, il défile lui-même */
+    .colonne-sommaire {
+      display: block;
+      position: sticky;
+      top: calc(var(--hauteur-entete) + 1rem);
+      max-height: calc(100vh - var(--hauteur-entete) - 2rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+
+  /* Le premier bloc du contenu ne crée pas d'espace sous le fil d'Ariane */
+  .colonne-contenu main > :global(:first-child) {
+    margin-top: 0;
+    padding-top: 0;
+  }
+</style>

@@ -1,0 +1,627 @@
+---
+/*
+ * En-tête du site (TopAppBar et TopAppBarSm de coquille-web).
+ *
+ * Les deux barres sont rendues en HTML et basculées en CSS à 1200 px :
+ * plus de saut à l'hydratation comme avec useMediaQuery.
+ *
+ * - Bureau : voile bleu foncé uni en haut de page, blanche et
+ *   ombrée après 50 px de défilement (useScrollTrigger de la source).
+ * - Compacte : fond clair, logo UdeM et « Les bibliothèques » en dessous.
+ *
+ * Le bouton Menu suit le motif « disclosure navigation » de l'APG
+ * (aria-expanded, aria-controls ; Échap ferme et rend le focus au bouton).
+ * Les deux boutons Menu commandent le même rideau (PanneauMenu), placé après
+ * les deux barres : il suit le bouton visible dans l'ordre de tabulation.
+ * Corrigé : TopAppBarSm imbriquait deux boutons ; il n'en reste qu'un.
+ *
+ * La loupe ouvre le même rideau en mode « recherche » : seule la recherche
+ * du haut du menu (Sofia ou les sites, Mon dossier, Obtenir un document),
+ * le focus dans le champ, et dessous « Afficher le menu », qui déplie le
+ * reste. Le mode est posé sur le rideau (data-mode) ; la loupe devient un
+ * X tant qu'il est ouvert en mode recherche, le bouton Menu une fois le
+ * menu entier affiché. Tout ce comportement est dans entete/menu.ts.
+ */
+import { sansBase } from '@/lib/chemin'
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import PanneauMenu from './entete/PanneauMenu.astro'
+import IconeMenu from './entete/IconeMenu.astro'
+import IconeLoupe from './entete/IconeLoupe.astro'
+import { PAGES_PRINCIPALES, estCourante } from '@/data/navigation'
+import logoUdem from '@/components/coquille/entete/logo-udem.svg'
+import logoUdemOfficiel from '@/components/coquille/entete/logo-udem-officiel.svg'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+const chemin = sansBase(Astro.url.pathname)
+---
+
+<header class="entete" data-entete>
+  <span class="voile" aria-hidden="true" data-voile-menu></span>
+
+  <div class="barre-bureau">
+    <div class="rangee">
+      <div class="marque">
+        <a class="logo-udem infobulle infobulle-dessous" href="https://www.umontreal.ca" data-infobulle="Aller au site de l’UdeM">
+          <img src={logoUdem.src} alt="Université de Montréal" width="135" height="59" />
+        </a>
+        <span class="separateur" aria-hidden="true"></span>
+        <a class="nom-site infobulle infobulle-dessous" href="/" data-infobulle="Revenir à l’accueil">Les bibliothèques</a>
+      </div>
+
+      <nav class="navigation-principale" aria-label="Navigation principale">
+        <ul>
+          {
+            PAGES_PRINCIPALES.map(({ url, libelle }) => (
+              <li>
+                <a href={url} aria-current={estCourante(chemin, url) ? 'page' : undefined}>
+                  {libelle}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <a class="je-donne" href="/nous-soutenir/">
+        Je donne
+        <span class="icone-je-donne"><IconeSprite icone={ArrowRightIcon} size={36} aria-hidden="true" /></span>
+      </a>
+
+      <div class="outils">
+        <button type="button" class="bouton-icone bouton-recherche" aria-label="Rechercher" aria-expanded="false" aria-controls="menu-principal" data-bouton-recherche>
+          <IconeLoupe />
+        </button>
+        <button type="button" class="bouton-icone bouton-menu" aria-label="Menu" aria-expanded="false" aria-controls="menu-principal" data-bouton-menu>
+          <span class="libelle-menu" aria-hidden="true"><span class="si-ferme">Menu</span><span class="si-ouvert">Fermer</span></span>
+          <IconeMenu />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="barre-compacte">
+    <div class="rangee">
+      <a class="marque-compacte" href="/">
+        <img src={logoUdemOfficiel.src} alt="Université de Montréal" width="140" height="61" />
+        <span>Les bibliothèques<span class="visuellement-masque"> – Accueil</span></span>
+      </a>
+      <div class="outils">
+        <button type="button" class="bouton-icone bouton-recherche recherche-compacte" aria-label="Rechercher" aria-expanded="false" aria-controls="menu-principal" data-bouton-recherche>
+          <IconeLoupe />
+        </button>
+        <button type="button" class="bouton-icone bouton-menu" aria-label="Menu" aria-expanded="false" aria-controls="menu-principal" data-bouton-menu>
+          <IconeMenu />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <PanneauMenu id="menu-principal" />
+</header>
+
+<script>
+  import { brancherMenu } from './entete/menu'
+
+  const entete = document.querySelector<HTMLElement>('[data-entete]')
+
+  if (entete) {
+    // Apparence de la barre de bureau après 50 px de défilement
+    // (et menu ouvert : la barre blanche se raccorde à la feuille du menu).
+    // Sans bannière photo sous l'en-tête (nouvelles, répertoire…), la barre
+    // est blanche d'office : le texte blanc sur le voile ne faisait que
+    // 3,43:1 sur le fond clair de la page (WCAG 1.4.3).
+    const sansBanniere = !document.querySelector('.super-hero, .super-hero-2, .banniere')
+    const majDefilement = () =>
+      entete.toggleAttribute('data-defile', sansBanniere || window.scrollY > 50 || entete.hasAttribute('data-menu-ouvert'))
+    majDefilement()
+    window.addEventListener('scroll', majDefilement, { passive: true })
+
+    // Échap ferme l'infobulle du logo ou du nom ; elle revient au prochain
+    // survol ou focus (WCAG 1.4.13)
+    const avecInfobulle = [...entete.querySelectorAll<HTMLElement>('[data-infobulle]')]
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return
+      for (const lien of avecInfobulle) if (lien.matches(':hover, :focus-visible')) lien.setAttribute('data-infobulle-fermee', '')
+    })
+    for (const lien of avecInfobulle) {
+      for (const evenement of ['pointerleave', 'blur']) lien.addEventListener(evenement, () => lien.removeAttribute('data-infobulle-fermee'))
+    }
+
+    // --hauteur-entete (marge de défilement des ancres et du focus, WCAG
+    // 2.4.11) suit la hauteur réelle : avec le texte agrandi ou espacé, la
+    // barre passe sur deux rangées et dépasse la valeur des jetons
+    new ResizeObserver(() => {
+      document.documentElement.style.setProperty('--hauteur-entete', `${Math.ceil(entete.getBoundingClientRect().height)}px`)
+    }).observe(entete)
+
+    // Menu et recherche : rideau, modes, poignée, focus et Échap (menu.ts)
+    brancherMenu(entete, majDefilement)
+  }
+</script>
+
+<style>
+  .entete {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-entete);
+  }
+
+  /* Menu ouvert : l'en-tête et son panneau passent au-dessus des liens
+     rapides, comme le tiroir modal de la source */
+  .entete[data-menu-ouvert] {
+    z-index: calc(var(--z-tiroir) + 1);
+  }
+
+  /* Le voile suit le panneau du menu : fondu à l'ouverture et à la
+     fermeture (display en allow-discrete le garde le temps du fondu) */
+  .voile {
+    display: none;
+    position: fixed;
+    z-index: var(--z-dessus-1);
+    inset: 0;
+    background-color: color-mix(in srgb, var(--bleu-fonce) 50%, transparent);
+    opacity: 0;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      display var(--duree-courte-4) allow-discrete;
+  }
+
+  .entete[data-menu-ouvert] .voile {
+    display: block;
+    opacity: 1;
+    transition-duration: var(--duree-moyenne-1);
+  }
+
+  @starting-style {
+    .entete[data-menu-ouvert] .voile {
+      opacity: 0;
+    }
+  }
+
+  /* Les barres (fond compris) passent au-dessus du voile et du rideau, qui
+     sort de derrière elles */
+  .barre-bureau,
+  .barre-compacte {
+    position: relative;
+    z-index: var(--z-dessus-3);
+  }
+
+  .outils {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bouton-icone {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    /* 44 px : commande principale sur mobile (40 px auparavant) */
+    width: var(--taille-cible);
+    height: var(--taille-cible);
+    padding: 8px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .bouton-icone :global(svg) {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .bouton-menu {
+    width: 50px;
+    height: 50px;
+  }
+
+  .bouton-menu .si-ouvert,
+  .bouton-menu[aria-expanded='true'] .si-ferme,
+  .bouton-recherche .si-ouvert,
+  .bouton-recherche[aria-expanded='true'] .si-ferme {
+    display: none;
+  }
+
+  .bouton-menu[aria-expanded='true'] .si-ouvert,
+  .bouton-recherche[aria-expanded='true'] .si-ouvert {
+    display: inline;
+  }
+
+  /* ---- Barre compacte (< 1200 px) ---- */
+  .barre-bureau {
+    display: none;
+  }
+
+  .barre-compacte {
+    border-bottom: 1px solid color-mix(in srgb, var(--couleur-texte) 12%, transparent);
+    background-color: var(--couleur-fond);
+    color: var(--couleur-texte);
+  }
+
+  .barre-compacte .rangee {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1500px;
+    min-height: 56px;
+    margin-inline: auto;
+    padding: 8px 16px;
+  }
+
+  /* Comme sur ordinateur : logo, trait, puis le nom sur la même ligne */
+  .marque-compacte {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-inline-end: 8px;
+    color: var(--couleur-texte);
+    /* Le nom tient sur une ligne dès 375 px ; plus étroit, il passe sur deux
+       lignes, toujours à droite du trait */
+    font-size: clamp(0.8125rem, 3.8vw, 1.0625rem);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  /* Texte agrandi à 200 % sur un écran étroit : « bibliothèques » ne tenait
+     plus et passait sous les boutons Rechercher et Menu. Le nom se coupe
+     (avec trait d'union si possible) plutôt que de déborder. */
+  .marque-compacte > span {
+    min-width: 0;
+    padding-block: 4px;
+    padding-inline-start: 8px;
+    border-inline-start: 1px solid currentColor;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
+
+  .marque-compacte:hover {
+    color: var(--couleur-texte);
+    text-decoration: underline;
+  }
+
+  .marque-compacte img {
+    flex-shrink: 0;
+    width: clamp(72px, 24vw, 120px);
+    height: auto;
+  }
+
+  /* Le bouton unique garde l'emprise des deux boutons imbriqués de la source
+     (66 px) : l'icône reste à sa place et la cible est plus grande. */
+  .barre-compacte .bouton-menu {
+    width: 66px;
+    height: 66px;
+    padding: 16px;
+  }
+
+  /* Le rideau couvre la fenêtre sous 1200 px : la page ne défile plus
+     derrière lui */
+  @media (width < 1200px) {
+    :global(html:has(.entete[data-menu-ouvert])) {
+      overflow: hidden;
+    }
+  }
+
+  @media (width >= 600px) {
+    .barre-compacte .rangee {
+      min-height: 64px;
+      padding-inline: 24px;
+    }
+  }
+
+  @media (width >= 900px) {
+    .marque-compacte img {
+      width: 140px;
+    }
+  }
+
+  /* ---- Barre de bureau (≥ 1200 px) ---- */
+  @media (width >= 1200px) {
+    .barre-compacte {
+      display: none;
+    }
+
+    /* Teinte gris-bleu de la bande de la recherche Sofia de l'accueil
+       (RechercheSofiaAccueil), en aplat sur toute la barre, assombrie pour
+       le contraste (WCAG 1.4.3) : texte blanc à 7,13:1 même sur une photo
+       entièrement blanche (le mélange précédent, gris 700 à 45 % et 62 %
+       d'opacité, tombait à 1,98:1). */
+    .barre-bureau {
+      display: block;
+      /* Couleurs de la palette, pas des rôles : posée sur la photo de la
+         bannière, la barre est la même dans les deux thèmes */
+      background-color: color-mix(in srgb, color-mix(in srgb, var(--gris-700) 90%, var(--bleu-200)) 85%, transparent);
+      color: var(--blanc-casse);
+      transition:
+        background-color var(--duree-moyenne-4) var(--courbe-emphase-deceleree),
+        box-shadow var(--duree-moyenne-4) var(--courbe-emphase-deceleree),
+        color var(--duree-courte-4) var(--courbe-emphase-deceleree);
+    }
+
+    .entete[data-defile] .barre-bureau {
+      background-color: var(--couleur-surface);
+      box-shadow: var(--ombre-1);
+      color: var(--couleur-neutre-700);
+    }
+  }
+
+  /* Hauteur minimale plutôt que fixe, et passage à la ligne autorisé : avec
+     le texte agrandi à 200 % (WCAG 1.4.4), le menu et « Je donne » ne
+     tiennent plus sur une rangée de 5rem et débordaient de la page. */
+  .barre-bureau .rangee {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: var(--largeur-max);
+    min-height: 5rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .marque {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-right: auto;
+    user-select: none;
+  }
+
+  .logo-udem {
+    display: flex;
+    align-items: center;
+    /* Couleur du texte de la barre, et non celle des liens : l'anneau de
+       focus (currentColor, plus bas) restait bleu sur la barre sombre (1,6:1) */
+    color: inherit;
+  }
+
+  .logo-udem img {
+    width: auto;
+    height: 59px;
+    filter: brightness(0) invert(1);
+    transition:
+      filter var(--duree-moyenne-2) var(--courbe-standard),
+      opacity var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .entete[data-defile] .logo-udem img {
+    filter: none;
+  }
+
+  /* Thème sombre : le logo noir passe en blanc sur la barre foncée */
+  :global(:root[data-theme='sombre']) .marque-compacte img,
+  :global(:root[data-theme='sombre']) .entete[data-defile] .logo-udem img {
+    filter: brightness(0) invert(1);
+  }
+
+  .logo-udem:hover img {
+    opacity: 0.8;
+  }
+
+  .separateur {
+    height: 32px;
+    border-left: 1px solid currentColor;
+  }
+
+  .nom-site {
+    color: inherit;
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-normale);
+    line-height: 1.5;
+    letter-spacing: 0.01188rem;
+    text-decoration: none;
+  }
+
+  .nom-site:hover {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  /* Infobulles du logo et du nom (utilitaire .infobulle de global.css) :
+     au-dessus de la barre ; elles ne captent pas le pointeur, qui
+     passerait sinon sur le lien voisin */
+  .marque .infobulle {
+    position: relative;
+  }
+
+  .marque .infobulle::after {
+    z-index: var(--z-dessus-1);
+    letter-spacing: normal;
+    pointer-events: none;
+  }
+
+  /* La navigation prend la place libre et se replie sur elle-même, alignée
+     à droite : avec l'espacement du texte agrandi (WCAG 1.4.12), c'est elle
+     qui passe sur deux lignes, et non toute la rangée (la loupe et le bouton
+     Menu tombaient sous le logo, que le libellé « Menu » chevauchait). */
+  .navigation-principale {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .navigation-principale ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .navigation-principale a {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    min-height: 56px;
+    padding-inline: 22px;
+    color: inherit;
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  /* Entre 1200 et 1439 px d'écran, la rangée complète (marque, menu, « Je donne »,
+     outils) demande environ 1035 px plus les marges des liens. Au lieu d'une
+     marge fixe de 10 px, la marge suit la place réellement libre dans la
+     rangée (unités cqi : la largeur de la rangée, barre de défilement
+     déduite) : toute la place restante, moins 7 px de sécurité, va aux 10
+     marges des 5 liens. Elle passe de 10 px à 1200 px à la marge normale de
+     22 px vers 1340 px. « Je donne » est allégé (flèche de 24 px). On ne
+     recule pas le seuil de la barre compacte : BanniereAccueil et la bannière de
+     section se glissent sous l'en-tête transparent dès 1200 px. */
+  .barre-bureau .rangee {
+    container-type: inline-size;
+  }
+
+  /* 1395 px : largeur de la rangée à 1440 px d'écran (mesurée). La règle
+     suit la rangée et non l'écran : pas de seuil de plus dans la page. */
+  @container (width < 1395px) {
+    .navigation-principale ul {
+      gap: 0;
+    }
+
+    .navigation-principale a {
+      padding-inline: clamp(8px, (100cqi - 1042px) / 10, 22px);
+    }
+
+    /* Sélecteurs plus précis : les règles de base de .je-donne viennent plus
+       loin */
+    .barre-bureau .je-donne {
+      padding-inline: 14px;
+    }
+
+    .barre-bureau .icone-je-donne :global(svg) {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  /* Soulignement animé de la source (::after en scaleX) */
+
+  .navigation-principale a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .navigation-principale a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .navigation-principale a[aria-current='page'] {
+    font-weight: var(--graisse-grasse);
+  }
+
+  .je-donne {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    padding: 0 21px;
+    border: 1px solid currentColor;
+    border-radius: var(--rayon-plein);
+    color: var(--couleur-sur-fonce);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    text-decoration: none;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard-deceleree),
+      color var(--duree-courte-4) var(--courbe-standard-deceleree),
+      border-color var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  .icone-je-donne {
+    display: inline-flex;
+  }
+
+  .icone-je-donne :global(svg) {
+    width: 36px;
+    height: 36px;
+  }
+
+  .entete[data-defile] .je-donne {
+    color: var(--couleur-texte);
+  }
+
+  .entete[data-defile] .icone-je-donne {
+    color: var(--rouge-orange);
+  }
+
+  .je-donne:hover,
+  .entete[data-defile] .je-donne:hover {
+    border-color: var(--bleu-fonce);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+  }
+
+  .entete[data-defile] .je-donne:hover .icone-je-donne {
+    color: var(--couleur-sur-fonce);
+  }
+
+  .barre-bureau .outils {
+    margin-left: 8px;
+  }
+
+  /* Libellé visible au-dessus de l'icône, comme dans la source */
+  .libelle-menu {
+    position: absolute;
+    right: 12px;
+    bottom: calc(50% + 17px);
+    font-size: var(--texte-minuscule);
+    font-weight: var(--graisse-normale);
+    line-height: 1;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .libelle-menu .si-ouvert {
+    display: none;
+  }
+
+  .bouton-menu[aria-expanded='true'] .libelle-menu .si-ferme {
+    display: none;
+  }
+
+  .bouton-menu[aria-expanded='true'] .libelle-menu .si-ouvert {
+    display: inline;
+  }
+
+  /* Le bleu du focus global se perd sur le voile sombre */
+  .barre-bureau .rangee :focus-visible {
+    outline-color: currentColor;
+  }
+
+  @media (forced-colors: active) {
+    .navigation-principale a[aria-current='page'] {
+      text-decoration: underline;
+    }
+
+    /* Le logo noir disparaissait sur un fond système noir : plaque blanche
+       gardée telle quelle, quel que soit le thème */
+    .logo-udem,
+    .marque-compacte img {
+      forced-color-adjust: none;
+      background-color: var(--couleur-surface);
+    }
+
+    .logo-udem img,
+    .entete[data-defile] .logo-udem img {
+      filter: none;
+    }
+  }
+</style>

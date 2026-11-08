@@ -1,0 +1,111 @@
+---
+/*
+ * Formulaire de consentement à l'inscription (FormulaireConsentement.jsx de
+ * coquille-web) : une iframe de l'API des usagers, ajustée à la hauteur de
+ * son contenu par @iframe-resizer/parent.
+ *
+ * Les paramètres de la page (?ticket=…, etc.) sont relayés à l'iframe ;
+ * l'adresse est donc construite dans le navigateur. Corrections : avec
+ * iframe-resizer v5, onMessage reçoit { iframe, message } (la source lisait
+ * event.data, et la redirection « navigate » n'était jamais faite) ;
+ * l'iframe a un titre ; seule une adresse http(s) est suivie.
+ *
+ * Hauteur réservée : le conteneur garde dès le HTML la place mesurée du
+ * formulaire (2650 px à 390 px, 1500 px à 1440 px, un peu moins ici pour ne
+ * jamais laisser de vide), en rem parce que le contenu de l'iframe suit la
+ * taille du texte du navigateur. Sans elle, l'iframe poussait le pied de page
+ * hors de l'écran à son arrivée (CLS 0,47 à 0,56). « Chargement du
+ * formulaire… » reste affiché par-dessus jusqu'au chargement de l'iframe.
+ */
+interface Props {
+  class?: string
+  style?: string
+}
+
+const { class: classe, style } = Astro.props
+---
+
+<div class:list={['formulaire-consentement', classe]} style={style} data-formulaire-consentement>
+  <p class="message-chargement" data-chargement>Chargement du formulaire…</p>
+  <noscript><p>Ce formulaire a besoin de JavaScript pour s'afficher.</p></noscript>
+</div>
+
+<script>
+  import iframeResize from '@iframe-resizer/parent'
+
+  const FORMULAIRE_URL = 'https://api.bib.umontreal.ca/usagers/formulaire/'
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-formulaire-consentement]')) {
+    // Adresse de retour fixe, comme dans la source : l'API la compare à sa liste
+    const adresseRetour = `${location.origin}/formulaire-consentement-inscription`
+    const src = new URL(FORMULAIRE_URL)
+    src.searchParams.set('hostPageUrl', adresseRetour)
+    src.searchParams.set('successUrl', adresseRetour)
+    new URLSearchParams(location.search).forEach((valeur, cle) => src.searchParams.set(cle, valeur))
+
+    const iframe = document.createElement('iframe')
+    iframe.src = src.toString()
+    iframe.title = "Formulaire de consentement à l'inscription"
+    iframe.className = 'cadre'
+    // Le message reste par-dessus la place réservée tant que l'iframe est vide
+    iframe.addEventListener('load', () => racine.querySelector('[data-chargement]')?.remove(), { once: true })
+    racine.append(iframe)
+
+    iframeResize(
+      {
+        license: 'GPLv3',
+        scrolling: true,
+        checkOrigin: ['https://bib.umontreal.ca', 'https://bib-pp.umontreal.ca', 'https://api.bib.umontreal.ca'],
+        onMessage: ({ message }) => {
+          const cible = typeof message === 'object' && message ? message.navigate : undefined
+          if (typeof cible !== 'string') return
+          try {
+            const url = new URL(cible, location.href)
+            if (url.protocol === 'https:' || url.protocol === 'http:') location.href = url.href
+          } catch {
+            // Adresse invalide : on reste sur la page
+          }
+        },
+      },
+      iframe,
+    )
+  }
+</script>
+
+<style>
+  .formulaire-consentement {
+    position: relative;
+    min-height: 150rem;
+  }
+
+  @media (width >= 600px) {
+    .formulaire-consentement {
+      min-height: 100rem;
+    }
+  }
+
+  @media (width >= 900px) {
+    .formulaire-consentement {
+      min-height: 86rem;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .formulaire-consentement {
+      min-height: 82rem;
+    }
+  }
+
+  @media (scripting: none) {
+    .formulaire-consentement {
+      min-height: 0;
+    }
+  }
+
+  .formulaire-consentement :global(.cadre) {
+    display: block;
+    width: 100%;
+    min-height: 160vh;
+    border: none;
+  }
+</style>

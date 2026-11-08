@@ -1,0 +1,75 @@
+---
+/*
+ * Lien du contenu (d'après coquille-web).
+ *
+ * Toujours un <a> ordinaire : le routeur de Gatsby n'a plus d'objet. On garde
+ * les props du contenu (`to`, `Icon`, `iconProps`) et on corrige :
+ * - un lien vers un PDF ou qui ouvre un nouvel onglet l'annonce en texte
+ *   masqué ; `target="_blank"` reçoit `rel="noopener"` ;
+ * - un lien sans icône dans un paragraphe se distingue autrement que par la
+ *   couleur (WCAG 1.4.1) : le bleu principal n'a que 2,5:1 contre le texte, on
+ *   le souligne donc. Un lien avec icône garde l'apparence de la source.
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { analyserLien, annonceLien } from '@/lib/liens'
+import { fusionnerStyles } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  to?: string
+  /** Ignoré par la source ; accepté ici en repli de `to` */
+  href?: string
+  /** true = flèche ; sinon un composant d'icône Phosphor */
+  Icon?: boolean | any
+  iconProps?: Record<string, unknown>
+  target?: string
+  rel?: string
+  title?: string
+  class?: string
+  style?: string | Record<string, string | number>
+}
+
+const { to, href, Icon, iconProps, target, rel, class: classe, style, ...reste } = Astro.props
+const adresse = to ?? href ?? '#'
+const { pdf } = analyserLien(adresse)
+const nouvelOnglet = target === '_blank'
+const relFinal = nouvelOnglet ? [...new Set([...(rel ?? '').split(/\s+/).filter(Boolean), 'noopener'])].join(' ') : rel
+const annonce = annonceLien({ pdf, nouvelOnglet })
+// Les icônes Phosphor sont des objets forwardRef, pas des fonctions
+const Icone = Icon === true ? ArrowRightIcon : Icon ? Icon : null
+---
+
+<a href={adresse} target={target} rel={relFinal} class:list={['lien', { 'avec-icone': Icone }, classe]} style={fusionnerStyles(style)} {...reste}
+  ><slot />{annonce && <span class="visuellement-masque">{annonce}</span>}{
+    Icone && <IconeSprite icone={Icone} size="1.125rem" color="currentColor" {...iconProps} aria-hidden="true" focusable="false" />
+  }</a
+>
+
+<style>
+  .lien {
+    color: var(--couleur-lien);
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-offset: 0.15em;
+  }
+
+  .lien:hover {
+    color: var(--couleur-lien-survol);
+    text-decoration-thickness: 2px;
+  }
+
+  .avec-icone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375em;
+    text-decoration: none;
+  }
+
+  .avec-icone:hover {
+    text-decoration: underline;
+  }
+
+  .avec-icone :global(svg) {
+    flex-shrink: 0;
+  }
+</style>

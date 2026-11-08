@@ -1,0 +1,32 @@
+---
+/*
+ * Bloc « carrousel-images » : titre, texte et carrousel (Carrousel) de
+ * cartes-liens à photo (CarteImage), titres en h3.
+ * Option `titresSansSerif` : les titres des cartes en Figtree (sans empattement)
+ * au lieu de Lora, comme le titre du bloc.
+ */
+import Carrousel from '@/components/contenu/mise-en-page/Carrousel.astro'
+import CarteImage from '@/components/contenu/cartes/CarteImage.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'carrousel-images'> }
+
+const { bloc } = Astro.props
+---
+
+<Carrousel ariaLabel={bloc.titre} class={bloc.titresSansSerif ? 'cartes-titres-sans' : undefined}>
+  <Titre slot="title" texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <TexteMarkdown slot="description" texte={bloc.texte} espacerParagraphes />}
+  {bloc.cartes.map((carte) => <CarteImage title={carte.titre} Image={carte.image} href={carte.lien} moreText={carte.appel} />)}
+</Carrousel>
+
+<style>
+  /* Depuis la racine du carrousel (class relayé, avec l'attribut de portée
+     de ce bloc) ; .contenu .titre : les titres des cartes seulement, pas
+     celui du bloc */
+  .cartes-titres-sans :global(.contenu .titre) {
+    font-family: var(--police-sans);
+  }
+</style>

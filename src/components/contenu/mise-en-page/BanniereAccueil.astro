@@ -1,0 +1,447 @@
+---
+/*
+ * Grande bannière de l'accueil (d'après coquille-web) : photo sous un
+ * voile noir de 40 %, titre <h1> (variante display1), sous-titre, puis les
+ * enfants en bas (la recherche de l'accueil).
+ *
+ * Hauteur de la source : 85vh sous 600 px, 95vh au-delà, avec un espaceur de
+ * hauteur - 5rem (sous 600 px) ou - 8rem. Comme BannierePage, elle est ici dans
+ * le flux : glissée de 5rem sous l'en-tête transparent dès 1200 px, et une
+ * marge basse règle l'écart avec le contenu suivant (2rem sous 600 px,
+ * aucune au-delà : la marge de la bande suivante suffit).
+ * Dès 1200 px, elle prend toute la fenêtre (100svh, sans chevauchement) :
+ * le contenu suivant commence sous le pli.
+ *
+ * `titreSite` (accueil) : le h1 nomme le site (masqué visuellement), et le
+ * titre devient une accroche (<p>) : un slogan ne dit ni aux moteurs de
+ * recherche ni aux lecteurs d'écran sur quel site on est.
+ *
+ * `portraits` (accueil) : à chaque chargement, une personne est tirée au
+ * hasard (jamais la même deux fois de suite), puis une de ses photos ; son
+ * slogan devient l'accroche, son nom et sa fonction le sous-titre. Le tirage
+ * se fait dans le navigateur (le site est statique), par un petit script en
+ * ligne qui s'exécute avant le premier affichage : l'<img> n'a pas de `src`
+ * dans le HTML, seule la photo tirée est téléchargée, en WebP à la largeur
+ * de l'écran. Sans JavaScript, le premier portrait s'affiche (<noscript>).
+ * Pas de voile sur ces photos : le texte garde son contraste par une ombre
+ * portée diffuse.
+ */
+import { getImage, Picture } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+import Typographie from '@/components/primitives/Typographie.astro'
+import { imageBanniere, largeursPour } from '@/lib/bannieres'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+export interface Portrait {
+  image: ImageMetadata
+  titre: string
+  nom: string
+  fonction: string
+  cadrage?: string
+  cadrageHorizontal?: string
+  /** Téléphone : remontée de la photo, en % de sa hauteur (« 8% ») */
+  decalageMobile?: string
+}
+
+interface Props {
+  title: string
+  /** Nom du site, rendu en h1 au-dessus du titre (qui devient une accroche) */
+  titreSite?: string
+  /** Photos tirées au hasard à chaque chargement (voir plus haut) */
+  portraits?: Portrait[]
+  /** Photo fixe ; facultative avec `portraits` */
+  imageName?: string
+  alt?: string
+  /** Hauteur de la photo à garder au recadrage (« 20% ») ; le centre par défaut */
+  cadrage?: string
+  class?: string
+  style?: Style
+}
+
+const { title, titreSite, portraits, imageName, alt = '', cadrage, class: classe, style } = Astro.props
+const image = portraits?.length ? undefined : imageBanniere(imageName ?? '')
+
+// Une variante WebP par largeur, pour chaque portrait ; le script choisit
+const variantes = portraits?.length
+  ? await Promise.all(
+      portraits.map(async (p) => {
+        const rendu = await getImage({ src: p.image, widths: largeursPour(p.image), sizes: '100vw', format: 'webp' })
+        return { src: rendu.src, srcset: rendu.srcSet.attribute, titre: p.titre, nom: p.nom, fonction: p.fonction, cadrage: p.cadrage, cadrageHorizontal: p.cadrageHorizontal, decalageMobile: p.decalageMobile }
+      }),
+    )
+  : null
+const premier = variantes?.[0]
+
+// Largeur réellement affichée : sur un écran plus étroit que la photo (en
+// portrait), elle remplit la hauteur de la bannière et déborde sur les
+// côtés. Avec « 100vw », un téléphone prenait la version de 1280 px pour
+// une image affichée sur ~950 px CSS (x3 en Retina) : floue. La hauteur
+// suit celle de la bannière (85vh - 5rem sous 600 px, 95vh - 5rem
+// au-delà), multipliée par les proportions des photos (environ 1,6).
+const TAILLES_PORTRAIT = '(max-width: 599px) and (max-aspect-ratio: 3/2) calc(136vh - 8rem), (max-aspect-ratio: 3/2) calc(152vh - 8rem), 100vw'
+const premiereImage = portraits?.[0]?.image
+
+const aSousTitre = Astro.slots.has('subTitle')
+const aEnfants = Astro.slots.has('default')
+---
+
+<div class:list={['super-hero', { 'avec-enfants': aEnfants, 'avec-portraits': premier }, classes(classe)]} style={fusionnerStyles(cadrage && { '--cadrage': cadrage }, style)}>
+  {
+    premier && premiereImage ? (
+      <Fragment>
+        {/* Sans src : le script ci-dessous donne celle de la photo tirée */}
+        <img class="super-hero-image" data-portrait-image alt="" sizes={TAILLES_PORTRAIT} width={premiereImage.width} height={premiereImage.height} loading="eager" fetchpriority="high" decoding="async" />
+        <noscript>
+          <img class="super-hero-image" src={premier.src} srcset={premier.srcset} sizes={TAILLES_PORTRAIT} alt="" width={premiereImage.width} height={premiereImage.height} />
+        </noscript>
+      </Fragment>
+    ) : (
+      <Picture
+        src={image!}
+        formats={['avif', 'webp']} fallbackFormat="webp"
+        widths={largeursPour(image!)}
+        sizes="100vw"
+        alt={alt}
+        loading="eager"
+        fetchpriority="high"
+        class="super-hero-image"
+      />
+    )
+  }
+  <div class="texte">
+    <div class="colonne">
+      {/* Nom du site (h1) : premier titre du contenu pour les moteurs et les
+          lecteurs d'écran, masqué à l'écran (le logo de l'en-tête le dit) */}
+      {titreSite && <h1 class="visuellement-masque">{titreSite}</h1>}
+      <Typographie component={titreSite ? 'p' : 'h1'} variant="display1" class="titre">{premier ? <span data-portrait-titre>{premier.titre}</span> : title}</Typographie>
+      {
+        premier && (
+          <div class="sous-titre credit-colonne">
+            <Typographie component="div" variant="subtitle1" class="sous-titre-ligne"><span data-portrait-nom>{premier.nom}</span></Typographie>
+            <Typographie component="div" variant="subtitle1" class="sous-titre-ligne"><span data-portrait-fonction>{premier.fonction}</span></Typographie>
+          </div>
+        )
+      }
+      {
+        aSousTitre && (
+          <div class="sous-titre">
+            <slot name="subTitle" />
+          </div>
+        )
+      }
+    </div>
+  </div>
+  {
+    variantes && (
+      <script is:inline define:vars={{ portraits: variantes }}>
+        // Tirage du portrait, avant le premier affichage (voir l'en-tête du composant)
+        const hero = document.currentScript.closest('.super-hero')
+        const CLE = 'portrait-accueil'
+        let dernier = null
+        try { dernier = localStorage.getItem(CLE) } catch {}
+        const noms = [...new Set(portraits.map((p) => p.nom))]
+        const candidats = noms.length > 1 ? noms.filter((n) => n !== dernier) : noms
+        const nom = candidats[Math.floor(Math.random() * candidats.length)]
+        const photos = portraits.filter((p) => p.nom === nom)
+        const p = photos[Math.floor(Math.random() * photos.length)]
+        try { localStorage.setItem(CLE, nom) } catch {}
+        const img = hero.querySelector('[data-portrait-image]')
+        img.srcset = p.srcset
+        img.src = p.src
+        if (p.cadrage) hero.style.setProperty('--cadrage', p.cadrage)
+        if (p.cadrageHorizontal) hero.style.setProperty('--cadrage-x', p.cadrageHorizontal)
+        if (p.decalageMobile) hero.style.setProperty('--decalage-mobile', p.decalageMobile)
+        hero.querySelector('[data-portrait-titre]').textContent = p.titre
+        hero.querySelectorAll('[data-portrait-nom]').forEach((e) => (e.textContent = p.nom))
+        hero.querySelectorAll('[data-portrait-fonction]').forEach((e) => (e.textContent = p.fonction))
+
+        // Dès 1200 px, la bannière glisse sous l'en-tête et le bandeau des
+        // horaires (opaque) : la photo commence sous celui-ci, pour que les
+        // têtes, en haut des photos, ne passent pas dessous
+        const bandeau = document.querySelector('[data-bandeau-horaires]')
+        const large = matchMedia('(width >= 1200px)')
+        const placer = () => {
+          const debut = large.matches && bandeau ? Math.max(0, bandeau.getBoundingClientRect().bottom - hero.getBoundingClientRect().top) : 0
+          hero.style.setProperty('--debut-photo', debut + 'px')
+        }
+        placer()
+        large.addEventListener('change', placer)
+        if (bandeau) new ResizeObserver(placer).observe(bandeau)
+      </script>
+    )
+  }
+  {
+    aEnfants && (
+      <div class="enfants">
+        <slot />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .super-hero {
+    --hauteur: 85vh;
+    /* Sous 600 px : 2rem sous la bannière, en plus de la marge de la bande
+       suivante (48 px) ; le Quoi de neuf paraissait collé à la photo */
+    --retrait: 3rem;
+
+    display: flex;
+    position: relative;
+    isolation: isolate;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    /* Hauteur minimale (voir BannierePage) : le titre n'est plus rogné par le
+       haut avec le texte agrandi à 200 % */
+    min-height: calc(var(--hauteur) - 5rem);
+    margin-bottom: calc(5rem - var(--retrait));
+    overflow: hidden;
+    color: var(--couleur-sur-fonce);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+  }
+
+  /* Plus de chevauchement de 3rem (8rem de retrait, comme la source) : sur
+     iPad, il mangeait la marge de la bande suivante et le titre du Quoi de
+     neuf touchait presque la photo */
+  @media (width >= 600px) {
+    .super-hero {
+      --hauteur: 95vh;
+      --retrait: 5rem;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .super-hero {
+      --hauteur: 100svh;
+      --retrait: 5rem;
+
+      min-height: var(--hauteur);
+      margin-top: -5rem;
+      padding-top: 5rem;
+    }
+  }
+
+  .super-hero::before {
+    content: '';
+    position: absolute;
+    z-index: var(--z-dessous);
+    inset: 0;
+    /* Voile seulement sous le texte, pas sur toute la photo : sur mobile,
+       le texte occupe le bas de l'image, le voile monte du bas (en pixels :
+       le texte est à hauteur fixe au-dessus de la recherche) ; dès
+       900 px, le texte est dans la colonne de gauche, le voile part de la
+       gauche et s'efface à droite du texte. L'effacement suit une courbe
+       douce (paliers rapprochés) plutôt qu'une ligne droite, qui laissait
+       voir où le voile s'arrête. */
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--couleur-voile) 60%, transparent),
+      color-mix(in srgb, var(--couleur-voile) 48%, transparent) 550px,
+      color-mix(in srgb, var(--couleur-voile) 44%, transparent) 640px,
+      color-mix(in srgb, var(--couleur-voile) 34%, transparent) 730px,
+      color-mix(in srgb, var(--couleur-voile) 22%, transparent) 820px,
+      color-mix(in srgb, var(--couleur-voile) 11%, transparent) 910px,
+      color-mix(in srgb, var(--couleur-voile) 3%, transparent) 1000px,
+      transparent 1100px
+    );
+  }
+
+  /* Le voile garde 45 à 50 % jusqu'au bout du titre (560 px après le
+     début du texte, centré dans --largeur-max sur les grands écrans), puis
+     s'efface en douceur sur 540 px */
+  @media (width >= 900px) {
+    .super-hero::before {
+      --_bord-texte: max(0px, (100% - var(--largeur-max)) / 2);
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--couleur-voile) 50%, transparent),
+        color-mix(in srgb, var(--couleur-voile) 45%, transparent) calc(var(--_bord-texte) + 560px),
+        color-mix(in srgb, var(--couleur-voile) 41%, transparent) calc(var(--_bord-texte) + 650px),
+        color-mix(in srgb, var(--couleur-voile) 32%, transparent) calc(var(--_bord-texte) + 740px),
+        color-mix(in srgb, var(--couleur-voile) 21%, transparent) calc(var(--_bord-texte) + 830px),
+        color-mix(in srgb, var(--couleur-voile) 11%, transparent) calc(var(--_bord-texte) + 920px),
+        color-mix(in srgb, var(--couleur-voile) 4%, transparent) calc(var(--_bord-texte) + 1010px),
+        transparent calc(var(--_bord-texte) + 1100px)
+      );
+    }
+  }
+
+  /* Portraits : pas de voile sur la photo ; une ombre diffuse sous les
+     lettres garde le texte blanc lisible devant les zones claires */
+  /* Sous le bandeau des horaires dès 1200 px (--debut-photo, mesuré par le
+     script) ; au-dessus, derrière l'en-tête, le bleu du bandeau */
+  .avec-portraits {
+    background-color: var(--bleu-fonce);
+  }
+
+  .super-hero.avec-portraits :global(.super-hero-image) {
+    top: var(--debut-photo, 0px);
+    height: calc(100% - var(--debut-photo, 0px));
+  }
+
+  .avec-portraits .texte {
+    text-shadow:
+      0 0 2px color-mix(in srgb, var(--couleur-voile) 45%, transparent),
+      0 1px 12px color-mix(in srgb, var(--couleur-voile) 55%, transparent),
+      0 2px 32px color-mix(in srgb, var(--couleur-voile) 45%, transparent);
+  }
+
+  /* Slogan plus petit sur téléphone (2,5rem dans le thème) : « Puissant
+     moteur de recherche » prenait trop de place sur la photo */
+  @media (width < 600px) {
+    .super-hero.avec-portraits :global(.titre) {
+      font-size: 2rem;
+      line-height: 1.1;
+      text-wrap: balance;
+    }
+
+    /* Remontée propre à une photo (`decalageMobile`) : la tête passe
+       au-dessus du slogan ; le bas découvert est sous le dégradé bleu foncé
+       de la recherche, de la couleur du fond */
+    .super-hero.avec-portraits :global(.super-hero-image) {
+      translate: 0 calc(-1 * var(--decalage-mobile, 0%));
+    }
+
+    /* Slogan, nom et fonction descendent sur le haut du dégradé de la
+       recherche (zone vide, plus foncée) : ils ne cachent plus le visage */
+    .avec-portraits .texte {
+      position: relative;
+      z-index: var(--z-dessus-1);
+      margin-bottom: -3rem;
+      padding-bottom: 0;
+    }
+  }
+
+  /* Crédit de la photo, sous le slogan : le nom ressort, la fonction
+     s'efface (Figtree variable : 300 sans fichier de plus) */
+  .credit-colonne [data-portrait-nom] {
+    font-size: 1.15em;
+    font-weight: var(--graisse-forte);
+  }
+
+  .credit-colonne [data-portrait-fonction] {
+    font-size: 0.875em;
+    font-weight: 300;
+  }
+
+  /* Portraits, dès 900 px : le slogan reste à gauche du visage (au centre
+     des photos). Colonne étroite et titre proportionné à la largeur :
+     « Puissant moteur » tient sur une ligne sans atteindre le milieu */
+  @media (width >= 900px) {
+    .super-hero.avec-portraits .colonne {
+      width: min(44vw, 46rem);
+    }
+
+    /* Lignes équilibrées : « Puissant moteur / de recherche » plutôt que
+       « Puissant moteur de / recherche » */
+    .super-hero.avec-portraits :global(.titre) {
+      font-size: clamp(3rem, 5vw, 6rem);
+      text-wrap: balance;
+    }
+  }
+
+  /* Une vague bleu foncé : le dégradé de la recherche, en bas, remonte en
+     courbe le long du côté gauche, sous le texte. Plus dense à la hauteur du
+     nom et de la fonction (texte fin, 4,5:1 devant les zones claires), plus
+     légère derrière le slogan, qui se lit aussi par son ombre portée */
+  .super-hero.avec-portraits::before {
+    content: '';
+    background: radial-gradient(
+      ellipse 150% 85% at 0% 100%,
+      color-mix(in srgb, var(--bleu-fonce) 66%, transparent),
+      color-mix(in srgb, var(--bleu-fonce) 58%, transparent) 50%,
+      color-mix(in srgb, var(--bleu-fonce) 34%, transparent) 72%,
+      color-mix(in srgb, var(--bleu-fonce) 12%, transparent) 88%,
+      transparent
+    );
+  }
+
+  @media (width >= 900px) {
+    .super-hero.avec-portraits::before {
+      background: radial-gradient(
+        ellipse 72% 125% at 0% 100%,
+        color-mix(in srgb, var(--bleu-fonce) 66%, transparent),
+        color-mix(in srgb, var(--bleu-fonce) 58%, transparent) 45%,
+        color-mix(in srgb, var(--bleu-fonce) 34%, transparent) 68%,
+        color-mix(in srgb, var(--bleu-fonce) 12%, transparent) 86%,
+        transparent
+      );
+    }
+  }
+
+  .super-hero.avec-portraits .sous-titre {
+    margin-top: var(--espace-2);
+  }
+
+  .super-hero :global(.super-hero-image) {
+    position: absolute;
+    z-index: var(--z-fond);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Recadrage : sur un écran large, la photo est coupée en haut et en bas ;
+       `cadrage` choisit la hauteur gardée (visages sous l'en-tête). Sur un
+       écran en portrait, coupée sur les côtés : `cadrageHorizontal` (par
+       portrait) garde le visage au centre */
+    object-position: var(--cadrage-x, 50%) var(--cadrage, 50%);
+  }
+
+  .texte {
+    width: 100%;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: 0 16px var(--espace-3);
+  }
+
+  /* Avec la recherche (accueil) : le titre reste en bas, mais pas collé à
+     elle (centré en hauteur, il s'en détachait trop) */
+  .avec-enfants .texte {
+    padding-bottom: var(--espace-4);
+  }
+
+  .super-hero :global(.titre) {
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  /* Le h1 (interligne 1) touchait le sous-titre par ses jambages */
+  .sous-titre {
+    margin-top: var(--espace-1);
+  }
+
+  .enfants {
+    width: 100%;
+  }
+
+  @media (width >= 600px) {
+    .texte {
+      padding: 0 20px 4.25rem;
+    }
+  }
+
+  @media (width >= 900px) {
+    .texte {
+      padding-inline: 40px;
+    }
+
+    .colonne {
+      width: calc(100% * 8 / 12);
+    }
+  }
+
+  @media (width >= 1200px) {
+    .texte {
+      padding-inline: 64px;
+    }
+  }
+
+  @media (width >= 600px) {
+    .avec-enfants .texte {
+      padding-bottom: var(--espace-6);
+    }
+  }
+</style>

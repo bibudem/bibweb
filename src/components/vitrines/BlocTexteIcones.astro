@@ -1,0 +1,79 @@
+---
+/*
+ * Bloc « texte-icones » : titre, texte et bouton à gauche, grille d'icônes
+ * légendées à droite (colonnes 6/12 de ColonnesTexte, comme le HeroWithText2
+ * de la source), deux par rangée dès 900 px.
+ * `boutons` se suivent dans le pied de la colonne, comme dans la source
+ * (enseignement : un bouton secondaire puis un primaire).
+ */
+import ColonnesTexte from '@/components/contenu/mise-en-page/ColonnesTexte.astro'
+import BoutonVitrine from './BoutonVitrine.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import { couleurPalette } from '@/lib/couleurs'
+import type { BlocDe } from './types'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Props = { bloc: BlocDe<'texte-icones'> }
+
+const { bloc } = Astro.props
+const icones = await Promise.all(bloc.icones.map((element) => composantIcone(element.icone)))
+const styleIcone = { color: couleurPalette(bloc.couleurIcones) }
+---
+
+<ColonnesTexte rapport="6-6" avecPiedGauche={Boolean(bloc.bouton || bloc.boutons?.length)}>
+  <Fragment slot="gauche">
+    <Titre texte={bloc.titre} id={bloc.id} />
+    {bloc.texte && <TexteMarkdown texte={bloc.texte} />}
+  </Fragment>
+  {
+    bloc.bouton && (
+      <BoutonVitrine slot="piedGauche" bouton={bloc.bouton} fond={bloc.fond} />
+    )
+  }
+  {
+    bloc.boutons && (
+      <Fragment slot="piedGauche">
+        {bloc.boutons.map((bouton) => (
+          <BoutonVitrine bouton={bouton} fond={bloc.fond} />
+        ))}
+      </Fragment>
+    )
+  }
+  <div slot="droite" class="icones">
+    {
+      bloc.icones.map((element, i) => {
+        const Icone = icones[i]
+        return (
+          <div class="element">
+            <div>
+              <IconeSprite icone={Icone} style={styleIcone} size={50} aria-hidden="true" />
+            </div>
+            {element.texte}
+          </div>
+        )
+      })
+    }
+  </div>
+</ColonnesTexte>
+
+<style>
+  /* Une colonne, puis deux dès 900 px ; les éléments d'une rangée ont la
+     même hauteur */
+  .icones {
+    display: grid;
+    gap: var(--espace-element);
+  }
+
+  @media (width >= 900px) {
+    .icones {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .element {
+    padding: 16px;
+    font-weight: var(--graisse-forte);
+  }
+</style>

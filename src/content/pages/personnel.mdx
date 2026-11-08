@@ -1,0 +1,25 @@
+---
+title: Répertoire du personnel
+description: 'Coordonnées des bibliothécaires et du personnel des bibliothèques de l’UdeM, avec leurs fonctions, leurs disciplines et leur bibliothèque.'
+---
+
+import FilArianePage from '@/components/contenu/mise-en-page/FilArianePage.astro'
+import RepertoirePersonnel from '@/components/contenu/personnel/RepertoirePersonnel.astro'
+import Section from '@/components/contenu/mise-en-page/Section.astro'
+import BannierePage from '@/components/contenu/mise-en-page/BannierePage.astro'
+
+{/* Page de niveau 1 hors gabarit de texte : comme /nouvelles/, la bannière
+    porte le h1 et Section donne les marges latérales du site */}
+<BannierePage
+  title="Répertoire du personnel"
+  imageName="default"
+  size="small"
+/>
+
+<FilArianePage />
+
+<Section>
+
+<RepertoirePersonnel niveauTitre={2} />
+
+</Section>

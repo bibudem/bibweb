@@ -1,0 +1,392 @@
+/*
+ * Styles de l'îlot CarteHoraires (/horaires/) : base commune et mise en
+ * page de CarteHoraires.tsx. Feuilles ordinaires, préfixe ch- : le contenu
+ * des bulles de Leaflet est construit hors de React et ne peut pas recevoir
+ * de classes à portée limitée. Couleurs, rayons et durées viennent des
+ * jetons.
+ *
+ * Une feuille par composant de l'îlot (recherche-lieu.css, carte-leaflet.css,
+ * fiche-lieu.css, horaire-semaine.css), toutes importées par CarteHoraires.tsx
+ * dans cet ordre, après celle-ci : l'ordre de la cascade en dépend.
+ */
+
+.ch {
+  padding-block: var(--espace-3);
+}
+
+@media (width >= 900px) {
+  .ch {
+    padding-block: var(--espace-8) var(--espace-5);
+  }
+}
+
+.ch-lien {
+  color: var(--couleur-lien);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.ch-lien:hover {
+  color: var(--couleur-lien-survol);
+}
+
+.ch-lien-icone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375em;
+  text-decoration: none;
+}
+
+.ch-lien-icone:hover {
+  text-decoration: underline;
+}
+
+.ch-lien-icone svg {
+  flex: 0 0 auto;
+}
+
+.ch-gras {
+  font-weight: var(--graisse-forte);
+}
+
+.ch-petit {
+  margin: 0;
+  font-size: var(--texte-petit);
+}
+
+/* ---- Barre d'outils ---- */
+.ch-outils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espace-2);
+  margin-bottom: var(--espace-4);
+  padding: var(--espace-2);
+  border-radius: var(--rayon-moyen);
+  background-color: var(--couleur-teinte);
+}
+
+@media (width >= 900px) {
+  .ch-outils {
+    padding: var(--espace-3);
+  }
+}
+
+.ch-bouton-plein {
+  display: inline-flex;
+  /* Rétrécit au besoin, le libellé passe à la ligne (texte agrandi sur
+     320 px, WCAG 1.4.10) */
+  flex: 0 1 auto;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  align-items: center;
+  gap: var(--espace-1);
+  min-height: 44px;
+  padding: var(--espace-1) 1.25rem;
+  border: 0;
+  border-radius: var(--rayon-plein);
+  background-color: var(--bleu-principal);
+  color: var(--couleur-sur-fonce);
+  font: inherit;
+  font-weight: var(--graisse-moyenne);
+  cursor: pointer;
+}
+
+.ch-bouton-plein:hover {
+  background-color: var(--bleu-principal-fonce);
+}
+
+.ch-bouton-plein:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.ch-message {
+  flex-basis: 100%;
+  /* Une rangée entière de la barre d'outils : la mesure du texte courant
+     (global.css) la ferait remonter à côté des filtres */
+  max-inline-size: none;
+  margin: 0;
+  color: var(--couleur-texte-secondaire);
+  font-size: var(--texte-petit);
+}
+
+/* Bouton « i » à côté de Me localiser, et son info-bulle (popover) posée
+   sous lui par l'ancrage CSS ; sans ancrage, le navigateur la centre */
+.ch-info {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -0.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--couleur-accent);
+  cursor: pointer;
+  anchor-name: --ch-info;
+}
+
+.ch-info:hover {
+  background-color: color-mix(in srgb, var(--bleu-principal) 10%, transparent);
+}
+
+.ch-confidentialite {
+  max-inline-size: min(22rem, calc(100vw - 2rem));
+  margin: 0;
+  padding: 0.75rem var(--espace-2);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-petit);
+  background-color: var(--couleur-surface);
+  color: var(--couleur-texte);
+  font-size: var(--texte-petit);
+  line-height: 1.45;
+  box-shadow: var(--ombre-2);
+}
+
+/* Sous le bouton dès 600 px ; en dessous, sur toute la largeur (16 px de
+   marge), sous le bouton aussi */
+@supports (anchor-name: --a) {
+  .ch-confidentialite {
+    position-anchor: --ch-info;
+    inset: auto;
+    top: anchor(bottom);
+    left: 16px;
+    right: 16px;
+    max-inline-size: none;
+    margin: 0.375rem 0 0;
+  }
+
+  @media (width >= 600px) {
+    .ch-confidentialite {
+      left: anchor(left);
+      right: auto;
+      max-inline-size: 22rem;
+    }
+  }
+}
+
+.ch-message:empty {
+  display: none;
+}
+
+/* ---- Sections ---- */
+.ch-section {
+  margin-bottom: var(--espace-5);
+}
+
+.ch-section-apres {
+  margin-top: var(--espace-5);
+  margin-bottom: 0;
+}
+
+.ch-titre-section {
+  margin: 0 0 var(--espace-2);
+  font-size: var(--texte-tres-grand);
+  font-weight: var(--graisse-forte);
+  line-height: 1.2;
+}
+
+@media (width >= 900px) {
+  .ch-titre-section {
+    font-size: 2rem;
+  }
+}
+
+.ch-plus-proche-ouvert {
+  margin: 0 0 var(--espace-2);
+}
+
+.ch-grille {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espace-2);
+  align-items: start;
+}
+
+.ch-grille-3 {
+  align-items: stretch;
+}
+
+@media (width >= 1200px) {
+  .ch-grille-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ch-grille-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---- Filtres (boutons bascules, aria-pressed) ---- */
+.ch-filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espace-1);
+  margin-bottom: var(--espace-3);
+}
+
+.ch-puce {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-1);
+  min-height: 40px;
+  padding: 0.25rem var(--espace-2);
+  border: 1px solid var(--couleur-accent);
+  border-radius: var(--rayon-plein);
+  background-color: var(--couleur-surface);
+  color: var(--couleur-accent);
+  font: inherit;
+  font-size: var(--texte-petit);
+  font-weight: var(--graisse-forte);
+  cursor: pointer;
+}
+
+/* Cibles de 44 px de haut (--taille-cible) sans changer le visuel : la zone
+   cliquable déborde en haut et en bas de ce qui manque (2 px pour une puce,
+   moins que la moitié de l'écart de 0,5rem entre deux rangées ; 10 px pour
+   les actions d'une fiche, voir .ch-actions), et de rien si l'élément est
+   déjà assez haut (texte agrandi). Le pourcentage vaut la hauteur de l'élément. */
+.ch-puce::after,
+.ch-bouton-texte::after,
+.ch-actions .ch-lien::after {
+  content: '';
+  position: absolute;
+  inset: min(0px, (100% - var(--taille-cible)) / 2) 0;
+}
+
+.ch-puce:hover {
+  background-color: var(--couleur-teinte);
+}
+
+.ch-puce[aria-pressed='true'] {
+  background-color: var(--bleu-principal);
+  color: var(--couleur-sur-fonce);
+}
+
+.ch-puce[aria-pressed='true']:hover {
+  background-color: var(--bleu-principal-fonce);
+}
+
+.ch-puce-ouvert {
+  border-color: var(--vert-fonce);
+  color: var(--vert-fonce);
+}
+
+.ch-puce-ouvert[aria-pressed='true'],
+.ch-puce-ouvert[aria-pressed='true']:hover {
+  background-color: var(--vert-fonce);
+}
+
+.ch-puce:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ch-separateur {
+  align-self: stretch;
+  width: 1px;
+  margin-inline: 0.25rem;
+  background-color: var(--couleur-bordure);
+}
+
+.ch-pastille {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--bleu-fonce);
+  border-radius: 50%;
+}
+
+@media (forced-colors: active) {
+  .ch-puce[aria-pressed='true'] {
+    outline: 3px solid SelectedItem;
+    outline-offset: 2px;
+  }
+}
+
+/* ---- Carte ---- */
+.ch-zone-carte {
+  margin-bottom: var(--espace-4);
+  scroll-margin-top: var(--hauteur-entete);
+}
+
+/* Recherche et filtres : au-dessus de la carte sur mobile, sous la carte
+   (filtres puis recherche) dès 900 px. Voir CarteHoraires.tsx. */
+.ch-apres-carte {
+  display: none;
+}
+
+@media (width >= 900px) {
+  .ch-avant-carte {
+    display: none;
+  }
+
+  .ch-apres-carte {
+    display: block;
+  }
+
+  .ch-zone-carte {
+    margin-bottom: var(--espace-3);
+  }
+}
+
+.ch-retour-carte {
+  margin: var(--espace-3) 0 0;
+}
+
+.ch-legende-position {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0.75rem 0 0;
+  color: var(--couleur-texte-secondaire);
+  font-size: var(--texte-petit);
+}
+
+.ch-compte {
+  margin: 0 0 var(--espace-2);
+  color: var(--couleur-texte-secondaire);
+  font-size: var(--texte-petit);
+}
+
+/* ---- Squelettes de chargement ---- */
+.ch-squelette {
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--couleur-teinte);
+}
+
+.ch-squelette-ligne {
+  width: 60%;
+  height: 1.25rem;
+  margin: var(--espace-1) 0;
+}
+
+.ch-squelette-tableau {
+  height: 200px;
+}
+
+/* ---- Erreur de l'API (etat-erreur.css) ---- */
+.ch-erreur {
+  margin-bottom: var(--espace-4);
+}
+
+/* Vide, la zone reste dans le DOM (sans hauteur) : elle garde le focus
+   donné par « Réessayer » pendant le nouveau chargement. */
+.ch-erreur:empty {
+  margin-bottom: 0;
+}
+
+/* Couleurs forcées : les boutons sans bordure (fond coloré seulement) se
+   lisaient comme du texte simple ; un contour système les rend repérables */
+@media (forced-colors: active) {
+  .ch-bouton-plein,
+  .ch-info {
+    border: 1px solid ButtonText;
+  }
+}

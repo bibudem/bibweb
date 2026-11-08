@@ -1,0 +1,208 @@
+---
+/*
+ * Carte à fond uni qui révèle une description (CarteRevelationFond, exporté
+ * ElegantHoverCard dans coquille-web).
+ *
+ * 23 × 25rem (18 × 20,5rem sous 600 px), icône à 50 % d'opacité en haut à
+ * droite, titre en bas. À la révélation, le titre monte et la description
+ * apparaît en fondu. Corrigés :
+ * - la révélation suit le survol, le focus clavier (la description est la
+ *   zone focalisable et défilable de la carte) et le toucher (un petit
+ *   script donne le focus à la description) : rien n'est réservé à la
+ *   souris ;
+ * - la description, cachée par l'opacité seule, reste lue par les lecteurs
+ *   d'écran ; un lien qu'elle contient révèle la carte en prenant le focus ;
+ * - plus de role="region" ni d'aria-label « Carte : … » : le titre est un
+ *   vrai titre (niveauTitre, 3 par défaut) et nomme la description, un
+ *   groupe focalisable ;
+ * - le titre monte par transform (la source animait top et bottom), avec les
+ *   durées et les courbes des jetons ; le mouvement réduit les coupe.
+ * La carte elle-même ne se soulève pas au survol (effet retiré à la demande).
+ * Contrastes : blanc 7,10:1 sur bleu principal, 11,26:1 sur vert foncé ;
+ * bleu foncé 15,2:1 sur rose 300. Les liens de la description prennent la
+ * couleur du texte sur les fonds foncés (le bleu du lien y serait invisible).
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { idUnique } from '@/lib/ids'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Fond = 'bleuPrincipal' | 'rose300' | 'vertFonce'
+
+interface Props {
+  title: string
+  Icon: any
+  bg?: Fond
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const FONDS: Fond[] = ['bleuPrincipal', 'rose300', 'vertFonce']
+
+const { title, Icon, bg = 'bleuPrincipal', niveauTitre = 3, class: classe, style, ...reste } = Astro.props
+
+if (!title) throw new Error('CarteRevelationFond : la propriété `title` est obligatoire.')
+if (!Icon) throw new Error('CarteRevelationFond : la propriété `Icon` est obligatoire.')
+if (!FONDS.includes(bg)) throw new Error(`CarteRevelationFond : valeur de bg invalide (${FONDS.join(', ')}).`)
+
+const idTitre = idUnique('carte-titre')
+const Titre = `h${niveauTitre}`
+---
+
+<div
+  class:list={['carte', `fond-${bg}`, { 'surface-claire': bg === 'rose300' }, classe]}
+  style={fusionnerStyles(style)}
+  data-carte-revelable
+  {...reste}
+>
+  <div class="icone"><IconeSprite icone={Icon} size={45} aria-hidden="true" focusable="false" /></div>
+  <Titre class="titre" id={idTitre}>{title}</Titre>
+  <div class="description" tabindex="0" aria-labelledby={idTitre} role="group" data-description><slot /></div>
+</div>
+
+<script>
+  import { activerRevelation } from './revelation'
+
+  activerRevelation()
+</script>
+
+<style>
+  .carte {
+    --_marge: var(--espace-carte);
+    --_hauteur: 20.5rem;
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    /* Jamais plus large que la piste du carrousel (conteneur de requête) :
+       avec le texte à 200 %, 18rem valait 612 px, une carte plus large qu'un
+       téléphone. Au texte par défaut, la piste est toujours plus large. */
+    width: min(18rem, 100cqi);
+    height: var(--_hauteur);
+    overflow: hidden;
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond);
+    color: var(--_encre);
+  }
+
+  @media (width >= 600px) {
+    .carte {
+      --_hauteur: 25rem;
+      width: min(23rem, 100cqi);
+    }
+  }
+
+  .fond-bleuPrincipal,
+  .fond-vertFonce {
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: var(--couleur-sur-fonce);
+    /* Comme le ton foncé de Section */
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+    --rouge-orange-texte: var(--jaune);
+  }
+
+  .fond-bleuPrincipal {
+    --_fond: var(--bleu-principal);
+  }
+
+  .fond-vertFonce {
+    --_fond: var(--vert-fonce);
+  }
+
+  .fond-rose300 {
+    --_fond: var(--rose-300);
+    --_encre: var(--couleur-texte);
+    --_icone: var(--rouge-orange);
+  }
+
+  .icone {
+    position: absolute;
+    top: var(--_marge);
+    right: var(--_marge);
+    z-index: var(--z-dessus-2);
+    display: flex;
+    color: var(--_icone);
+    opacity: 0.5;
+  }
+
+  /* h4Figtree du thème */
+  .titre {
+    position: absolute;
+    right: 4rem;
+    bottom: var(--_marge);
+    left: var(--_marge);
+    z-index: var(--z-dessus-3);
+    margin: 0;
+    font-family: var(--police-sans);
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    transition: transform var(--duree-moyenne-4) var(--courbe-emphase-deceleree);
+  }
+
+  @media (width >= 900px) {
+    .titre {
+      font-size: 1.875rem;
+    }
+  }
+
+  .description {
+    position: absolute;
+    right: var(--_marge);
+    bottom: var(--_marge);
+    left: var(--_marge);
+    z-index: var(--z-dessus-2);
+    max-height: 52%;
+    overflow-y: auto;
+    font-size: var(--texte-courant);
+    font-weight: 350;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--duree-moyenne-4) var(--courbe-emphase-deceleree),
+      transform var(--duree-moyenne-4) var(--courbe-emphase-deceleree);
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, currentColor 40%, transparent) transparent;
+  }
+
+  .description > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .description > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  .description :global(a) {
+    color: var(--couleur-lien);
+  }
+
+  /* Le focus de la description s'affiche sur la carte, à l'intérieur (le
+     bord de la carte est rogné par overflow: hidden) */
+  .description:focus-visible {
+    outline: none;
+  }
+
+  .carte:has(.description:focus-visible) {
+    outline: 3px solid var(--_encre);
+    outline-offset: -6px;
+  }
+
+  /* Révélation : le titre monte en haut de la carte (100 % = sa hauteur) */
+  .carte:is(:hover, :focus-within) .titre {
+    transform: translateY(calc(100% + 2 * var(--_marge) - var(--_hauteur)));
+  }
+
+  .carte:is(:hover, :focus-within) .description {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

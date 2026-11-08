@@ -1,0 +1,104 @@
+---
+/*
+ * Directive :::image-texte (RenduDirectives). Taille normale : BandeImageTexte
+ * compact (vignette carrée à côté du titre sur un téléphone), les boutons
+ * de la fin dans son pied (slot `footer`). `taille=petite` : petite image
+ * à côté du texte. L'image est chargée par RenduDirectives.
+ */
+import type { ImageMetadata } from 'astro'
+import { Picture } from 'astro:assets'
+import BandeImageTexte from '@/components/contenu/mise-en-page/BandeImageTexte.astro'
+import { largeursHauteur, sansConversion } from './images'
+
+interface Props {
+  image: ImageMetadata
+  position?: 'gauche' | 'droite'
+  taille?: 'petite'
+  alt?: string
+}
+
+const { image, position, taille, alt } = Astro.props
+---
+
+{
+  taille === 'petite' ? (
+    <div class:list={['image-texte-petite', position === 'gauche' ? 'image-gauche' : 'image-droite']}>
+      <div class="petite-texte">
+        <slot />
+      </div>
+      <div class="petite-image">
+        {sansConversion(image) ? (
+          <img src={image.src} width={image.width} height={image.height} alt={alt} loading="lazy" decoding="async" />
+        ) : (
+          <Picture src={image} alt={alt} formats={['avif', 'webp']} fallbackFormat="webp" {...largeursHauteur(image, 200)} loading="lazy" decoding="async" />
+        )}
+      </div>
+    </div>
+  ) : (
+    <BandeImageTexte Image={image} align={position === 'gauche' ? 'right' : 'left'} class="image-texte" compact>
+      <slot />
+      {Astro.slots.has('footer') && (
+        <Fragment slot="footer">
+          <slot name="footer" />
+        </Fragment>
+      )}
+    </BandeImageTexte>
+  )
+}
+
+<style>
+  /* Image et texte (taille normale) : un bloc de la page, --espace-bloc
+     au-dessus et au-dessous ; sur un téléphone, l'image est une vignette
+     (BandeImageTexte compact) */
+  .image-texte {
+    margin-block: var(--espace-bloc);
+  }
+
+  /* Petite image à côté du texte (taille=petite) : l'image garde sa petite
+     taille (11rem de haut, comme les 160 à 216 px de la source), et le texte
+     prend le reste. Empilés sous 900 px. */
+  .image-texte-petite {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  .image-texte-petite.image-gauche .petite-image {
+    order: -1;
+  }
+
+  .petite-texte > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .petite-texte > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  .petite-image :global(img) {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: 11rem;
+    object-fit: contain;
+    object-position: left top;
+    border-radius: var(--rayon-petit);
+  }
+
+  @media (width >= 900px) {
+    .image-texte-petite {
+      display: grid;
+      align-items: start;
+      gap: var(--espace-grille);
+    }
+
+    .image-texte-petite.image-droite {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .image-texte-petite.image-gauche {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+  }
+</style>

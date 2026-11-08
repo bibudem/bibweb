@@ -1,0 +1,37 @@
+<!doctype html>
+<!--
+  Interface de rédaction (Decap CMS). La configuration vient de
+  src/pages/admin/config.yml.ts, servie à côté (config.yml).
+  Essai local : npm run dev:fond, puis npm run cms:local, puis
+  http://localhost:4321/admin/
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Rédaction | Les bibliothèques UdeM</title>
+    <!-- Logo de Decap que l'écran de connexion ajoute en bas à côté du nôtre
+         (NetlifyCreditIcon). Classe propre à cette version de Decap : à
+         revérifier si on change de version. -->
+    <style>
+      .exus10f2 {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Démarrage manuel : le format des vitrines doit être enregistré avant -->
+    <script>
+      window.CMS_MANUAL_INIT = true
+    </script>
+    <script src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"></script>
+    <script type="module">
+      import YAML from 'https://unpkg.com/yaml@2.8.1/browser/index.js'
+      import { formatVitrine } from './format-vitrine.js'
+
+      CMS.registerCustomFormat('yaml-vitrine', 'yaml', formatVitrine(YAML))
+      CMS.init()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+---
+/*
+ * Page 404 (src/pages/404.jsx de coquille-web), dans la coquille complète :
+ * en-tête, liens rapides et pied de page aux mêmes seuils que les autres
+ * pages (la source basculait l'en-tête à 900 px au lieu de 1200 px).
+ * Le titre est un h1 (la source n'avait qu'un h2) ; l'image dit « 404 ».
+ *
+ * Ajouts, selon les recommandations de NN/g pour les pages 404 : les causes
+ * probables (adresse mal tapée comprise), la recherche des sites des
+ * bibliothèques, pré-remplie avec les mots de l'adresse demandée, les pages
+ * les plus demandées et un lien pour signaler le lien brisé. L'image, plus
+ * petite, ne repousse plus le message sous la ligne de flottaison.
+ */
+import { Image } from 'astro:assets'
+import Base from '@/layouts/Base.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import ChampRecherche from '@/components/coquille/entete/ChampRecherche.astro'
+import image404 from '@/assets/404/im-um-404.webp'
+
+const LIENS = [
+  { libelle: 'Rechercher dans Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr' },
+  { libelle: 'Horaires et lieux', href: '/horaires/' },
+  { libelle: 'Obtenir un document', href: '/obtenir/' },
+  { libelle: 'Nous joindre', href: '/nous-joindre/' },
+]
+---
+
+<Base titre="Page non trouvée" noindex>
+  <main id="contenu-principal" class="page-404">
+    <Image src={image404} alt="Erreur 404" widths={[300, 600]} sizes="(min-width: 900px) 300px, 60vw" class="illustration" loading="eager" />
+    <h1>Désolés... nous n'avons pas trouvé ce que vous demandez.</h1>
+    <p class="causes">L'adresse est peut-être mal tapée, ou la page a été déplacée ou supprimée.</p>
+
+    <ChampRecherche
+      id="recherche-404"
+      etiquette="Rechercher dans les sites des bibliothèques"
+      nom="Recherche"
+      action="/resultats/"
+      parametre="q"
+      placeholder="Services, guides, soutien informatique…"
+      class="champ-404"
+      data-recherche-404
+    />
+
+    <h2 class="sous-titre">Ces pages peuvent vous aider</h2>
+    <ul class="liens">
+      {
+        LIENS.map(({ libelle, href }) => (
+          <li>
+            <a href={href}>{libelle}</a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="signaler">
+      Ce lien brisé vient de notre site? <a href="/nous-joindre/nous-ecrire/">Signalez-le-nous</a>.
+    </p>
+
+    <Bouton href="/" retour>Retour à la page d'accueil</Bouton>
+  </main>
+</Base>
+
+<script>
+  // Mots de l'adresse demandée dans le champ : /horaires-blsh/ → « horaires
+  // blsh ». Rien pour les extensions et les chiffres seuls.
+  const champ = document.querySelector<HTMLInputElement>('[data-recherche-404] input[type=search]')
+  if (champ) {
+    let chemin = location.pathname
+    try {
+      chemin = decodeURIComponent(chemin)
+    } catch {
+      // adresse mal encodée : on garde le texte brut
+    }
+    const mots = chemin
+      .replace(/\.[a-z0-9]+$/i, '')
+      .split(/[/\-_.+]+/)
+      .filter((mot) => mot && !/^\d+$/.test(mot))
+      .join(' ')
+    if (mots) champ.value = mots
+  }
+</script>
+
+<style>
+  .page-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - var(--hauteur-entete));
+    padding: 32px 16px 48px;
+    text-align: center;
+  }
+
+  .page-404:focus {
+    outline: none;
+  }
+
+  .illustration {
+    width: min(60vw, 300px);
+    height: auto;
+    margin-bottom: 24px;
+  }
+
+  /* max-width et coupure : un mot de 2rem tient dans 320 px même avec le
+     texte agrandi (le h1 est un élément flexible, centré) */
+  h1 {
+    max-width: 40rem;
+    margin: 0 0 16px;
+    color: var(--couleur-texte);
+    font-size: 2rem;
+    overflow-wrap: anywhere;
+  }
+
+  .causes {
+    max-width: 36rem;
+    margin: 0 0 32px;
+  }
+
+  /* Le champ et les liens restent alignés à gauche, dans une colonne
+     centrée : un champ de recherche centré se lit mal */
+  .page-404 :global(.champ-404) {
+    width: min(100%, 36rem);
+    text-align: start;
+  }
+
+  .sous-titre {
+    margin: 40px 0 12px;
+    font-size: var(--texte-grand);
+  }
+
+  .liens {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 24px;
+    margin: 0 0 32px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .liens a {
+    display: inline-block;
+    padding-block: 6px;
+  }
+
+  .signaler {
+    max-width: 36rem;
+    margin: 0 0 32px;
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-reduit);
+  }
+
+  @media (width >= 900px) {
+    .page-404 {
+      padding-block: 64px 96px;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+    }
+
+    .causes {
+      font-size: var(--texte-moyen);
+    }
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+/*
+ * Une colonne de la section Quoi de neuf (ColonneQuoiDeNeuf de coquille-web) :
+ * titre h3, liste qui occupe la hauteur libre, puis le bouton « Tous nos… »
+ * en bas. Les colonnes ont la même hauteur dans la grille de QuoiDeNeuf :
+ * les boutons tombent donc au même niveau.
+ *
+ * Corrigé : sans `id`, aria-labelledby pointait vers rien ; on en génère un.
+ * `data-colonne` permet à QuoiDeNeuf de relier la colonne à son onglet.
+ *
+ * Hors de l'accueil (bloc « formations » d'Études) : `titreMasque` garde le
+ * h3 pour les lecteurs d'écran seulement (le titre du bloc suffit à l'écran),
+ * `plusCentre` centre le bouton sous la liste et en fait un bouton principal.
+ */
+import Bouton from '@/components/primitives/Bouton.astro'
+import { idUnique } from '@/lib/ids'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  title: string
+  id?: string
+  moreText?: string
+  moreLink?: string
+  externe?: boolean
+  titreMasque?: boolean
+  plusCentre?: boolean
+  class?: string
+  style?: Style
+}
+
+const { title, id: idDonne, moreText, moreLink, externe = false, titreMasque = false, plusCentre = false, class: classe, style } = Astro.props
+const id = idDonne ?? idUnique('colonne-quoi-de-neuf')
+---
+
+<section class:list={['colonne', classes(classe)]} style={fusionnerStyles(style)} aria-labelledby={id} data-colonne={id}>
+  <h3 id={id} class:list={['titre-colonne', { 'visuellement-masque': titreMasque }]}>{title}</h3>
+  <div class="corps"><slot /></div>
+  {
+    moreLink && (
+      <div class:list={['plus', { centre: plusCentre }]}>
+        <Bouton secondary={!plusCentre} primary={plusCentre} href={moreLink} {...(externe && { target: '_blank', rel: 'noopener noreferrer' })}>
+          {moreText}
+        </Bouton>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .colonne {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-element);
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+  }
+
+  /* Bouton « Tous nos… » : fond de survol sans fondu, comme les titres des
+     éléments (animation réduite au minimum dans Quoi de neuf) */
+  .plus :global(.bouton) {
+    transition: none;
+  }
+
+  .titre-colonne {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  /* Conteneur de requête : Element.astro (compact) n'y coupe ses titres que
+     si la colonne est assez large en em, donc jamais avec le texte agrandi */
+  .corps {
+    flex-grow: 1;
+    container: quoi-de-neuf / inline-size;
+  }
+
+  /* Listes et messages passés en slot (ListeEvenements, etc.). Pas d'écart
+     entre les éléments : le filet de chacun les sépare déjà. */
+  .corps :global(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .corps :global(p) {
+    margin: 0;
+  }
+
+  /* L'attribut hidden des états des listes passe devant display: flex */
+  .corps :global([hidden]) {
+    display: none;
+  }
+
+  .plus {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  @media (width >= 900px) {
+    .plus {
+      justify-content: flex-end;
+    }
+  }
+
+  .plus.centre {
+    justify-content: center;
+    margin-top: var(--espace-bloc);
+  }
+</style>

@@ -1,0 +1,107 @@
+---
+/*
+ * Bloc « personnel » (page d'une bibliothèque) : titre, texte, puis une
+ * rangée de vignettes des membres de la bibliothèque (EquipeBibliotheque :
+ * photo, nom, fonction, lien vers la fiche complète du répertoire), et le
+ * bouton `lienTout` vers le répertoire complet. Les vignettes se tiennent à
+ * jour avec le tableur du personnel, comme /nous-joindre/notre-equipe/.
+ *
+ * `coordonnees` : une colonne « Nous joindre » à gauche (un tiers dès
+ * 900 px), l'équipe à droite en rangées de trois. Les deux répondent à la
+ * même question (à qui s'adresser) ; seules, les coordonnées laissaient une
+ * bande presque vide. Sous 900 px, les coordonnées passent au-dessus.
+ */
+import EquipeBibliotheque from '@/components/contenu/personnel/EquipeBibliotheque.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'personnel'> }
+
+const { bloc } = Astro.props
+const { coordonnees } = bloc
+---
+
+<div class:list={['personnel', { 'avec-coordonnees': coordonnees }]}>
+  {
+    coordonnees && (
+      <div class="coordonnees">
+        <Titre texte={coordonnees.titre} />
+        <TexteMarkdown texte={coordonnees.texte} brut />
+        {coordonnees.bouton && (
+          <div class="appel">
+            <Bouton href={coordonnees.bouton.lien}>{coordonnees.bouton.texte}</Bouton>
+          </div>
+        )}
+      </div>
+    )
+  }
+  <div>
+    <Titre texte={bloc.titre} id={bloc.id} />
+    {bloc.texte && <TexteMarkdown texte={bloc.texte} brut />}
+    <div class="vignettes">
+      <EquipeBibliotheque bibliotheque={bloc.bibliotheque} ordre={bloc.ordre} />
+    </div>
+    {
+      bloc.lienTout && (
+        <div class="tout">
+          <Bouton href={bloc.lienTout.lien} secondary target={bloc.lienTout.nouvelOnglet ? '_blank' : undefined}>
+            {bloc.lienTout.texte}
+          </Bouton>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  /* minmax(0, …) et coupure des mots : une adresse courriel ou un numéro
+     ne font pas déborder la page avec le texte agrandi (WCAG 1.4.10) */
+  .avec-coordonnees {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-blocs);
+  }
+
+  .coordonnees {
+    overflow-wrap: anywhere;
+  }
+
+  /* Le bloc fait l'écart ; sans la marge haute de Bouton */
+  .appel {
+    margin-block-start: var(--espace-bloc);
+  }
+
+  .appel :global(.bouton) {
+    margin-top: 0;
+  }
+
+  .vignettes {
+    margin-block-start: var(--espace-bloc);
+  }
+
+  .tout {
+    display: flex;
+    justify-content: center;
+    margin-block-start: var(--espace-bloc);
+  }
+
+  @media (width >= 900px) {
+    .avec-coordonnees {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      gap: var(--espace-6);
+    }
+
+    /* Filet entre les deux colonnes, à égale distance de chacune */
+    .avec-coordonnees > :last-child {
+      padding-inline-start: var(--espace-6);
+      border-inline-start: 1px solid var(--couleur-bordure);
+    }
+
+    /* Six personnes : deux rangées de trois plutôt que quatre puis deux */
+    .avec-coordonnees .vignettes :global(.equipe) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

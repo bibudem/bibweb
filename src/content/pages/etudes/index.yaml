@@ -1,0 +1,127 @@
+# Page vitrine /etudes/ : voir docs/REDACTION.md, section « Vitrines »
+title: Études
+
+banniere:
+  titre: On inspire la réussite
+  sousTitre:
+    - "Pour les étudiantes et étudiants de tous les cycles : aide, guides, soutien informatique, formations et accessibilité."
+  image: etudes
+  cadrage: 30%
+
+sections:
+  - type: image-texte
+    disposition: encart
+    teinteEncart: vertFonce
+    titre: Besoin d’aide? On est là!
+    libelle: Besoin d’aide
+    texte: Que ce soit votre première ou votre dernière session à l’Université, nous sommes toujours là pour vous accompagner. [Passez nous voir au comptoir](/horaires/), [utilisez le clavardage](/nous-joindre/clavarder/) ou [contactez un membre de notre équipe](/nous-joindre/notre-equipe/) pour obtenir de l’aide personnalisée.
+    image: ../images/aide-bibliothecaire.webp
+    positionImage: droite
+    cadrage: 5%
+    cadrageHorizontal: 100%
+    bouton:
+      texte: Nous joindre
+      lien: /nous-joindre/
+
+  - type: grille-elargissable
+    titre: Les essentiels pour commencer
+    libelle: Essentiels
+    texte: Par où commencer une recherche? Nos spécialistes ont conçu des guides et sélectionné les ressources les plus pratiques pour vous. Profitez-en!
+    bouton:
+      texte: Voir tous les guides de la Boîte à outils
+      lien: https://boite-outils.bib.umontreal.ca
+    cartes:
+      - titre: Citer ses sources
+        icone: text-outdent
+        appel: Explorer la citation
+        lien: https://boite-outils.bib.umontreal.ca/citer
+      - titre: Ressources par discipline
+        icone: compass
+        appel: Explorer les disciplines
+        lien: https://boite-outils.bib.umontreal.ca/disciplines
+      - titre: Trouver et évaluer la fiabilité des sources
+        icone: magnifying-glass
+        appel: En savoir plus sur la recherche de sources
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer
+      - titre: Intelligence artificielle générative
+        icone: head-circuit
+        appel: En savoir plus sur l’IAg
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/iag
+
+  - type: grille-elargissable
+    fond: bleu100
+    titre: Problème informatique? Pas de panique!
+    libelle: Aide informatique
+    texte: Nos comptoirs, nos services et nos spécialistes vous sont accessibles à l’année! Nos services vont de la connexion hors campus à l’impression, en passant par le prêt d’ordinateurs ou de tablettes.
+    couleurCartes: jaune
+    bouton:
+      texte: Voir les ressources informatiques
+      lien: https://studio.bib.umontreal.ca/informatique/
+    cartes:
+      - titre: Accès à distance aux logiciels
+        icone: plugs
+        appel: Se connecter à distance
+        lien: https://studio.bib.umontreal.ca/informatique/connexion-distance/
+      - titre: Accès hors campus
+        icone: network
+        appel: Configuration Proxy et VPN
+        lien: https://studio.bib.umontreal.ca/informatique/proxy/
+      - titre: Installation et configuration de logiciels
+        icone: download-simple
+        appel: Guides d’installation
+        lien: https://studio.bib.umontreal.ca/informatique/logiciels/
+      - titre: Accès au réseau sans fil
+        icone: wifi-high
+        appel: Se connecter au Wi-Fi
+        lien: https://studio.bib.umontreal.ca/informatique/reseau/
+
+  - type: formations
+    titre: Nos formations gratuites, c’est payant
+    libelle: Formations
+    texte: Consultez notre calendrier de formations – il y en a pour tous les goûts, tous les niveaux!
+    lienTout:
+      texte: Toutes nos formations
+      lien: https://calendrier.bib.umontreal.ca/calendar?cid=7690&t=m&d=0000-00-00&cal=7690&inc=0
+
+  - type: image-texte
+    fond: bleu100
+    titre: Accessibilité
+    libelle: Accessibilité
+    texte: L’accès à la documentation dont vous avez besoin est notre priorité.
+    image: ../images/service-accessibilite/teleagrandisseur.webp
+    positionImage: gauche
+    icones:
+      - icone: book-open-text
+        texte: Formats adaptés
+      - icone: desktop
+        texte: Équipement et logiciels d’accessibilité
+      - icone: armchair
+        texte: Mobilier adaptable
+      - icone: lightbulb
+        texte: Salle sensorielle
+    bouton:
+      texte: Service Accessibilité
+      lien: /service-accessibilite/
+
+  - type: liste-liens
+    titre: Nos services pour les cycles supérieurs
+    libelle: Cycles supérieurs
+    liens:
+      - titre: Matinées de rédaction
+        description: Séances de rédaction en groupe divisées en cycles de rédaction, suivis de pauses d’échanges informels.
+        lien: https://www.facebook.com/groups/655999033385375/
+      - titre: Aide à la rédaction de mémoire ou de thèse
+        description: Aide pour l’utilisation du modèle Word répondant aux normes du Guide de présentation des mémoires et des thèses des Études supérieures et postdoctorales (ESP).
+        lien: https://boite-outils.bib.umontreal.ca/recherche/deposer-these-memoire?p=5412524
+      - titre: Aide au dépôt de mémoire ou thèse dans Papyrus
+        description: Soutien pour la réalisation de cette étape obligatoire pour l’obtention de votre grade.
+        lien: https://boite-outils.bib.umontreal.ca/recherche/deposer-these-memoire?p=5344092
+      - titre: Accompagnement personnalisé au doctorat
+        description: Série de rencontres individuelles avec votre bibliothécaire disciplinaire pour recevoir un soutien dans toutes les étapes de votre parcours aux cycles supérieurs.
+        lien: /nous-joindre/notre-equipe/
+      - titre: Espaces dédiés aux cycles supérieurs
+        description: "Salles individuelles réservables, salles communes équipées de casiers pour votre documentation : l’offre varie d’une bibliothèque à l’autre, consultez le répertoire!"
+        lien: /espaces/
+      - titre: Bourses de la Bibliothèque des livres rares et collections spéciales
+        description: La Bibliothèque des livres rares et collections spéciales offre chaque année deux bourses de 2 000 $ et une bourse de 3 500 $ pour les personnes inscrites aux cycles supérieurs. Consultez les modalités pour voir si vous y êtes admissible.
+        lien: /nouvelles/2026/bourses-blrcs/

@@ -1,0 +1,37 @@
+---
+/*
+ * Directive :::tableau et tableaux GFM (RenduDirectives) : Tableau du MDX,
+ * rangées et cellules rendues dans le slot. `enfants` sert à compter les
+ * colonnes.
+ */
+import TableauMdx from '@/components/primitives/Tableau.astro'
+import { directives, type Noeud } from './types'
+
+interface Props {
+  enfants: Noeud[]
+  titre?: string
+}
+
+const { enfants, titre } = Astro.props
+
+// Largeur minimale des tableaux de la source (minWidth 650 dans les 11 pages à
+// tableau) : sur un téléphone, le tableau défile au lieu de s'écraser. Un
+// tableau de deux colonnes tient dans l'écran : il n'en a pas, pour ne pas
+// défiler à l'horizontale (libellé à gauche, valeur à droite).
+const STYLE_TABLEAU = { minWidth: '650px' }
+const COLONNES_SANS_MINIMUM = 2
+
+// Nombre de colonnes d'un tableau : cellules de sa première rangée
+function colonnes(liste: Noeud[]): number {
+  for (const noeud of directives(liste)) {
+    if (noeud.nom === 'rangee') return directives(noeud.enfants).filter((n) => n.nom === 'cellule').length
+    const trouve = colonnes(noeud.enfants)
+    if (trouve) return trouve
+  }
+  return 0
+}
+---
+
+<TableauMdx style={colonnes(enfants) > COLONNES_SANS_MINIMUM ? STYLE_TABLEAU : undefined} titre={titre}>
+  <slot />
+</TableauMdx>

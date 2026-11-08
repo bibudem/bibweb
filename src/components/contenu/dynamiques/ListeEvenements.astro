@@ -1,0 +1,156 @@
+---
+/*
+ * Colonne « Événements » de la section Quoi de neuf (ListeEvenements de
+ * coquille-web) : les prochaines activités des Bibliothèques, lues dans le
+ * flux RSS du calendrier UdeM.
+ *
+ * - Chargée dans le navigateur par un petit script (pas d'îlot React).
+ * - Le flux met 2 à 3 s à répondre (100 événements, aucun cache côté
+ *   serveur) : 10 s par tentative, et une seconde tentative avant
+ *   d'afficher l'erreur. Pendant ce temps, un squelette du même gabarit
+ *   garde la place.
+ * - En cas d'échec : un message clair et « Réessayer » ; le détail technique
+ *   reste dans la console. Le bouton « Tous nos événements » reste affiché :
+ *   le calendrier, lui, est sans doute accessible.
+ * - Sans JavaScript : un renvoi vers le calendrier.
+ * - Sans vignette (ou si elle ne se charge pas), une image décorative aux
+ *   couleurs des Bibliothèques, /images/evenement-repli.svg, remplace le
+ *   /images/fallback.jpg de la source, absent des deux sites.
+ */
+import ColonneQuoiDeNeuf from './ColonneQuoiDeNeuf.astro'
+import Element from './Element.astro'
+import EtatErreur from './EtatErreur.astro'
+import type { Style } from '@/lib/styles'
+
+interface Props {
+  title?: string
+  id?: string
+  service?: string
+  limit?: number
+  moreText?: string
+  moreLink?: string
+  class?: string
+  style?: Style
+}
+
+const SERVICE_URL =
+  'https://calendrier.umontreal.ca/activites/export.rss?tx_solr[filter][0]=types:activites-culturelles&tx_solr[filter][1]=types:activites-de-reseautage&tx_solr[filter][2]=types:activites-dinformation&tx_solr[filter][3]=types:activites-philanthropiques&tx_solr[filter][4]=types:activites-sportives&tx_solr[filter][5]=types:ceremonies-officielles&tx_solr[filter][6]=types:concours&tx_solr[filter][7]=types:conferences-colloques&tx_solr[filter][8]=types:cours-seminaires&tx_solr[filter][9]=types:journees-thematiques&tx_solr[filter][10]=types:portes-ouvertes&tx_solr[filter][11]=types:soutenances-de-these&tx_solr[filter][12]=organisateurs:les-bibliotheques'
+const MORE_LINK = 'https://calendrier.umontreal.ca/activites?organisateurs=les-bibliotheques'
+
+function urlValide(valeur: unknown, defaut: string) {
+  try {
+    return typeof valeur === 'string' ? new URL(valeur).toString() : defaut
+  } catch {
+    return defaut
+  }
+}
+
+const { title = 'Événements', id, service, limit: limiteDemandee = 3, moreText = 'Tous nos événements', moreLink, class: classe, style } = Astro.props
+const limite = typeof limiteDemandee === 'number' && limiteDemandee > 0 ? limiteDemandee : 3
+const urlService = urlValide(service, SERVICE_URL)
+const urlPlus = urlValide(moreLink, MORE_LINK)
+---
+
+<ColonneQuoiDeNeuf title={title} id={id} moreText={moreText} moreLink={urlPlus} externe class={classe} style={style}>
+  <div class="dynamique" data-liste-evenements data-service={urlService} data-limite={limite} aria-busy="true">
+    <ul data-etat="chargement">
+      {Array.from({ length: limite }, () => <Element vignette compact squelette />)}
+    </ul>
+    <p class="visuellement-masque" data-etat="chargement">Chargement des événements…</p>
+    <ul data-etat="pret" data-liste hidden></ul>
+    <EtatErreur message="Les événements ne sont pas disponibles pour le moment." />
+    <p data-etat="vide" hidden>Aucun événement à afficher pour le moment</p>
+    <p class="sans-js">
+      Les événements s'affichent avec JavaScript. Consultez-les dans le <a href={urlPlus} target="_blank" rel="noopener noreferrer"
+        >calendrier de l'Université<span class="visuellement-masque"> (nouvel onglet)</span></a
+      >.
+    </p>
+    <template data-gabarit>
+      <Element href="#" externe vignette calendrier compact>
+        <span slot="ligne" data-champ="date"></span>
+      </Element>
+    </template>
+  </div>
+</ColonneQuoiDeNeuf>
+
+<script>
+  import { brancherReessayer, chargerAvecDelai, cloner, montrerEtat, remplir } from './chargement'
+
+  const formatDate = new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
+
+  async function lireRss(reponse: Response) {
+    const xml = new DOMParser().parseFromString(await reponse.text(), 'text/xml')
+    const erreur = xml.querySelector('parsererror')
+    if (erreur) throw new Error(`XML illisible : ${erreur.textContent}`)
+    // Un flux vide ou une page d'erreur n'a pas de <channel>
+    if (!xml.querySelector('channel')) throw new Error('Structure RSS invalide')
+    return xml
+  }
+
+  function evenements(xml: Document, limite: number) {
+    const vus = new Set<string>()
+    const resultat: { titre: string; url: string; image?: string; date: string }[] = []
+    for (const item of xml.querySelectorAll('item')) {
+      if (resultat.length >= limite) break
+      const titre = item.querySelector('title')?.textContent?.trim()
+      const date = new Date(item.querySelector('pubDate')?.textContent?.trim() ?? '')
+      if (!titre || Number.isNaN(date.getTime())) continue
+      // Le flux répète une activité pour chacun de ses types
+      const cle = `${titre}:::${date.getHours()}:${date.getMinutes()}`
+      if (vus.has(cle)) continue
+      vus.add(cle)
+      resultat.push({
+        titre,
+        url: item.querySelector('link')?.textContent?.trim() || 'https://calendrier.umontreal.ca/',
+        image: item.querySelector('enclosure')?.getAttribute('url')?.trim() || undefined,
+        date: formatDate.format(date),
+      })
+    }
+    return resultat
+  }
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-evenements]')) {
+    const liste = racine.querySelector<HTMLElement>('[data-liste]')!
+    const gabarit = racine.querySelector<HTMLTemplateElement>('template[data-gabarit]')!
+    const service = racine.dataset.service!
+    const limite = Number(racine.dataset.limite) || 3
+
+    async function charger() {
+      montrerEtat(racine, 'chargement')
+      try {
+        const items = evenements(await chargerAvecDelai(service, lireRss, { delai: 10_000, tentatives: 2 }), limite)
+        liste.replaceChildren(
+          ...items.map(({ titre, url, image, date }) => {
+            const element = cloner(gabarit)
+            remplir(element, { url, titre, image, repli: '/images/evenement-repli.svg' })
+            const champDate = element.querySelector('[data-champ="date"]')
+            if (champDate) champDate.textContent = date
+            return element
+          }),
+        )
+        montrerEtat(racine, items.length ? 'pret' : 'vide')
+      } catch {
+        montrerEtat(racine, 'erreur')
+      }
+    }
+
+    brancherReessayer(racine, charger)
+    charger()
+  }
+</script>
+
+<style>
+  .sans-js {
+    display: none;
+  }
+
+  @media (scripting: none) {
+    .sans-js {
+      display: block;
+    }
+
+    [data-etat] {
+      display: none;
+    }
+  }
+</style>

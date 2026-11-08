@@ -1,0 +1,221 @@
+---
+/*
+ * Texte typographié (composant de texte de MUI et variantes du thème de
+ * coquille-web).
+ *
+ * `variant` donne l'apparence, `component` la balise : variant="h2"
+ * component="h1" rend un <h1> qui a l'apparence d'un h2. Sans component, la
+ * balise suit la correspondance de MUI (h1-h6, body → p, autres → span).
+ * Corrigés : subtitle1 donnait un <h6> (faux titre) et devient un <p> ;
+ * variant="p", invalide dans MUI, donne un <p> en body1.
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { couleurTheme } from '@/lib/couleurs'
+
+interface Props {
+  variant?: string
+  component?: string
+  gutterBottom?: boolean
+  paragraph?: boolean
+  noWrap?: boolean
+  align?: 'left' | 'center' | 'right' | 'justify' | 'inherit'
+  /** text.primary, text.secondary, primary ou nom de la palette */
+  color?: string
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { variant: varianteDemandee = 'body1', component, gutterBottom = false, paragraph = false, noWrap = false, align, color, class: classe, style, ...reste } = Astro.props
+
+const variante = varianteDemandee === 'p' ? 'body1' : varianteDemandee
+const BALISES: Record<string, string> = {
+  h1: 'h1',
+  h2: 'h2',
+  h3: 'h3',
+  h4: 'h4',
+  h5: 'h5',
+  h6: 'h6',
+  subtitle1: 'p',
+  body1: 'p',
+  body2: 'p',
+}
+const Balise = component ?? (paragraph ? 'p' : BALISES[variante]) ?? 'span'
+const styleFinal = fusionnerStyles({ color: couleurTheme(color), textAlign: align && align !== 'inherit' ? align : undefined }, style)
+---
+
+<Balise
+  class:list={['typo', `typo-${variante}`, { 'marge-bas': gutterBottom, paragraphe: paragraph, 'sans-retour': noWrap }, classe]}
+  style={styleFinal}
+  {...reste}><slot /></Balise
+>
+
+<style>
+  .typo {
+    margin: 0;
+    font-family: var(--police-sans);
+    font-style: normal;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .marge-bas {
+    margin-bottom: 0.35em;
+  }
+
+  .paragraphe {
+    margin-bottom: 16px;
+  }
+
+  .sans-retour {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---- Titres (tailles mobiles, puis dès 900 px) ---- */
+  .typo-h1,
+  .typo-h2,
+  .typo-h3,
+  .typo-h4,
+  .typo-h5,
+  .typo-h6 {
+    margin-block: 0.5em;
+    text-wrap: pretty;
+  }
+
+  .typo-h1 {
+    font-size: 3rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.1;
+  }
+
+  .typo-h2 {
+    font-size: 2.5rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.1;
+  }
+
+  .typo-h3 {
+    font-size: var(--texte-tres-grand);
+    font-weight: var(--graisse-grasse);
+    line-height: 1.2;
+  }
+
+  .typo-h4 {
+    font-size: var(--texte-grand);
+    line-height: 1.2;
+    font-family: var(--police-serif);
+    font-weight: var(--graisse-normale);
+    /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
+       l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
+    font-variant-numeric: lining-nums proportional-nums;
+  }
+
+  .typo-h5 {
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-grasse);
+    line-height: 1.1;
+  }
+
+  .typo-h6 {
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
+  }
+
+  @media (width >= 900px) {
+    .typo-h1 {
+      font-size: 6.875rem;
+    }
+
+    .typo-h2 {
+      font-size: 3.5rem;
+    }
+
+    .typo-h3 {
+      font-size: 2.25rem;
+      font-weight: var(--graisse-forte);
+    }
+
+    .typo-h4 {
+      font-size: 1.875rem;
+    }
+
+    .typo-h6 {
+      font-size: var(--texte-moyen);
+    }
+  }
+
+  /* ---- Texte ---- */
+  .typo-body1,
+  .typo-subtitle1 {
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+  }
+
+  .typo-body2 {
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+  }
+
+  /* ---- Titres de bannière ---- */
+  .typo-titreSuperHero,
+  .typo-titreSuperHeroSmall {
+    font-weight: var(--graisse-forte);
+    line-height: 1.1;
+  }
+
+  .typo-titreSuperHero {
+    padding-bottom: var(--espace-2);
+    font-size: 2.5rem;
+  }
+
+  .typo-titreSuperHeroSmall {
+    padding-bottom: var(--espace-5);
+    font-size: 2rem;
+  }
+
+  /* ---- Affichage ---- */
+  .typo-display1 {
+    font-size: 2.5rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1;
+  }
+
+  @media (width >= 600px) {
+    .typo-titreSuperHero {
+      font-size: 3.75rem;
+    }
+
+    .typo-titreSuperHeroSmall {
+      font-size: 3rem;
+    }
+
+    .typo-display1 {
+      font-size: 4rem;
+    }
+  }
+
+  @media (width >= 900px) {
+    .typo-titreSuperHero {
+      font-size: 4.5rem;
+    }
+
+    .typo-titreSuperHeroSmall {
+      font-size: 3.5rem;
+    }
+
+    .typo-display1 {
+      font-size: 6.5rem;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .typo-titreSuperHeroSmall {
+      font-size: 4rem;
+    }
+  }
+</style>

@@ -1,0 +1,348 @@
+---
+/*
+ * Consentement aux statistiques : petit message, puis panneau détaillé
+ * (éléments requis par la Loi sur l'accès, art. 53.1, 65 et 65.0.1).
+ *
+ * Rien n'est chargé avant la réponse : Google Tag Manager et Microsoft Clarity
+ * ne s'activent qu'avec un consentement valide. Les vidéos n'ont pas besoin
+ * de cette demande : BlocVideo ne contacte YouTube qu'au clic.
+ * Le choix est gardé dans le témoin décrit dans src/lib/consentement.ts.
+ */
+const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
+---
+
+<div lang="fr-CA" class="consentement">
+  <section class="carte" aria-labelledby="consentement-titre" hidden data-consentement-carte>
+    <h2 id="consentement-titre" class="titre-carte">L’UdeM reconnaît l’importance de respecter la vie privée</h2>
+    <p class="texte-carte">
+      Avec votre accord, ce site utilise des témoins (cookies) pour mesurer sa fréquentation.
+      <button type="button" class="lien-texte" data-consentement-details>En savoir plus</button>
+    </p>
+    <div class="actions">
+      <button type="button" class="bouton" data-consentement-accepter>Accepter</button>
+      <button type="button" class="bouton" data-consentement-refuser>Refuser</button>
+    </div>
+  </section>
+
+  <dialog class="panneau" aria-labelledby="consentement-panneau-titre" data-consentement-panneau>
+    <h2 id="consentement-panneau-titre" class="titre-panneau">Personnaliser les témoins</h2>
+    <p>Cette catégorie est facultative. Si vous la refusez, le site fonctionne normalement.</p>
+    <p>Vous pouvez modifier vos préférences en tout temps avec le bouton « Paramètres des témoins », en bas de chaque page.</p>
+
+    <div class="categorie">
+      <label class="choix">
+        <input type="checkbox" data-consentement-statistiques />
+        <span>Statistiques de fréquentation</span>
+      </label>
+      <p>Pour savoir quelles pages sont consultées et mieux organiser le contenu du site.</p>
+      <details>
+        <summary>Détails sur les statistiques</summary>
+        <ul>
+          <li>
+            <strong>Moyens :</strong> des témoins et des scripts recueillent notamment les pages vues, la durée de la
+            visite, les clics, le défilement, le type d’appareil et une localisation approximative tirée de l’adresse IP.
+          </li>
+          <li>
+            <strong>Tiers :</strong> Google (Google Tag Manager, Google Analytics) et Microsoft (Clarity) recueillent ces
+            renseignements.
+          </li>
+          <li><strong>Hors du Québec :</strong> ces renseignements peuvent être communiqués à l’extérieur du Québec.</li>
+          <li>
+            <strong>Profilage et localisation :</strong> ces outils analysent les parcours de navigation et peuvent estimer
+            votre localisation. Ces fonctions s’activent seulement si vous acceptez les statistiques.
+          </li>
+          <li><strong>Si vous refusez ou retirez votre accord :</strong> le site fonctionne normalement.</li>
+          <li><strong>Portée :</strong> ce choix vaut aussi pour studio.bib.umontreal.ca.</li>
+        </ul>
+      </details>
+    </div>
+
+    <p>Les vidéos YouTube se chargent seulement quand vous cliquez sur « Lire la vidéo ».</p>
+    <p>
+      Pour en savoir plus sur vos renseignements personnels, vos droits d’accès et de rectification ou la façon dont l’UdeM
+      traite ces renseignements, consultez
+      <a href={URL_VIE_PRIVEE} target="_blank" rel="noopener noreferrer">Vie privée à l’UdeM<span class="visuellement-masque"> (ouvre une nouvelle fenêtre)</span></a>.
+    </p>
+
+    <div class="actions">
+      <button type="button" class="bouton" data-consentement-enregistrer>Enregistrer mes choix</button>
+      <button type="button" class="lien-texte" data-consentement-fermer>Fermer</button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  import { formaterTemoin, lireChoix } from '@/lib/consentement'
+
+  const CONTENEUR_GTM = 'GTM-K8BQPC'
+  const PROJET_CLARITY = 'tfds44a7xa'
+  const TEMOINS_STATISTIQUES = [/^_ga$/i, /^_ga_.+/i, /^_gid$/i, /^_gat$/i, /^_clck$/i, /^_clsk$/i, /^CLID$/i, /^ANONCHK$/i, /^MR$/i, /^MUID$/i, /^SM$/i]
+
+  type Fenetre = typeof window & {
+    dataLayer?: unknown[]
+    gtag?: (...args: unknown[]) => void
+    clarity?: { (...args: unknown[]): void; q?: unknown[] }
+  }
+  const fenetre = window as Fenetre
+
+  const ajouterScript = (src: string) => {
+    const script = document.createElement('script')
+    script.async = true
+    script.src = src
+    document.head.append(script)
+  }
+
+  function gtag(...args: unknown[]) {
+    if (!fenetre.gtag) {
+      fenetre.dataLayer ??= []
+      // gtag() doit pousser l'objet arguments : c'est ce que lit Google Tag Manager
+      fenetre.gtag = function () {
+        // eslint-disable-next-line prefer-rest-params
+        fenetre.dataLayer!.push(arguments)
+      }
+      fenetre.gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500,
+      })
+    }
+    fenetre.gtag(...args)
+  }
+
+  function effacerTemoinsStatistiques() {
+    const { hostname } = window.location
+    const domaines = [hostname, `.${hostname}`]
+    if (hostname.endsWith('umontreal.ca')) domaines.push('.umontreal.ca')
+    const expire = 'expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    document.cookie
+      .split('; ')
+      .map((morceau) => morceau.split('=')[0])
+      .filter((nom) => TEMOINS_STATISTIQUES.some((motif) => motif.test(nom)))
+      .forEach((nom) => {
+        document.cookie = `${nom}=; ${expire}`
+        domaines.forEach((domaine) => {
+          document.cookie = `${nom}=; ${expire}; domain=${domaine}`
+        })
+      })
+  }
+
+  let googleCharge = false
+
+  function appliquerStatistiques(accepte: boolean) {
+    if (accepte) {
+      gtag('consent', 'update', { analytics_storage: 'granted' })
+      if (!googleCharge) {
+        googleCharge = true
+        fenetre.dataLayer!.push({ 'gtm.start': Date.now(), event: 'gtm.js' })
+        ajouterScript(`https://www.googletagmanager.com/gtm.js?id=${CONTENEUR_GTM}`)
+        gtag('event', 'page_view', {
+          page_path: location.pathname,
+          page_location: location.href,
+          page_title: document.title,
+        })
+      }
+      if (!fenetre.clarity) {
+        const clarity: Fenetre['clarity'] = function () {
+          // eslint-disable-next-line prefer-rest-params
+          ;(clarity!.q ??= []).push(arguments)
+        }
+        fenetre.clarity = clarity
+        ajouterScript(`https://www.clarity.ms/tag/${PROJET_CLARITY}`)
+      }
+    } else if (googleCharge) {
+      gtag('consent', 'update', { analytics_storage: 'denied' })
+    }
+
+    fenetre.clarity?.('consent', accepte)
+    fenetre.clarity?.('consentv2', { ad_Storage: 'denied', analytics_Storage: accepte ? 'granted' : 'denied' })
+    if (!accepte) effacerTemoinsStatistiques()
+  }
+
+  const carte = document.querySelector<HTMLElement>('[data-consentement-carte]')!
+  const panneau = document.querySelector<HTMLDialogElement>('[data-consentement-panneau]')!
+  const caseStatistiques = document.querySelector<HTMLInputElement>('[data-consentement-statistiques]')!
+
+  function enregistrer(statistiques: boolean) {
+    document.cookie = formaterTemoin({ statistiques, date: Date.now() }, window.location)
+    carte.hidden = true
+    panneau.close()
+    appliquerStatistiques(statistiques)
+  }
+
+  function ouvrirPanneau() {
+    caseStatistiques.checked = lireChoix(document.cookie)?.statistiques === true
+    panneau.showModal()
+  }
+
+  document.querySelector('[data-consentement-accepter]')!.addEventListener('click', () => enregistrer(true))
+  document.querySelector('[data-consentement-refuser]')!.addEventListener('click', () => enregistrer(false))
+  document.querySelector('[data-consentement-details]')!.addEventListener('click', ouvrirPanneau)
+  document.querySelector('[data-consentement-enregistrer]')!.addEventListener('click', () => enregistrer(caseStatistiques.checked))
+  document.querySelector('[data-consentement-fermer]')!.addEventListener('click', () => panneau.close())
+  window.addEventListener('bib:parametres-temoins', ouvrirPanneau)
+
+  const choix = lireChoix(document.cookie)
+  if (choix) {
+    // Réécrit à chaque visite, sans changer la date : Safari raccourcit la durée
+    // des témoins créés par JavaScript.
+    document.cookie = formaterTemoin(choix, window.location)
+    if (choix.statistiques) appliquerStatistiques(true)
+  } else {
+    carte.hidden = false
+  }
+</script>
+
+<style>
+  /* En bas à droite, au-dessus du bouton de retour en haut, sous les modales. */
+  .carte {
+    position: fixed;
+    z-index: var(--z-tiroir);
+    right: 1rem;
+    bottom: 1rem;
+    width: min(29rem, calc(100vw - 2rem));
+    padding: var(--espace-2);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-surface);
+    color: var(--couleur-texte);
+    box-shadow: var(--ombre-2);
+  }
+
+  .carte[hidden] {
+    display: none;
+  }
+
+  .titre-carte {
+    margin: 0 0 0.25rem;
+    font-size: var(--texte-courant);
+    line-height: 1.3;
+  }
+
+  .texte-carte {
+    margin: 0 0 0.75rem;
+    font-size: var(--texte-petit);
+    line-height: 1.4;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  /* Bordure transparente : invisible ici, elle devient le contour du bouton
+     en couleurs forcées (sinon « Accepter » et « Refuser » s'y lisaient
+     comme du texte simple) */
+  .bouton {
+    padding: var(--espace-1) 1.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-fond-fort);
+    color: var(--couleur-sur-fonce);
+    font: inherit;
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-moyenne);
+    cursor: pointer;
+  }
+
+  .bouton:hover {
+    background-color: var(--couleur-fond-fort-survol);
+  }
+
+  @media (forced-colors: active) {
+    .bouton {
+      border-color: ButtonText;
+    }
+  }
+
+  .lien-texte {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .panneau {
+    width: min(40rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: var(--espace-3);
+    overflow-y: auto;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-surface);
+    color: var(--couleur-texte);
+    font-size: var(--texte-reduit);
+  }
+
+  .panneau::backdrop {
+    background-color: color-mix(in srgb, var(--couleur-voile) 50%, transparent);
+  }
+
+  .panneau p {
+    margin: 0 0 0.75rem;
+  }
+
+  .titre-panneau {
+    margin: 0 0 0.75rem;
+    font-size: var(--texte-grand);
+  }
+
+  .categorie {
+    margin-block-end: 0.75rem;
+    padding-block: 0.75rem;
+    border-block: 1px solid var(--couleur-bordure);
+  }
+
+  .categorie p {
+    margin: 0.25rem 0 var(--espace-1);
+  }
+
+  .categorie summary {
+    cursor: pointer;
+  }
+
+  .categorie ul {
+    margin: var(--espace-1) 0 0;
+    padding-left: 1.25rem;
+  }
+
+  .choix {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+    font-weight: var(--graisse-forte);
+    cursor: pointer;
+  }
+
+  .choix input {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  /* Mobile : bande compacte en bas de l'écran */
+  @media (width < 600px) {
+    .carte {
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      padding: 0.75rem var(--espace-2);
+      border-width: 1px 0 0;
+      border-radius: 0;
+    }
+
+    .texte-carte {
+      margin-bottom: var(--espace-1);
+      font-size: var(--texte-tres-petit);
+    }
+
+    .panneau {
+      padding: var(--espace-2);
+    }
+  }
+</style>

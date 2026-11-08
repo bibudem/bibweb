@@ -1,0 +1,118 @@
+---
+/*
+ * Carte-lien bleue avec icône (d'après coquille-web).
+ *
+ * Bleu principal (survol : bleu principal foncé), 250 à 400 px de large puis
+ * sans limite dès 600 px, marges --espace-carte, icône de 55 px, titre de 1,75rem,
+ * pastille fléchée en bas à droite. Texte blanc : 7,10:1 au repos, 10,3:1
+ * au survol.
+ *
+ * Un seul lien, sur le titre : son ::after couvre la carte, son nom
+ * accessible est le titre. Le type de lien (flèche, rel) est fixé au build ;
+ * la source l'établissait après l'hydratation.
+ */
+import PastilleFleche from '@/components/partage/PastilleFleche.astro'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { lienCarte } from '@/lib/liens'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  title: string
+  Icon?: any
+  href: string
+  target?: string
+  rel?: string
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { title, Icon, href, target, rel, class: classe, style, ...reste } = Astro.props
+
+if (typeof href !== 'string') throw new Error('CarteTexte : la propriété `href` doit être une chaîne.')
+
+const { interne, rel: relFinal, annonce } = lienCarte(href, target, rel)
+---
+
+<div class:list={['carte', 'carte-lien', 'anneau-carte', classe]} style={fusionnerStyles(style)} {...reste}>
+  <div class="icone">{Icon && <IconeSprite icone={Icon} size={55} aria-hidden="true" focusable="false" />}</div>
+  <div class="titre">
+    <a class="lien-etire" href={href} target={target} rel={relFinal}
+      >{title}{annonce && <span class="visuellement-masque">{annonce}</span>}</a
+    >
+  </div>
+  <div class="pied">
+    <PastilleFleche externe={!interne} />
+  </div>
+</div>
+
+<style>
+  .carte {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: var(--espace-3);
+    box-sizing: border-box;
+    min-width: 250px;
+    max-width: 400px;
+    height: 100%;
+    margin-inline: auto;
+    padding: var(--espace-carte);
+    border-radius: var(--rayon-carte);
+    background-color: var(--bleu-principal);
+    color: var(--couleur-sur-fonce);
+  }
+
+  @media (width >= 600px) {
+    .carte {
+      max-width: none;
+    }
+  }
+
+  /* Fond de survol en calque : on anime son opacité plutôt que la couleur */
+  .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-dessous);
+    border-radius: inherit;
+    background-color: var(--bleu-principal-fonce);
+    opacity: 0;
+    transition: opacity var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .carte:hover::before {
+    opacity: 1;
+  }
+
+  .icone {
+    display: flex;
+    color: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
+  }
+
+  .titre {
+    font-size: 1.75rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  .pied {
+    display: flex;
+    flex-grow: 1;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  /* Pastille pleine, plus foncée que la carte (PastilleFleche) */
+  .carte {
+    --pastille-fond: var(--bleu-principal-fonce);
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

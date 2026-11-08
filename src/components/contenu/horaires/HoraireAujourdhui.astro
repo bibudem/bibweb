@@ -1,0 +1,155 @@
+---
+/*
+ * Bloc « Aujourd'hui » d'une fiche de bibliothèque
+ * (FicheBibliotheque/HoraireAujourdhui.jsx) : l'horaire du jour de chaque
+ * service, puis « Tous les horaires » vers la fiche de /horaires/.
+ * `bib` est le code de l'API horaires (« ss », « sciences »…).
+ *
+ * Les horaires viennent de l'API dans le navigateur (aujourdhui-client.ts) :
+ * une seule requête pour toute la page, quel que soit le nombre de fiches.
+ * Sans JavaScript, le bloc garde son lien vers /horaires/.
+ *
+ * Corrigé :
+ * - les heures suivent le format de /horaires/ (« 7 h à 23 h », « minuit »,
+ *   « Ouvert 24 h sur 24 ») au lieu du sommaire brut de l'API (« 7h à 23h ») ;
+ * - une erreur de l'API est dite en texte, avec « Réessayer » (EtatErreur,
+ *   comme les événements et les formations), au lieu de faire disparaître le bloc ;
+ * - une seule liste de descriptions au lieu d'un <dl> par service ;
+ * - les hooks n'étaient pas tous appelés à chaque rendu (règle des hooks).
+ */
+import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown'
+import Bloc from './Bloc.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import Lien from '@/components/primitives/Lien.astro'
+import EtatErreur from '@/components/contenu/dynamiques/EtatErreur.astro'
+import { lieuParCode } from '@/data/horaires/lieux'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  bib: string
+  /** Lien « Tous les horaires » (vrai par défaut) */
+  lienHoraires?: boolean
+  niveauTitre?: number
+  class?: string
+}
+
+const { bib, lienHoraires = true, niveauTitre = 4, class: classe } = Astro.props
+const lieu = lieuParCode(bib)
+const lien = lieu ? `/horaires/#${lieu.id}` : '/horaires/'
+---
+
+<Bloc titre="Aujourd'hui" Icon={ClockCountdownIcon} niveauTitre={niveauTitre} flex class={classe}>
+  <div class="aujourdhui" data-horaire-aujourdhui={bib}>
+    <dl class="services" aria-busy="true"></dl>
+    <p class="etat" hidden></p>
+    <EtatErreur message="Les horaires du jour ne sont pas disponibles pour le moment." etat="" />
+    <template>
+      <div class="service">
+        <dt><IconeSprite icone={ClockCountdownIcon} className="icone-service" size={26} color="currentColor" aria-hidden="true" focusable="false" /><span></span></dt>
+        <dd></dd>
+      </div>
+    </template>
+  </div>
+  {
+    lienHoraires && (
+      <div>
+        <span class="mobile">
+          <Bouton primary href={lien}>
+            Tous les horaires
+          </Bouton>
+        </span>
+        <span class="bureau">
+          <Lien to={lien} Icon>
+            Tous les horaires
+          </Lien>
+        </span>
+      </div>
+    )
+  }
+</Bloc>
+
+<script>
+  import { remplirHorairesAujourdhui } from './aujourdhui-client'
+
+  remplirHorairesAujourdhui()
+</script>
+
+<style>
+  .services {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .services:empty {
+    display: none;
+  }
+
+  .service {
+    position: relative;
+    min-height: 26px;
+    padding-left: calc(26px + 1em);
+  }
+
+  .service :global(.icone-service) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--couleur-accent);
+  }
+
+  dt {
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-normale);
+    line-height: 1.1;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--couleur-texte);
+    font-size: var(--texte-minuscule);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.1;
+  }
+
+  .etat {
+    margin: 0;
+  }
+
+  .bureau {
+    display: none;
+  }
+
+  /* Sous 900 px, le lien devient un bouton plein, comme dans la source */
+  @media (width >= 900px) {
+    .service {
+      min-height: 0;
+      padding-left: 0;
+    }
+
+    .service :global(.icone-service) {
+      display: none;
+    }
+
+    dt {
+      font-weight: var(--graisse-forte);
+      line-height: 1.2;
+    }
+
+    dd {
+      padding-bottom: var(--espace-1);
+      font-size: var(--texte-courant);
+      font-weight: var(--graisse-normale);
+      line-height: 1.2;
+    }
+
+    .mobile {
+      display: none;
+    }
+
+    .bureau {
+      display: inline;
+    }
+  }
+</style>

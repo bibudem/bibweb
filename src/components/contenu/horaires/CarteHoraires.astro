@@ -1,0 +1,51 @@
+---
+/*
+ * Page /horaires/ : recherche, filtres, carte Leaflet, liste des lieux et
+ * horaires de la semaine (CarteHoraires de coquille-web, version de
+ * /horaires/test, la plus récente et la plus accessible). Remplace les 17
+ * blocs recopiés à la main dans l'ancien horaires.mdx : les lieux viennent de
+ * src/data/horaires/lieux.ts.
+ *
+ * L'îlot React est rendu au serveur : sans JavaScript, la liste des lieux
+ * (adresses, contacts, espaces, réservations) reste lisible ; la carte n'est
+ * jamais le seul accès à l'information. Les données structurées (JSON-LD)
+ * sont produites ici, au build.
+ */
+import { jsonLd } from '@/lib/json-ld'
+import { getImage } from 'astro:assets'
+import CarteHorairesIlot from '@/components/ilots/horaires/CarteHoraires'
+import { lieux } from '@/data/horaires/lieux'
+import { imagesLieux } from '@/data/horaires/images'
+
+// Vignettes : 88 à 168 px de large, recadrées sur la hauteur de la fiche.
+const images: Record<string, { src: string; srcset: string }> = {}
+for (const [code, image] of Object.entries(imagesLieux)) {
+  const resultat = await getImage({ src: image, widths: [320, 640], format: 'webp' })
+  images[code] = { src: resultat.src, srcset: resultat.srcSet.attribute }
+}
+
+// Les heures d'ouverture n'y sont pas : elles viennent en direct de l'API et
+// changent (examens, congés, fermetures).
+const urlPage = new URL('/horaires/', Astro.site ?? 'https://bib.umontreal.ca').href
+const graphe = lieux
+  .filter((l) => l.zone !== 'service' && l.addr)
+  .map((l) => {
+    const telephone = l.contact?.find((c) => c.phone)?.phone
+    const courriel = l.contact?.find((c) => c.email)?.email
+    return {
+      '@type': 'Library',
+      '@id': `${urlPage}#${l.id}`,
+      name: l.name,
+      url: `${urlPage}#${l.id}`,
+      address: { '@type': 'PostalAddress', streetAddress: l.addr, addressRegion: 'QC', addressCountry: 'CA' },
+      ...(l.lat != null && { geo: { '@type': 'GeoCoordinates', latitude: l.lat, longitude: l.lng } }),
+      ...(telephone && { telephone }),
+      ...(courriel && { email: courriel }),
+      parentOrganization: { '@type': 'CollegeOrUniversity', name: 'Université de Montréal', url: 'https://www.umontreal.ca' },
+    }
+  })
+const donnees = jsonLd({ '@context': 'https://schema.org', '@graph': graphe })
+---
+
+<CarteHorairesIlot client:visible lieux={lieux} images={images} />
+<script type="application/ld+json" set:html={donnees} is:inline />

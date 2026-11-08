@@ -1,0 +1,30 @@
+---
+/*
+ * Bouton d'un bloc de vitrine (champ `bouton` / `boutons` du schéma) :
+ * plein par défaut, `secondaire` (texte seul) ou `contour`. Sur une bande
+ * foncée (ton « fonce » de lib/fonds.ts) ou sur une photo assombrie
+ * (`surFonce`), il passe en variante claire : sinon un bouton secondaire
+ * restait bleu sur bleu foncé (2,6:1) et un bouton plein bleu foncé se
+ * fondait dans la bande. Remplace l'appel à Bouton recopié dans chaque bloc.
+ */
+import Bouton from '@/components/primitives/Bouton.astro'
+import { FONDS, type Fond } from '@/lib/fonds'
+import type { Style } from '@/lib/styles'
+
+interface Props {
+  bouton: { texte: string; lien: string; secondaire?: boolean; contour?: boolean }
+  /** Fond de la bande du bloc */
+  fond?: Fond
+  /** Posé sur une photo assombrie (bannière, image de fond) */
+  surFonce?: boolean
+  class?: string
+  style?: Style
+}
+
+const { bouton, fond, surFonce = false, class: classe, style } = Astro.props
+const clair = surFonce || (fond !== undefined && FONDS[fond].ton === 'fonce')
+---
+
+<Bouton href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined} light={clair} class={classe} style={style}>
+  {bouton.texte}
+</Bouton>

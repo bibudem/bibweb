@@ -1,0 +1,371 @@
+---
+/*
+ * Page de résultats des sites des bibliothèques (/resultats/?q=…) : la suite
+ * de la recherche du menu (RechercheMenu), quand on choisit « Tous les
+ * résultats ». Mêmes sources et même classement que les suggestions (index
+ * réuni de src/lib/recherche/moteur.ts : le site, la Boîte à outils, Studio·bib),
+ * avec un filtre par source et la même recherche dans Sofia.
+ *
+ * Page statique : la requête est lue dans l'URL par le script, l'index se
+ * charge à l'arrivée. Le formulaire est un vrai GET vers la page elle-même.
+ */
+import Base from '@/layouts/Base.astro'
+import ChampRecherche from '@/components/coquille/entete/ChampRecherche.astro'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import { PORTEES } from '@/lib/recherche/portees'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+// Libellés des sites externes : ceux des portées de la recherche (une seule source)
+const SOURCES = [
+  { cle: 'tout', libelle: 'Toutes les sources' },
+  { cle: 'site', libelle: 'Site des bibliothèques' },
+  ...PORTEES.filter((p) => p.cle === 'outils' || p.cle === 'studio').map(({ cle, libelle }) => ({ cle, libelle })),
+]
+---
+
+<Base titre="Résultats de recherche" noindex niveau={1}>
+  <main id="contenu-principal" class="conteneur page-resultats" data-page-resultats>
+    <h1 class="apparence-h2">Résultats de recherche</h1>
+
+    <ChampRecherche id="resultats-requete" etiquette="Rechercher dans les sites des bibliothèques" nom="Recherche" action="/resultats/" parametre="q" placeholder="Services, guides, soutien informatique…" class="champ-page" />
+
+    <div class="outils" data-outils hidden>
+      <fieldset class="sources">
+        <legend class="visuellement-masque">Source</legend>
+        {
+          SOURCES.map(({ cle, libelle }, i) => (
+            <label class="source">
+              <input type="radio" name="source" value={cle} checked={i === 0} />
+              <span>{libelle}</span>
+              <span class="compte" data-compte={cle} />
+            </label>
+          ))
+        }
+      </fieldset>
+      <a class="sofia" href="https://umontreal.on.worldcat.org/discovery?lang=fr" data-lien-sofia>
+        <span data-lien-sofia-texte>Chercher dans Sofia</span>
+        <IconeSprite icone={ArrowUpRightIcon} size={16} weight="bold" aria-hidden="true" />
+      </a>
+    </div>
+
+    <p class="etat" role="status" data-statut>
+      <noscript>La recherche demande JavaScript.</noscript>
+    </p>
+
+    {/* role="list" : Safari retire la sémantique de liste avec list-style: none */}
+    <ul class="liste" role="list" data-liste></ul>
+    <button type="button" class="plus" data-plus hidden>Afficher plus de résultats</button>
+
+    <template data-modele>
+      <li>
+        <a class="resultat">
+          <span class="ligne">
+            <span class="source-nom"></span>
+            <span class="fleche" aria-hidden="true">→</span>
+            <span class="visuellement-masque"> : </span>
+            <span class="titre"></span>
+            <IconeSprite icone={ArrowUpRightIcon} size={16} aria-hidden="true" className="externe" />
+          </span>
+          <span class="extrait"></span>
+        </a>
+      </li>
+    </template>
+  </main>
+</Base>
+
+<script>
+  import { chargerIndex, suggerer, type Suggestion } from '@/lib/recherche/moteur'
+  import { urlSofia } from '@/lib/sofia'
+  import { PORTEES } from '@/lib/recherche/portees'
+
+  const SOURCES: Record<string, string> = Object.fromEntries(PORTEES.filter((p) => p.cle === 'outils' || p.cle === 'studio').map((p) => [p.cle, p.libelle]))
+  const SOURCE_SITE = 'Site des bibliothèques'
+  const PAR_PAGE = 20
+
+  const page = document.querySelector<HTMLElement>('[data-page-resultats]')
+  if (page) {
+    const $ = <T extends Element>(s: string) => page.querySelector<T>(s)!
+    const champ = $<HTMLInputElement>('#resultats-requete')
+    const outils = $<HTMLElement>('[data-outils]')
+    const statut = $<HTMLElement>('[data-statut]')
+    const liste = $<HTMLElement>('[data-liste]')
+    const plus = $<HTMLButtonElement>('[data-plus]')
+    const modele = $<HTMLTemplateElement>('[data-modele]')
+    const sofia = $<HTMLAnchorElement>('[data-lien-sofia]')
+    const radios = page.querySelectorAll<HTMLInputElement>('input[name=source]')
+
+    const requete = new URLSearchParams(window.location.search).get('q')?.trim() ?? ''
+    const cleSource = (r: Suggestion) => (r.section in SOURCES ? r.section : 'site')
+    let resultats: Suggestion[] = []
+    let montres = PAR_PAGE
+
+    champ.value = requete
+    if (requete) document.title = `« ${requete} » – ${document.title}`
+
+    function filtres() {
+      const choix = [...radios].find((r) => r.checked)?.value ?? 'tout'
+      return choix === 'tout' ? resultats : resultats.filter((r) => cleSource(r) === choix)
+    }
+
+    function element({ title, excerpt, url, section }: Suggestion) {
+      const li = modele.content.firstElementChild!.cloneNode(true) as HTMLElement
+      const lien = li.querySelector('a')!
+      lien.href = url
+      li.querySelector('.source-nom')!.textContent = SOURCES[section] ?? SOURCE_SITE
+      li.querySelector('.titre')!.textContent = title
+      if (!/^https?:/.test(url)) li.querySelector('.externe')!.remove()
+      const extrait = li.querySelector('.extrait')!
+      if (excerpt) extrait.textContent = excerpt
+      else extrait.remove()
+      return li
+    }
+
+    function rendre() {
+      const visibles = filtres()
+      liste.replaceChildren(...visibles.slice(0, montres).map(element))
+      plus.hidden = visibles.length <= montres
+      const n = visibles.length
+      statut.textContent = n ? `${n} résultat${n > 1 ? 's' : ''} pour « ${requete} »` : `Aucun résultat pour « ${requete} » dans cette source.`
+    }
+
+    if (!requete) {
+      statut.textContent = 'Tapez votre recherche ci-dessus.'
+    } else {
+      sofia.href = urlSofia(requete)
+      $<HTMLElement>('[data-lien-sofia-texte]').textContent = `Chercher « ${requete} » dans Sofia`
+      statut.textContent = 'Chargement des résultats…'
+      chargerIndex('sites')
+        .then((index) => {
+          resultats = suggerer(index, requete)
+          for (const radio of radios) {
+            const nombre = radio.value === 'tout' ? resultats.length : resultats.filter((r) => cleSource(r) === radio.value).length
+            page.querySelector(`[data-compte="${radio.value}"]`)!.textContent = String(nombre)
+          }
+          outils.hidden = false
+          rendre()
+        })
+        .catch(() => {
+          statut.textContent = "Les résultats n'ont pas pu être chargés. Réessayez dans un moment."
+        })
+    }
+
+    radios.forEach((r) =>
+      r.addEventListener('change', () => {
+        montres = PAR_PAGE
+        rendre()
+      }),
+    )
+
+    plus.addEventListener('click', () => {
+      const premierNouveau = montres
+      montres += PAR_PAGE
+      rendre()
+      // Le focus va au premier résultat ajouté, pas en haut de la liste
+      liste.children[premierNouveau]?.querySelector('a')?.focus()
+    })
+  }
+</script>
+
+<style>
+  .page-resultats {
+    padding-block: var(--espace-bande);
+  }
+
+  h1 {
+    margin: 0 0 var(--espace-titre);
+    color: var(--couleur-texte);
+    overflow-wrap: anywhere;
+  }
+
+  .page-resultats :global(.champ-page) {
+    max-width: 48rem;
+  }
+
+  .outils {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-2);
+    margin-block: var(--espace-3) var(--espace-2);
+  }
+
+  .outils[hidden] {
+    display: none;
+  }
+
+  /* ---- Filtre par source : pastilles, des boutons radio natifs ---- */
+  .sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-1);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .source {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espace-1);
+    min-height: var(--taille-cible);
+    padding: 0.375rem var(--espace-2);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-plein);
+    background: var(--couleur-surface);
+    color: var(--couleur-texte);
+    font-size: var(--texte-reduit);
+    font-weight: var(--graisse-moyenne);
+    cursor: pointer;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      border-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Le bouton radio couvre la pastille : clavier et lecteurs d'écran natifs */
+  .source input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .source:hover {
+    background: var(--couleur-teinte);
+  }
+
+  .source:has(input:checked) {
+    border-color: var(--bleu-fonce);
+    background: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+  }
+
+  .source:has(input:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .compte {
+    padding: 0 var(--espace-1);
+    border-radius: var(--rayon-plein);
+    background: color-mix(in srgb, currentColor 12%, transparent);
+    font-size: var(--texte-tres-petit);
+  }
+
+  .compte:empty {
+    display: none;
+  }
+
+  .sofia {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: var(--taille-cible);
+    color: var(--couleur-accent);
+    font-weight: var(--graisse-forte);
+    overflow-wrap: anywhere;
+  }
+
+  .sofia :global(svg) {
+    flex-shrink: 0;
+  }
+
+  .etat {
+    margin: 0 0 var(--espace-1);
+    color: var(--couleur-texte-secondaire);
+  }
+
+  /* ---- Résultats ---- */
+  .liste {
+    max-width: 48rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .liste :global(li + li) {
+    border-block-start: 1px solid var(--couleur-bordure);
+  }
+
+  .liste :global(.resultat) {
+    display: block;
+    padding-block: var(--espace-2);
+    color: var(--couleur-accent);
+    text-decoration: none;
+  }
+
+  .liste :global(.ligne) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--espace-1);
+  }
+
+  .liste :global(.source-nom),
+  .liste :global(.fleche) {
+    flex-shrink: 0;
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-forte);
+  }
+
+  .liste :global(.titre) {
+    min-width: 0;
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-forte);
+    overflow-wrap: anywhere;
+  }
+
+  .liste :global(.resultat:hover .titre) {
+    text-decoration: underline;
+  }
+
+  .liste :global(.externe) {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .liste :global(.extrait) {
+    display: block;
+    margin-block-start: 0.25rem;
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-reduit);
+  }
+
+  .plus {
+    min-height: var(--taille-cible);
+    margin-block-start: var(--espace-2);
+    padding: var(--espace-1) 1.25rem;
+    border: 1px solid var(--couleur-accent);
+    border-radius: var(--rayon-plein);
+    background: var(--couleur-surface);
+    color: var(--couleur-accent);
+    font: inherit;
+    font-weight: var(--graisse-forte);
+    cursor: pointer;
+  }
+
+  .plus[hidden] {
+    display: none;
+  }
+
+  .plus:hover {
+    background: var(--couleur-teinte);
+  }
+
+  @media (forced-colors: active) {
+    .source:has(input:checked) {
+      border: 2px solid SelectedItem;
+    }
+
+    .source:has(input:checked) span:first-of-type {
+      text-decoration: underline;
+    }
+  }
+</style>

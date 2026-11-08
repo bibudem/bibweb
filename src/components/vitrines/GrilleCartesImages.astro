@@ -1,0 +1,49 @@
+---
+/*
+ * Grille de cartes à photo (CarteImage) des blocs « cartes-images » et
+ * « onglets » : --espace-grille entre les cartes (.62rem dans la source),
+ * comme toutes les grilles de cartes. Le titre et le texte
+ * passés en slot se placent au début de la grille, comme dans les onglets
+ * d'espaces où ils occupaient toute une rangée. Les marges autour de la
+ * grille sont celles du bloc qui l'emploie (classe `class`), pas un style en
+ * ligne : un style en ligne empêchait la bande d'annuler la marge de son
+ * premier et de son dernier enfant.
+ */
+import CarteImage from '@/components/contenu/cartes/CarteImage.astro'
+import type { BlocDe } from './types'
+
+interface Props {
+  cartes: BlocDe<'cartes-images'>['cartes']
+  niveauTitre: 2 | 3
+  class?: string
+}
+
+const { cartes, niveauTitre, class: classe } = Astro.props
+---
+
+<div class:list={['grille-cartes-images', classe]} data-revelation="groupe">
+  <slot />
+  {
+    cartes.map((carte) => (
+      <div>
+        <CarteImage title={carte.titre} Image={carte.image} href={carte.lien} moreText={carte.appel} niveauTitre={niveauTitre} />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  /* Les cartes (330 px) passent à la ligne quand la rangée est pleine */
+  .grille-cartes-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-grille);
+  }
+
+  /* Sans min-width: 0, un élément flexible ne descend pas sous son plus long
+     mot : « avant-garde » (h2 du slot) faisait défiler la page de côté avec
+     le texte à 200 % (19 px à 900 px) au lieu d'être coupé par overflow-wrap. */
+  .grille-cartes-images > :global(*) {
+    min-width: 0;
+  }
+</style>

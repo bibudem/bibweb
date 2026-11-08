@@ -1,0 +1,23 @@
+---
+title: Nouvelles
+description: 'Nouvelles des bibliothèques de l’UdeM : services, travaux, horaires, bourses, collections et activités.'
+---
+
+import FilArianePage from '@/components/contenu/mise-en-page/FilArianePage.astro'
+import ListeNouvelles from '@/components/contenu/dynamiques/ListeNouvelles.astro'
+import Section from '@/components/contenu/mise-en-page/Section.astro'
+import BannierePage from '@/components/contenu/mise-en-page/BannierePage.astro'
+
+<BannierePage
+  title="Nouvelles"
+  imageName="default"
+  size="small"
+/>
+
+<FilArianePage />
+
+<Section>
+
+  <ListeNouvelles />
+
+</Section>

@@ -1,0 +1,30 @@
+---
+/*
+ * Bloc « quoi-de-neuf » (accueil) : titre et les trois colonnes dynamiques
+ * de QuoiDeNeuf (événements, nouvelles, formations), dans cet ordre. Les
+ * colonnes et leurs ancres (#evenements, #nouvelles, #formations) sont fixes :
+ * le rédacteur ne choisit que le titre et le nombre d'éléments par colonne.
+ */
+import QuoiDeNeuf from '@/components/contenu/dynamiques/QuoiDeNeuf.astro'
+import ListeEvenements from '@/components/contenu/dynamiques/ListeEvenements.astro'
+import ListeNouvellesAccueil from '@/components/contenu/dynamiques/ListeNouvellesAccueil.astro'
+import ListeFormationsAccueil from '@/components/contenu/dynamiques/ListeFormationsAccueil.astro'
+import Titre from './Titre.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'quoi-de-neuf'> }
+
+const { bloc } = Astro.props
+const onglets = [
+  { id: 'evenements', label: 'Événements' },
+  { id: 'nouvelles', label: 'Nouvelles' },
+  { id: 'formations', label: 'Formations' },
+]
+---
+
+<Titre texte={bloc.titre} id={bloc.id} />
+<QuoiDeNeuf onglets={onglets}>
+  <ListeEvenements id="evenements" limit={bloc.nombre} />
+  <ListeNouvellesAccueil title="Nouvelles" id="nouvelles" limit={bloc.nombre} />
+  <ListeFormationsAccueil id="formations" limit={bloc.nombre} />
+</QuoiDeNeuf>

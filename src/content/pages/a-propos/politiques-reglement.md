@@ -1,0 +1,72 @@
+---
+title: Politiques et règlement
+description: 'Règlement des bibliothèques, modalités de prêt, grille des tarifs, politiques d’acquisition, de dons et d’exposition, et code de conduite des usagers.'
+crumbLabel: Politiques et règlement
+secondaryNav:
+  order: 5
+superHero:
+  imageName: espaces
+  title: À propos
+---
+## Politiques et règlement
+
+- [Règlement des bibliothèques](https://secretariatgeneral.umontreal.ca/public/secretariatgeneral/documents/doc_officiels/reglements/administration/ges40_19-reglement-bibliotheques.pdf)
+- [Modalités de prêt](/obtenir/pret-renouvellement-retour/)
+- [Grille des tarifs](/obtenir/grille-tarifs.pdf)
+- [Lignes directrices d’acquisition](/a-propos/politiques-reglement/lignes-directrices-privilegier-format-numerique.pdf)
+- [Politique sur les dons de documents](/nous-soutenir/politique-dons-2025-adoptee.pdf)
+- [Politique d’exposition](/a-propos/politiques-reglement/politique-exposition.pdf)
+
+### Code de conduite
+
+Considérant que
+
+- la Direction des bibliothèques met tout en œuvre pour fournir à ses usagers et usagères un environnement propice au travail intellectuel dans un climat agréable et respectueux;
+- toute personne qui fréquente les bibliothèques contribue à créer et à maintenir cet environnement d’étude;
+- le code de conduite s’adresse à tous les usagers et usagères et est en vigueur en tout temps et en tout lieu dans les espaces des bibliothèques;
+- toute personne qui déroge à ce code peut se voir imposer une sanction prévue à l’article 5.3 Rappel à l’ordre et interdiction d’accès du Règlement sur les bibliothèques (40.19). En cas de litige, le Règlement sur les bibliothèques prévaut sur le présent code de conduite.
+
+L’usager ou l’usagère s’engage à :
+
+#### 1. Faire preuve de civisme
+
+- agir avec courtoisie envers le personnel et les autres usagers et usagères;
+- utiliser un langage adéquat;
+- utiliser seulement l’espace dont il ou elle a besoin en bibliothèque afin de respecter les autres personnes;
+- respecter les règles de prêt;
+- respecter les heures d’ouverture et de fermeture des bibliothèques.
+
+#### 2. Respecter l’ambiance des bibliothèques
+
+- respecter l’ambiance des bibliothèques et avoir le comportement attendu selon la zone dans laquelle il ou elle se trouve : aire de service, zone de silence et zone de discussion;
+- éviter tout bruit pouvant gêner la concentration des personnes qui l’entourent : baisser le volume des appareils audio et éviter les conversations à voix haute;
+- respecter l’interdiction de procéder à quelque forme de sollicitation, d’activité commerciale, de pétition et d’affichage que ce soit, sans avoir obtenu l’autorisation des personnes responsables dans les bibliothèques.
+
+#### 3. Prendre soin de la collection, des lieux et des équipements
+
+- garder les documents des bibliothèques en bon état. Ne pas annoter, crayonner, surligner, découper, déchirer, écorner ou endommager autrement les documents;
+- laisser les documents consultés dans les espaces prévus à cette fin;
+- respecter l’interdiction de manger dans les bibliothèques;
+- boire des boissons non alcoolisées dans des contenants avec couvercle, sauf à la Bibliothèque des livres rares et collections spéciales, où il est interdit de boire;
+- utiliser les équipements informatiques aux fins d’étude et de recherche, dans le respect des règles de l’Université de Montréal;
+- respecter la configuration des postes informatiques et ne pas la modifier;
+- se conformer aux conditions d’utilisation des équipements et des locaux;
+- laisser les lieux propres et en ordre en les quittant.
+
+#### 4. Établir son identité et contribuer à la sécurité des lieux
+
+- pouvoir se nommer et présenter sa carte d’identité à un agent de sécurité ou à un membre du personnel en tout temps;
+- être responsable de la protection de ses effets personnels;
+- se soumettre à l’inspection de ses effets personnels lorsque l’alarme du système électronique antivol se déclenche;
+- signaler tout comportement inopportun au personnel des bibliothèques.
+
+#### 5. Respecter les règles
+
+- respecter le Règlement sur les bibliothèques (40.19) ainsi que les modalités de prêt. Seuls les responsables des bibliothèques sont autorisés à accorder des exceptions aux politiques des bibliothèques;
+- respecter toutes les règles, directives et politiques de l’Université de Montréal, en plus du présent code de conduite;
+- respecter les dispositions entourant la Loi sur le droit d’auteur et dégager l’Université de toute responsabilité découlant d’une violation de ladite loi; se conformer aux Directives administratives générales concernant la reproduction d’une publication protégée par le droit d’auteur émises par l’Université et à l’Avis aux usagers de logiciels à l’Université de Montréal;
+- respecter les licences d’utilisation des ressources électroniques et audiovisuelles;
+- respecter l’interdiction de télécharger et de reproduire systématiquement le contenu des ressources électroniques;
+- préserver la confidentialité de ses codes d’accès.
+
+[Écrivez-nous](mailto:unequestion@bib.umontreal.ca) pour nous faire part de vos questions et de vos commentaires.

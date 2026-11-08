@@ -1,0 +1,92 @@
+---
+/*
+ * Bloc « cartes-revelation » : carrousel (Carrousel) de cartes qui révèlent
+ * un texte au survol, au focus ou au toucher. Une carte à `image` est une
+ * CarteRevelationImage (photo, sous-titre facultatif) ; une carte à `icone`, une
+ * CarteRevelationFond sur le fond `couleurCartes`.
+ *
+ * Disposition `compacte` : cartes dépliables (CarteDepliable) en rangées de
+ * deux (GrilleElargissable), titre et texte du bloc au-dessus, lien « tout
+ * voir » en bouton centré dessous.
+ *
+ * Le bouton d'une carte à photo est blanc, texte foncé, comme dans la source
+ * (espaces : « Réservez votre salle ») : le bouton bleu foncé ne se voyait
+ * pas sur le voile bleu foncé de la carte révélée.
+ */
+import Carrousel from '@/components/contenu/mise-en-page/Carrousel.astro'
+import GrilleElargissable from '@/components/contenu/cartes/GrilleElargissable.astro'
+import CarteDepliable from '@/components/contenu/cartes/CarteDepliable.astro'
+import CarteRevelationImage from '@/components/contenu/cartes/CarteRevelationImage.astro'
+import CarteRevelationFond from '@/components/contenu/cartes/CarteRevelationFond.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'cartes-revelation'> }
+
+const { bloc } = Astro.props
+const icones = await Promise.all(bloc.cartes.map((carte) => (carte.icone ? composantIcone(carte.icone) : undefined)))
+const styleBouton = { backgroundColor: 'var(--couleur-surface)', color: 'var(--couleur-texte)' }
+---
+
+{
+  bloc.disposition === 'compacte' && (
+    <Fragment>
+      <Titre texte={bloc.titre} id={bloc.id} />
+      {bloc.texte && <TexteMarkdown texte={bloc.texte} brut />}
+      <GrilleElargissable style={{ marginTop: 'var(--espace-bloc)' }}>
+        {bloc.cartes.map((carte, i) => (
+          <CarteDepliable titre={carte.titre} Icon={icones[i]} couleur={bloc.couleurCartes}>
+            {carte.texte && <TexteMarkdown texte={carte.texte} brut />}
+          </CarteDepliable>
+        ))}
+      </GrilleElargissable>
+      {bloc.lienTout && (
+        <div class="pied-bloc">
+          <Bouton href={bloc.lienTout.lien} target={bloc.lienTout.nouvelOnglet ? '_blank' : undefined}>
+            {bloc.lienTout.texte}
+          </Bouton>
+        </div>
+      )}
+    </Fragment>
+  )
+}
+{bloc.disposition === 'carrousel' && (
+<Carrousel ariaLabel={bloc.titre} moreText={bloc.lienTout?.texte} moreLink={bloc.lienTout?.lien} moreTarget={bloc.lienTout?.nouvelOnglet ? '_blank' : undefined}>
+  <Titre slot="title" texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <TexteMarkdown slot="description" texte={bloc.texte} espacerParagraphes />}
+  {
+    bloc.cartes.map((carte, i) =>
+      carte.image ? (
+        <CarteRevelationImage title={carte.titre} subtitle={carte.sousTitre} Image={carte.image}>
+          {carte.texte && <TexteMarkdown texte={carte.texte} brut />}
+          {carte.bouton && (
+            <Bouton href={carte.bouton.lien} style={styleBouton}>
+              {carte.bouton.texte}
+            </Bouton>
+          )}
+        </CarteRevelationImage>
+      ) : (
+        <CarteRevelationFond title={carte.titre} Icon={icones[i]} bg={bloc.couleurCartes}>
+          {carte.texte && <TexteMarkdown texte={carte.texte} brut />}
+          {carte.bouton && (
+            <Bouton href={carte.bouton.lien} primary={!carte.bouton.secondaire} secondary={carte.bouton.secondaire} variant={carte.bouton.contour ? 'outlined' : undefined}>
+              {carte.bouton.texte}
+            </Bouton>
+          )}
+        </CarteRevelationFond>
+      ),
+    )
+  }
+</Carrousel>
+)}
+
+<style>
+  .pied-bloc {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--espace-5);
+  }
+</style>

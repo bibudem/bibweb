@@ -1,0 +1,73 @@
+---
+/*
+ * Bloc « icone-texte » : grande icône dans un carré de couleur à gauche,
+ * titre, texte et boutons à droite (colonnes 3/12 et 8/12 de ColonnesTexte,
+ * comme le HeroWithText de la source, et IconeCarree).
+ *
+ * Les boutons vont dans le pied de la colonne, sur une rangée qui passe à la
+ * ligne : la source les mettait tantôt dans le texte, avec une marge à gauche
+ * qui décalait le second bouton une fois passé à la ligne, tantôt dans le pied.
+ *
+ * `accordeons` s'affichent sous le texte, dans la colonne de droite :
+ * alignés sur le titre et le texte, ils ne débordent plus à gauche de
+ * l'icône (engagements : principes de l'IA).
+ */
+import ColonnesTexte from '@/components/contenu/mise-en-page/ColonnesTexte.astro'
+import IconeCarree from '@/components/contenu/cartes/IconeCarree.astro'
+import BoutonVitrine from './BoutonVitrine.astro'
+import Titre from './Titre.astro'
+import Volets from './Volets.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Props = { bloc: BlocDe<'icone-texte'> }
+
+const { bloc } = Astro.props
+const Icone = await composantIcone(bloc.icone)
+const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-sur-fonce)' : bloc.couleurIcone
+---
+
+<ColonnesTexte rapport="3-8" avecPiedDroit={Boolean(bloc.boutons?.length)}>
+  <IconeCarree slot="gauche" color={couleur}><IconeSprite icone={Icone} /></IconeCarree>
+  <Fragment slot="droite">
+    <Titre texte={bloc.titre} id={bloc.id} />
+    <TexteMarkdown texte={bloc.texte} espacerParagraphes />
+    {
+      bloc.accordeons && (
+        <div class="volets">
+          <Volets volets={bloc.accordeons} couleur={bloc.couleurAccordeons} fond={bloc.fond} />
+        </div>
+      )
+    }
+  </Fragment>
+  {
+    bloc.boutons && (
+      <div slot="piedDroit" class="boutons">
+        {bloc.boutons.map((bouton) => (
+          <BoutonVitrine bouton={bouton} fond={bloc.fond} />
+        ))}
+      </div>
+    )
+  }
+</ColonnesTexte>
+
+<style>
+  .volets {
+    margin-top: var(--espace-element);
+  }
+
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-element);
+  }
+
+  /* Bouton à contour : pilule blanche bordée, pour ne pas se fondre dans le
+     fond de la bande */
+  .boutons :global(.variante-outlined:not(.clair)) {
+    --bouton-fond: var(--couleur-surface);
+    --bouton-fond-survol: var(--couleur-teinte);
+  }
+</style>

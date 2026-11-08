@@ -1,0 +1,84 @@
+---
+/*
+ * Directive :::cartes (RenduDirectives) : grille de cartes à photo
+ * (CarteImage), ou de cartes à icône (CarteTexte, ou CarteIcone avec appel).
+ * Icônes et images sont chargées par RenduDirectives et arrivent dans
+ * `cartes`.
+ */
+import type { ImageMetadata } from 'astro'
+import type { ComponentProps } from 'astro/types'
+import CarteTexte from '@/components/contenu/cartes/CarteTexte.astro'
+import CarteIcone from '@/components/contenu/cartes/CarteIcone.astro'
+import CarteImage from '@/components/contenu/cartes/CarteImage.astro'
+
+interface Carte {
+  titre: string
+  lien: string
+  appel?: string
+  /** Photo (forme=image) ou composant d'icône */
+  ressource: any
+}
+
+interface Props {
+  forme?: 'image' | 'icone-appel'
+  couleur?: ComponentProps<typeof CarteIcone>['color']
+  niveau?: ComponentProps<typeof CarteImage>['niveauTitre']
+  cartes: Carte[]
+}
+
+const { forme, couleur, niveau, cartes } = Astro.props
+---
+
+{
+  forme === 'image' ? (
+    <div class="cartes-images">
+      {cartes.map((carte) => (
+        <CarteImage title={carte.titre} Image={carte.ressource as ImageMetadata} href={carte.lien} moreText={carte.appel} niveauTitre={niveau} />
+      ))}
+    </div>
+  ) : (
+    <div class="cartes-icones">
+      {cartes.map((carte) => (
+        <div>
+          {forme === 'icone-appel' ? (
+            <CarteIcone title={carte.titre} Icon={carte.ressource} href={carte.lien} moreText={carte.appel} color={couleur} fullWidth />
+          ) : (
+            <CarteTexte title={carte.titre} Icon={carte.ressource} href={carte.lien} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  /* Grilles de cartes : mêmes écarts que les blocs de vitrine (la source
+     donnait 4rem autour des cartes à icône, 2rem autour des cartes à photo) */
+  .cartes-icones {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  /* Cartes à icône de la source (a-propos/carriere) : 1, 2 puis 3 colonnes */
+  @media (width >= 600px) {
+    .cartes-icones {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 900px) {
+    .cartes-icones {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* CarteImage a une largeur fixe (330 px) : les cartes passent à la ligne */
+  .cartes-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+</style>

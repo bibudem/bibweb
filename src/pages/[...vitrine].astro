@@ -1,0 +1,20 @@
+---
+/*
+ * Génère les vitrines (accueil et pages de section, fichiers .yaml de
+ * src/content/pages/). Route distincte de [...chemin].astro (pages de texte
+ * et nouvelles) pour que chaque page ne charge que le CSS de son gabarit.
+ */
+import GabaritVitrine from '@/layouts/GabaritVitrine.astro'
+import { toutesLesPages, estVitrine, type Vitrine } from '@/lib/contenu'
+
+export async function getStaticPaths() {
+  return (await toutesLesPages()).filter(estVitrine).map((vitrine) => ({
+    params: { vitrine: vitrine.id === 'index' ? undefined : vitrine.id },
+    props: { vitrine },
+  }))
+}
+
+const { vitrine } = Astro.props as { vitrine: Vitrine }
+---
+
+<GabaritVitrine vitrine={vitrine} />

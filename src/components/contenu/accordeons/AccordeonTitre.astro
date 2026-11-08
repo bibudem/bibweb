@@ -1,0 +1,131 @@
+---
+/*
+ * Titre cliquable d'un volet (d'après coquille-web), rendu en
+ * <summary>. Comme MUI, la source plaçait le titre dans un h3 : on garde ce
+ * niveau par défaut, réglable par `niveauTitre` pour respecter la
+ * hiérarchie de la page (0 : pas de titre). Le contenu doit rester du texte :
+ * un lien ou un bouton dans un <summary> serait un élément interactif
+ * imbriqué.
+ *
+ * Apparence de la source : 30 px au-dessus, 20 px dessous, trait de 1 px à
+ * la couleur du groupe, titre 1,2222rem semi-gras coloré quand le volet est
+ * ouvert, icône plus ou moins de 17,5 px dans une pastille de 35 px qui
+ * s'efface à l'ouverture. Le changement d'icône (et non la seule pastille)
+ * marque l'état, y compris en couleurs forcées.
+ */
+import { MinusIcon } from '@phosphor-icons/react/dist/ssr/Minus'
+import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  niveauTitre?: 0 | 2 | 3 | 4 | 5 | 6
+  id?: string
+  class?: string
+  style?: Style
+}
+
+// aria-controls n'a plus de cible : <details> relie lui-même titre et contenu
+const { niveauTitre = 3, class: classe, style, ...reste } = Astro.props
+const Titre = niveauTitre ? `h${niveauTitre}` : 'span'
+---
+
+<summary class:list={['sommaire', classe]} style={fusionnerStyles(style)} {...reste}>
+  <Titre class="titre"><slot /></Titre>
+  <span class="indicateur" aria-hidden="true">
+    <IconeSprite icone={PlusIcon} className="plus" size={17.5} focusable="false" />
+    <IconeSprite icone={MinusIcon} className="moins" size={17.5} focusable="false" />
+  </span>
+</summary>
+
+<style>
+  .sommaire {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-2);
+    padding: 30px 0 20px;
+    border-bottom: 1px solid var(--accordeon-filet, var(--couleur-accent));
+    list-style: none;
+    cursor: pointer;
+    transition: color var(--duree-moyenne-3) var(--courbe-emphase);
+  }
+
+  .sommaire::-webkit-details-marker {
+    display: none;
+  }
+
+  .titre {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--police-sans);
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+  }
+
+  :global(details[open]) > .sommaire {
+    color: var(--accordeon-accent, var(--bleu-principal));
+  }
+
+  .indicateur {
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 35px;
+    height: 35px;
+    color: var(--accordeon-accent, var(--bleu-principal));
+  }
+
+  .indicateur::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-dessous);
+    border-radius: var(--rayon-plein);
+    background-color: var(--accordeon-pastille, var(--bleu-100));
+    transition: opacity var(--duree-moyenne-3) var(--courbe-emphase);
+  }
+
+  :global(details[open]) > .sommaire .indicateur::after {
+    opacity: 0;
+  }
+
+  /* Plus et moins superposés : l'un tourne et s'efface pendant que l'autre
+     arrive, au lieu d'un échange sec */
+  .plus,
+  .moins {
+    grid-area: 1 / 1;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      transform var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .moins {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+
+  :global(details[open]) > .sommaire .plus {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+
+  :global(details[open]) > .sommaire .moins {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* La pastille disparaît en couleurs forcées : on cerne l'icône pour que
+     l'indicateur reste repérable comme commande */
+  @media (forced-colors: active) {
+    .indicateur::after {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

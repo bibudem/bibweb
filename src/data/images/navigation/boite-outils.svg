@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1254 1254" role="img" aria-labelledby="title desc">
+  <title id="title">Boîte ouverte avec documents</title>
+  <desc id="desc">Icône vectorielle blanche représentant une boîte ouverte et trois documents sur fond orange.</desc>
+  <rect width="1254" height="1254" fill="#F04E24"/>
+
+  <!-- Grand rabat supérieur gauche -->
+  <path fill="#fff" d="M103.7 349.1 426.5 186.2a14 14 0 0 1 13.7.8l133.2 82.2a13 13 0 0 1 6.2 11.1v66.3L478 287.1a9 9 0 0 0-13.6 7.8v174.9a11 11 0 0 1-5.6 9.6l-94.3 51a13 13 0 0 1-13.5-.7L103.1 367.2a10.5 10.5 0 0 1 .6-18.1Z"/>
+
+  <!-- Document arrière -->
+  <path fill="#fff" d="M734.8 225.5 910.4 326a12 12 0 0 1 6 10.4v237.7a7.3 7.3 0 0 1-11 6.3l-52.3-31a13 13 0 0 1-6.4-11.2V369.4l-115.5-66.7a8 8 0 0 1-4-6.9v-63.9a8.8 8.8 0 0 1 7.6-6.4Z"/>
+
+  <!-- Document central -->
+  <path fill="#fff" d="M632.6 294.3 801.5 390a12 12 0 0 1 6.1 10.4v230.8a7.3 7.3 0 0 1-11 6.3l-52.4-31a13 13 0 0 1-6.4-11.2V436.9l-108.6-63a8 8 0 0 1-4-6.9v-65.8a8 8 0 0 1 7.4-6.9Z"/>
+
+  <!-- Document avant -->
+  <path fill="#fff" d="m513.2 355.3 177 99.7a13 13 0 0 1 6.6 11.3v222.8a7.5 7.5 0 0 1-11.2 6.5L511.1 595.2a13 13 0 0 1-6.5-11.2V362.5a8.3 8.3 0 0 1 8.6-7.2Z"/>
+
+  <!-- Face gauche de la boîte -->
+  <path fill="#fff" d="m365.4 570.3 281.5 160a13 13 0 0 1 6.6 11.3v355.8a7.8 7.8 0 0 1-11.7 6.8L361 943.2a14 14 0 0 1-7-12.1V578.4a9.1 9.1 0 0 1 11.4-8.1Z"/>
+
+  <!-- Face droite de la boîte -->
+  <path fill="#fff" d="m703.7 731.7 290.1-154.8a8.9 8.9 0 0 1 13.1 7.9v346.7a14 14 0 0 1-7.4 12.4l-290.7 157.3a7.8 7.8 0 0 1-11.5-6.9V743.1a13 13 0 0 1 6.4-11.4Z"/>
+</svg>

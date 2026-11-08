@@ -1,0 +1,90 @@
+---
+/*
+ * Fil d'Ariane (motif Breadcrumb de l'APG WAI-ARIA) : une liste ordonnée dans
+ * un <nav> nommé, la page courante marquée aria-current="page".
+ *
+ * Le libellé d'une page dans une autre langue (frontmatter `lang`) porte son
+ * lang ; `lang` sur le <nav> remet le fil en français sur une telle page.
+ * Un groupe de pages (« À propos du site ») n'a pas de page à lui : son
+ * maillon est du texte, sans lien.
+ */
+import { filAriane } from '@/lib/contenu'
+
+interface Props {
+  url: string
+  lang?: string
+}
+
+const maillons = await filAriane(Astro.props.url)
+---
+
+<nav class="fil-ariane" aria-label="Fil d'Ariane" lang={Astro.props.lang}>
+  <ol>
+    {
+      maillons.map((m, i) =>
+        i === maillons.length - 1 ? (
+          <li>
+            <span aria-current="page" lang={m.lang}>
+              {m.libelle}
+            </span>
+          </li>
+        ) : m.url ? (
+          <li>
+            <a href={m.url} lang={m.lang}>
+              {m.libelle}
+            </a>
+          </li>
+        ) : (
+          <li>
+            <span lang={m.lang}>{m.libelle}</span>
+          </li>
+        ),
+      )
+    }
+  </ol>
+</nav>
+
+<style>
+  .fil-ariane {
+    margin-block-end: var(--espace-4);
+    font-size: var(--texte-petit);
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--espace-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  li + li::before {
+    content: '';
+    width: 0.4em;
+    height: 0.4em;
+    border-block-start: 1.5px solid currentColor;
+    border-inline-end: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    opacity: 0.6;
+  }
+
+  /* Cible de 24 px de haut au moins (WCAG 2.5.8), le texte n'en faisait que 17 */
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--couleur-lien);
+  }
+
+  [aria-current='page'] {
+    color: var(--couleur-texte);
+    font-weight: var(--graisse-forte);
+  }
+</style>

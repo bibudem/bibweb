@@ -1,0 +1,240 @@
+---
+/*
+ * Bloc « cartes-sections » (accueil) : de deux à quatre cartes côte à côte
+ * dès 900 px, de même hauteur, l'une sous l'autre en dessous. Chaque carte
+ * est une petite section : photo en haut, titre (h2, avec son ancre), texte
+ * et bouton, sur son propre fond.
+ *
+ * Mobile (< 600 px), comme dans studio·bib : un carrousel qui se glisse du
+ * doigt. Les cartes sont sur une rangée, la suivante dépasse pour montrer la
+ * suite, le défilement s'accroche à chaque carte, un dégradé à droite le
+ * signale ; dessous, la barre de progression et les flèches communes à tous
+ * les carrousels du site (src/lib/carrousel.ts). La rangée va
+ * jusqu'aux bords de l'écran. De 600 à 900 px, deux cartes par rangée.
+ *
+ * Fond et couleurs de texte suivent les tons de src/lib/fonds.ts, comme les
+ * bandes (Section) : blanc sur un fond foncé, bleu foncé sur un fond clair ou
+ * moyen. Le bouton est toujours secondaire (à contour), pour que les quatre
+ * cartes pèsent autant l'une que l'autre ; variante claire (`light`) sur un
+ * fond foncé.
+ */
+import { Picture } from 'astro:assets'
+import Bouton from '@/components/primitives/Bouton.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import BoutonsCarrousel from '@/components/partage/BoutonsCarrousel.astro'
+import ProgressionCarrousel from '@/components/partage/ProgressionCarrousel.astro'
+import { idUnique } from '@/lib/ids'
+import { FONDS } from '@/lib/fonds'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'cartes-sections'> }
+
+const { bloc } = Astro.props
+const idPiste = idUnique('cartes-sections')
+---
+
+<div class="carrousel-cartes" data-cartes-carrousel>
+<ul class="cartes" id={idPiste} data-revelation="groupe" data-piste>
+  {
+    bloc.cartes.map((carte) => {
+      const fond = carte.fond ? FONDS[carte.fond] : undefined
+      const ton = fond?.ton ?? 'clair'
+      return (
+        <li class:list={['carte', `ton-${ton}`, ton === 'moyen' && 'theme-clair']} style={fond ? `--carte-fond: ${fond.couleur}` : undefined}>
+          <div class="cadre">
+            <Picture src={carte.image} alt="" widths={[400, 600, 800]} sizes="(min-width: 900px) 33vw, 100vw" formats={['avif', 'webp']} fallbackFormat="webp" class="photo" loading="lazy" decoding="async" />
+          </div>
+          <div class="contenu">
+            <Titre texte={carte.titre} id={carte.id} />
+            <TexteMarkdown texte={carte.texte} brut />
+            {carte.bouton && (
+              <div class="pied">
+                <Bouton href={carte.bouton.lien} secondary variant="outlined" light={ton === 'fonce'}>
+                  {carte.bouton.texte}
+                </Bouton>
+              </div>
+            )}
+          </div>
+        </li>
+      )
+    })
+  }
+</ul>
+  <div class="pied-carrousel">
+    <ProgressionCarrousel />
+    <BoutonsCarrousel class="fleches" piste={idPiste} />
+  </div>
+</div>
+
+<script>
+  // Carrousel mobile : barre de progression, flèches et annonce communes (src/lib/carrousel.ts)
+  import { brancherCarrousel } from '@/lib/carrousel'
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-cartes-carrousel]')) brancherCarrousel(racine)
+</script>
+
+<style>
+  .cartes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Mobile : carrousel au doigt (voir l'en-tête) */
+  @media (width < 600px) {
+    .cartes {
+      /* Marge intérieure de la bande (Section) sous 600 px : la rangée va
+         exactement jusqu'aux bords de l'écran */
+      --_bord: 16px;
+
+      display: flex;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--_bord);
+      margin-inline: calc(-1 * var(--_bord));
+      padding: 8px var(--_bord);
+      scrollbar-width: none;
+      /* Léger dégradé à droite : la rangée continue. Il tombe sur le
+         remplissage de fin de rangée : la dernière carte reste nette. */
+      mask-image: linear-gradient(to right, #000 calc(100% - 1.75rem), transparent);
+    }
+
+    .cartes::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cartes > .carte {
+      flex: 0 0 min(300px, 85%);
+      scroll-snap-align: start;
+    }
+  }
+
+  .pied-carrousel {
+    display: grid;
+    gap: var(--espace-1);
+    margin-top: var(--espace-element);
+  }
+
+  .fleches {
+    justify-content: center;
+  }
+
+  @media (width >= 600px) {
+    .pied-carrousel {
+      display: none;
+    }
+  }
+
+  @media (600px <= width < 900px) {
+    .cartes:has(> .carte:nth-child(4)) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 900px) {
+    .cartes {
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      grid-auto-flow: column;
+    }
+
+    /* Quatre cartes (accueil : les pages de la barre de navigation) : deux
+       par rangée à toutes les largeurs ; quatre colonnes, même à 1440 px,
+       serraient trop le texte et les titres des boutons */
+    .cartes:has(> .carte:nth-child(4)) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: row;
+    }
+  }
+
+  .carte {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--rayon-carte);
+    background-color: var(--carte-fond, var(--couleur-surface));
+  }
+
+  /* Tons (voir src/lib/fonds.ts et Section.astro) */
+  .ton-fonce {
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+    --rouge-orange-texte: var(--jaune);
+    color: var(--couleur-sur-fonce);
+  }
+
+  .ton-moyen {
+    --couleur-lien: var(--couleur-texte);
+    --couleur-lien-survol: var(--couleur-texte);
+    --couleur-focus: var(--bleu-fonce);
+    --rouge-orange-texte: var(--couleur-texte);
+    color: var(--couleur-texte);
+  }
+
+  .ton-clair {
+    color: var(--couleur-texte);
+  }
+
+  /* Carte sans fond ou de même couleur que la page : un filet la délimite */
+  .carte:not([style]) {
+    border: 1px solid var(--couleur-bordure);
+  }
+
+  /* Photo plus basse que le 3:2 d'origine, pour laisser le texte en avant :
+     16:9 sur téléphone, 2:1 dès 600 px (cartes plus larges) */
+  .cadre {
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  @media (width >= 600px) {
+    .cadre {
+      aspect-ratio: 2 / 1;
+    }
+  }
+
+  .cadre :global(picture) {
+    display: block;
+    height: 100%;
+  }
+
+  .cadre :global(.photo) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .contenu {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: var(--espace-carte);
+  }
+
+  /* Titre de carte : plus petit que celui d'une bande */
+  .contenu :global(h2.titre-bloc) {
+    font-size: 1.75rem;
+  }
+
+  .contenu :global(ul) {
+    margin-block: var(--espace-1) 0;
+  }
+
+  /* Le bouton se cale en bas : il tombe au même niveau d'une carte à l'autre */
+  .pied {
+    margin-top: auto;
+    padding-top: var(--espace-3);
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

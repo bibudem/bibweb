@@ -1,0 +1,161 @@
+# Page vitrine : voir docs/REDACTION.md, section « Vitrines »
+title: Les bibliothèques UdeM
+description: "Les 14 bibliothèques de l’Université de Montréal : espaces d’étude, collections, Sofia, aide à la recherche et formations, sur tous les campus."
+
+banniere:
+  titre: Curiosité illimitée
+  rechercheSofia: true
+  # Chaque portrait a son cadrage : le plus haut qui garde la tête entière
+  # sous le bandeau des horaires, de 1280 à 2560 px de large
+  # Une photo tirée au hasard à chaque chargement, avec son slogan
+  # (« Curiosité illimitée » ou « Puissant moteur de recherche », choisi
+  # pour chaque personne), affiché en accroche sous le h1 « Les
+  # bibliothèques de l'Université de Montréal ». Sans JavaScript, le premier
+  # portrait s'affiche.
+  portraits:
+    - image: ./images/portraits-accueil/emir.webp
+      titre: Curiosité illimitée
+      nom: Emir Chouchane
+      fonction: Conseiller en médiation technologique
+      cadrage: 26%
+    - image: ./images/portraits-accueil/indiana-1.webp
+      titre: Puissant moteur de recherche
+      nom: Indiana Delsart
+      fonction: Bibliothécaire Mathématiques / Informatique
+      cadrage: 42%
+    - image: ./images/portraits-accueil/indiana-2.webp
+      titre: Puissant moteur de recherche
+      nom: Indiana Delsart
+      fonction: Bibliothécaire Mathématiques / Informatique
+      cadrage: 26%
+    - image: ./images/portraits-accueil/indiana-3.webp
+      titre: Puissant moteur de recherche
+      nom: Indiana Delsart
+      fonction: Bibliothécaire Mathématiques / Informatique
+      cadrage: 40%
+    - image: ./images/portraits-accueil/jason.webp
+      titre: Puissant moteur de recherche
+      nom: Jason Madooray
+      fonction: Technicien en documentation
+      cadrage: 28%
+    - image: ./images/portraits-accueil/julia.webp
+      titre: Puissant moteur de recherche
+      nom: Julia Généreux Rendall
+      fonction: Bibliothécaire Science politique / Démographie
+      cadrage: 15%
+    - image: ./images/portraits-accueil/guillaume.webp
+      titre: Curiosité illimitée
+      nom: Guillaume Viart
+      fonction: Technicien à la médiatisation
+      cadrage: 18%
+      cadrageHorizontal: 64%
+    - image: ./images/portraits-accueil/chloe.webp
+      titre: Puissant moteur de recherche
+      nom: Chloé Sinotte
+      fonction: Bibliothécaire disciplinaire
+      cadrage: 22%
+      cadrageHorizontal: 68%
+      decalageMobile: 8%
+    - image: ./images/portraits-accueil/amy.webp
+      titre: Puissant moteur de recherche
+      nom: Amy Bergeron
+      fonction: Bibliothécaire offre pédagogique
+      cadrage: 21%
+      cadrageHorizontal: 68%
+      decalageMobile: 8%
+    - image: ./images/portraits-accueil/jia-1.webp
+      titre: Curiosité illimitée
+      nom: Jia Ao Sun
+      fonction: Doctorat en informatique, intelligence artificielle
+      cadrage: 18%
+    - image: ./images/portraits-accueil/jia-2.webp
+      titre: Curiosité illimitée
+      nom: Jia Ao Sun
+      fonction: Doctorat en informatique, intelligence artificielle
+      cadrage: 16%
+      cadrageHorizontal: 56%
+    - image: ./images/portraits-accueil/luna.webp
+      titre: Curiosité illimitée
+      nom: Luna Barrois de Sarigny
+      fonction: Baccalauréat en traduction
+      cadrage: 15%
+      cadrageHorizontal: 56%
+    - image: ./images/portraits-accueil/seyf-1.webp
+      titre: Curiosité illimitée
+      nom: Seyf Badreddine
+      fonction: Baccalauréat en sciences biologiques
+      cadrage: 33%
+    - image: ./images/portraits-accueil/seyf-2.webp
+      titre: Curiosité illimitée
+      nom: Seyf Badreddine
+      fonction: Baccalauréat en sciences biologiques
+      cadrage: 30%
+    - image: ./images/portraits-accueil/thea-1.webp
+      titre: Curiosité illimitée
+      nom: Théa Constant
+      fonction: Maîtrise en sciences vétérinaires
+      cadrage: 20%
+    - image: ./images/portraits-accueil/thea-2.webp
+      titre: Curiosité illimitée
+      nom: Théa Constant
+      fonction: Maîtrise en sciences vétérinaires
+      cadrage: 11%
+
+sections:
+  - type: quoi-de-neuf
+    id: quoi-de-neuf
+    titre: Quoi de neuf
+    nombre: 3
+
+  # Les pages de la barre de navigation, dans le même ordre et sous le même nom
+  - type: cartes-sections
+    cartes:
+      - fond: bleu100
+        titre: Espaces
+        texte: "Tout le monde s’y retrouve. Choisissez votre espace selon vos besoins du moment : horaires étendus, accès autonome, création numérique, cabine silencieuse, salon de détente… Le réseau, c’est 14 bibliothèques, chacune avec sa personnalité."
+        image: ./images/espaces-alveoles.webp
+        bouton:
+          texte: Découvrir nos espaces
+          lien: /espaces/
+      - fond: bleu100
+        titre: Études
+        texte: "Mille et une façons d’apprendre : guides de nos spécialistes, soutien informatique, formations gratuites, Service Accessibilité et aide personnalisée, de la première à la dernière session."
+        image: ./images/super-heroes/etudes.webp
+        bouton:
+          texte: Découvrir les services pour la communauté étudiante
+          lien: /etudes/
+      - fond: bleu100
+        titre: Recherche
+        texte: "Nos spécialistes vous accompagnent tout au long du cycle de la recherche : intelligence artificielle générative, données, synthèses des connaissances, publication et libre accès, mesure de l’impact."
+        image: ./images/recherche-accueil.webp
+        bouton:
+          texte: Explorer les services pour la recherche
+          lien: /recherche/
+      - fond: bleu100
+        titre: Enseignement
+        texte: "Réserve de cours, droit d’auteur et déclarations dans Savia, formations dans vos cours et dans StudiUM, salles et ressources éducatives libres : notre équipe appuie votre enseignement."
+        image: ./images/enseignement-accueil.webp
+        bouton:
+          texte: Découvrir les services pour l’enseignement
+          lien: /enseignement/
+
+  - type: image-texte
+    titre: Découvrez nos pièces uniques
+    texte: Nos collections spéciales forment de véritables laboratoires de recherche et de découverte. Parcourir les différents fonds, c’est découvrir le passé à travers nos livres rares et anciens, nos artefacts et nos collections d’images.
+    image: ./images/collections-speciales-montage.webp
+    positionImage: droite
+    boutons:
+      - texte: Explorer les collections spéciales
+        lien: https://collections-speciales.bib.umontreal.ca/
+      - texte: Découvrir la Bibliothèque des livres rares et collections spéciales
+        lien: /espaces/blrcs/
+        contour: true
+
+  - type: image-fond
+    image: ./images/engagement-accueil.webp
+    cadrage: 15%
+    titre: S’engager pour une science ouverte
+    texte: Notre équipe est résolument engagée dans le développement d’un accès universel aux savoirs, par son soutien à la Politique sur le libre accès aux publications savantes et par le financement de la publication de monographies savantes en libre accès, sans parler du soutien à de multiples outils et initiatives.
+    bouton:
+      texte: Nos engagements
+      lien: /engagements/

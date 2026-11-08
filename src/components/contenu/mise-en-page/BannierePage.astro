@@ -1,0 +1,315 @@
+---
+/*
+ * Bannière des pages de niveau 0 et 1 (d'après coquille-web) : photo
+ * sous un voile noir de 50 %, titre <h1> en bas à gauche.
+ *
+ * Hauteurs de la source : 26 / 30 / 34rem (moins de 600 px, jusqu'à 899 px,
+ * au-delà), 15 / 16 / 18rem en `size="small"`. La source la plaçait en
+ * position absolue (sous les bandeaux, mesurés en JS) avec un espaceur de
+ * hauteur - 4 / 6 / 8rem : le contenu suivant chevauchait donc le bas de la
+ * bannière, d'où les `<Section marginTop>` qui suivent.
+ * Ici, elle est dans le flux : glissée de 5rem sous l'en-tête transparent dès
+ * 1200 px (raccourcie d'autant en dessous, sous la barre compacte opaque), et
+ * une marge basse de 5rem - (4 | 6 | 8rem) reproduit le même chevauchement.
+ * Plus de mesure ni de saut au chargement.
+ *
+ * En `size="small"` sans `cadrage`, la photo est recadrée au build en 5:2
+ * (centre gardé) : la bannière fait de 1,6 à 5 fois sa hauteur en largeur,
+ * et les deux tiers d'une photo 3:2 étaient téléchargés pour être rognés.
+ * Sous 600 px, où la bannière est plus étroite que 5:2, la photo déborde en
+ * largeur (jusqu'à 1,6 fois l'écran) : `sizes` le dit au navigateur. Avec
+ * un `cadrage`, la photo reste entière, pour ne pas déplacer la partie gardée.
+ */
+import { Picture } from 'astro:assets'
+import Typographie from '@/components/primitives/Typographie.astro'
+import { imageBanniere, largeursPour } from '@/lib/bannieres'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  title: string
+  /** Police réduite pour le titre, comme un titre long (réglage `titreReduit` d'une vitrine) */
+  titreReduit?: boolean
+  /** Texte sous le titre (aussi possible en slot « subTitle ») */
+  subTitle?: string
+  imageName: string
+  alt?: string
+  /** Hauteur de la photo à garder au recadrage (« 20% ») ; le centre par défaut */
+  cadrage?: string
+  size?: 'default' | 'small'
+  /** Inutilisé, comme dans la source */
+  lvl?: number
+  class?: string
+  style?: Style
+}
+
+const { title, titreReduit = false, subTitle, imageName, alt = '', cadrage, size = 'default', lvl: _lvl, class: classe, style, ...reste } = Astro.props
+if (size !== 'default' && size !== 'small') throw new Error('BannierePage : `size` vaut « default » ou « small ».')
+const image = imageBanniere(imageName)
+const aSousTitre = subTitle !== undefined || Astro.slots.has('subTitle')
+const aEnfants = Astro.slots.has('default')
+const recadree = size === 'small' && !cadrage
+const recadrage = recadree ? { width: image.width, height: Math.round(image.width / 2.5), fit: 'cover' as const, position: 'center' } : {}
+
+// Titre long (un slogan d'une phrase, comme celui d'Espaces) : police réduite,
+// pour que la bannière ne soit pas qu'un bloc de texte sur 3 ou 4 lignes
+const TITRE_LONG = 45
+const titreLong = titreReduit || (typeof title === 'string' && title.length > TITRE_LONG)
+---
+
+<div class:list={['super-hero-2', 'fond-photo', 'vague', `taille-${size}`, { 'titre-long': titreLong }, classe]} style={fusionnerStyles(cadrage && { '--cadrage': cadrage }, style)} {...reste}>
+  <Picture
+    src={image}
+    formats={['avif', 'webp']} fallbackFormat="webp"
+    widths={largeursPour(image)}
+    sizes={recadree ? '(max-width: 599px) 160vw, 100vw' : '100vw'}
+    {...recadrage}
+    alt={alt}
+    loading="eager"
+    fetchpriority="high"
+    class="super-hero-image fond-photo-image"
+  />
+  <div class="texte">
+    <div class="colonne">
+      <Typographie component="h1" variant={size === 'small' ? 'titreSuperHeroSmall' : 'titreSuperHero'} class="titre">{title}</Typographie>
+      {
+        aSousTitre && (
+          <div class="sous-titre">
+            <slot name="subTitle">{subTitle}</slot>
+          </div>
+        )
+      }
+    </div>
+  </div>
+  {
+    aEnfants && (
+      <div class="enfants">
+        <slot />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .super-hero-2 {
+    /* Hauteur totale de la source, et ce que son espaceur en retranchait */
+    --hauteur: 26rem;
+    --retrait: 4rem;
+
+    display: flex;
+    position: relative;
+    isolation: isolate;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    /* Hauteur minimale et non fixe : avec le texte agrandi à 200 % (WCAG
+       1.4.4), le titre débordait et était rogné ; la bannière grandit */
+    min-height: calc(var(--hauteur) - 5rem);
+    margin-bottom: calc(5rem - var(--retrait));
+    overflow: hidden;
+    color: var(--couleur-sur-fonce);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+  }
+
+  /* Suivie d'une bande de couleur (vitrine dont la première section a un
+     fond) : la bannière la touche. Sous 600 px, la marge positive (1rem)
+     laissait voir le fond de la page entre la photo et la bande. */
+  .super-hero-2:has(+ :global(.section.marge-haut)) {
+    margin-bottom: min(0px, calc(5rem - var(--retrait)));
+  }
+
+  /* Suivie du fil d'Ariane d'une vitrine sous une section (GabaritVitrine) :
+     pas de chevauchement, il serait caché sous la photo */
+  .super-hero-2:has(+ :global(.fil-vitrine)) {
+    margin-bottom: 0;
+  }
+
+  /* Avec un sommaire (panneau de liens qui déborde de la bannière) : rien
+     n'est rogné, et la bannière passe au-dessus de la bande suivante (z-index 1,
+     sous celui du bandeau d'horaires, 2). La
+     photo et le voile sont en inset: 0, ils ne débordent pas. */
+  .super-hero-2:has([data-sommaire]) {
+    z-index: var(--z-dessus-1);
+    overflow: visible;
+  }
+
+  .taille-small {
+    --hauteur: 15rem;
+  }
+
+  @media (width >= 600px) {
+    .super-hero-2 {
+      --hauteur: 30rem;
+      --retrait: 6rem;
+    }
+
+    .taille-small {
+      --hauteur: 16rem;
+    }
+  }
+
+  @media (width >= 900px) {
+    .super-hero-2 {
+      --hauteur: 34rem;
+      --retrait: 8rem;
+    }
+
+    .taille-small {
+      --hauteur: 18rem;
+    }
+  }
+
+  @media (width >= 1200px) {
+    /* Glissée sous l'en-tête : le texte reste sous ses 5rem */
+    .super-hero-2 {
+      min-height: var(--hauteur);
+      margin-top: -5rem;
+      padding-top: 5rem;
+    }
+  }
+
+  /* Photo et voile : utilitaires .fond-photo et .vague de global.css
+     (--cadrage choisit la hauteur gardée, visages sous l'en-tête). La vague
+     bleu foncé de l'accueil monte du coin bas gauche, sous le titre : sur
+     toute la largeur sous 900 px, où le texte la prend aussi ; dès 900 px,
+     le texte n'occupe que la gauche et la photo reste intacte à droite. */
+  .super-hero-2 {
+    --vague-taille: 210% 150%;
+  }
+
+  @media (width >= 900px) {
+    .super-hero-2 {
+      --vague-taille: 100% 175%;
+    }
+  }
+
+  /* Même boîte qu'une Section : marges internes et largeur maximale */
+  .texte {
+    width: 100%;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: 48px 16px;
+  }
+
+  /* La source tirait la Section de -4rem vers le bas en taille réduite.
+     Plafonné à 72 px : la marge interne du bas est en px, et avec le texte
+     agrandi à 200 % les 4rem (136 px) faisaient passer le bas du titre sous
+     la bannière, qui le rognait (6,5 px à 390 px). Au texte par défaut,
+     4rem vaut 68 ou 72 px : inchangé. */
+  .taille-small .texte {
+    margin-bottom: max(-4rem, -72px);
+  }
+
+  .colonne {
+    width: 100%;
+  }
+
+  .super-hero-2 :global(.titre) {
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  /* Titre long (plus de 45 caractères) : environ 70 % de la taille normale,
+     lignes équilibrées */
+  .titre-long :global(.titre) {
+    font-size: 2rem;
+    text-wrap: balance;
+  }
+
+  @media (width >= 600px) {
+    .titre-long :global(.titre) {
+      font-size: 2.75rem;
+    }
+  }
+
+  @media (width >= 900px) {
+    .titre-long :global(.titre) {
+      font-size: 3.25rem;
+    }
+  }
+
+  .sous-titre {
+    margin-top: 8px;
+  }
+
+  .enfants {
+    width: 100%;
+    padding: 0 var(--espace-2) var(--espace-2);
+  }
+
+  @media (width >= 600px) {
+    .texte {
+      padding-inline: 20px;
+    }
+
+    .colonne {
+      width: calc(100% * 10 / 12);
+    }
+
+    .sous-titre {
+      margin-top: 12px;
+    }
+
+    .enfants {
+      padding: 0 var(--espace-3) var(--espace-4);
+    }
+  }
+
+  @media (width >= 900px) {
+    .texte {
+      padding: 64px 40px;
+    }
+
+    .colonne {
+      width: calc(100% * 8 / 12);
+    }
+
+    .taille-small .colonne {
+      width: 100%;
+    }
+
+    .sous-titre {
+      margin-top: 16px;
+    }
+
+    .enfants {
+      padding: 0 3.75rem 4.25rem;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .texte {
+      padding: 96px 64px;
+    }
+  }
+  /* Ligne de sous-titre (vitrines : pour qui, pour quoi) : collée au titre,
+     qu'elle complète ; le sommaire ou le bouton qui suit s'en détache. Sans
+     ligne, l'écart du sommaire au titre ne change pas. */
+  .sous-titre:has(> :global(.sous-titre-ligne)) {
+    margin-top: 4px;
+  }
+
+  /* Le titre garde sous lui un espace (padding de titreSuperHero) qui
+     éloignait la ligne autant que le sommaire : on le retire */
+  .super-hero-2:has(.sous-titre-ligne) :global(.titre) {
+    padding-bottom: 0;
+  }
+
+  .sous-titre :global(.sous-titre-ligne + [data-sommaire]),
+  .sous-titre :global(.sous-titre-ligne + .bouton) {
+    margin-top: var(--espace-3);
+  }
+
+  @media (width >= 900px) {
+    .sous-titre:has(> :global(.sous-titre-ligne)) {
+      margin-top: 8px;
+    }
+
+    .sous-titre :global(.sous-titre-ligne + [data-sommaire]),
+    .sous-titre :global(.sous-titre-ligne + .bouton) {
+      margin-top: var(--espace-4);
+    }
+  }
+
+</style>

@@ -1,0 +1,28 @@
+---
+/*
+ * Message d'erreur et bouton « Réessayer » des listes chargées dans le
+ * navigateur (événements, formations, horaires du jour). Styles communs avec
+ * l'îlot de /horaires/ : etat-erreur.css. Le script de la liste branche le
+ * bouton avec brancherReessayer (chargement.ts).
+ */
+import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise'
+import './etat-erreur.css'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  /** Phrase complète, par exemple « Les formations ne sont pas disponibles pour le moment. » */
+  message: string
+  /** Valeur de data-etat, pour montrerEtat (chargement.ts) ; absent : pas d'attribut */
+  etat?: string
+}
+
+const { message, etat = 'erreur' } = Astro.props
+---
+
+<div class="etat-erreur" data-etat={etat || undefined} hidden>
+  <p>{message}</p>
+  <button type="button" class="etat-erreur-bouton" data-reessayer>
+    <IconeSprite icone={ArrowClockwiseIcon} size={18} aria-hidden="true" focusable="false" />
+    Réessayer
+  </button>
+</div>

@@ -1,0 +1,130 @@
+# Page vitrine /recherche/ : voir docs/REDACTION.md, section « Vitrines »
+# Version précédente : docs/archives/recherche-2026-11-05.yaml
+title: Recherche
+crumbLabel: Recherche
+
+banniere:
+  titre: Amplifier l’impact de vos recherches
+  titreReduit: true
+  sousTitre:
+    - "Pour les chercheuses, les chercheurs et les équipes de recherche : accompagnement, données, publication, impact et science ouverte."
+  image: recherche
+  cadrage: 0%
+
+sections:
+  - type: image-texte
+    disposition: encart
+    teinteEncart: bleu
+    titre: Premier arrêt, votre bibliothécaire disciplinaire
+    libelle: Bibliothécaire disciplinaire
+    texte: De l’idéation à la communication de vos résultats, nous pouvons vous accompagner tout au long du cycle de la recherche.
+    image: ../images/bibliothecaire-indiana.webp
+    positionImage: droite
+    cadrage: 15%
+    cadrageHorizontal: 100%
+    bouton:
+      texte: Trouvez votre bibliothécaire disciplinaire
+      lien: /nous-joindre/notre-equipe/
+
+  - type: grille-elargissable
+    titre: Explorer l’intelligence artificielle générative
+    libelle: IA générative
+    texte: Pour utiliser l’IAg de façon efficace, éthique et responsable à l’Université, consultez nos ressources spécialisées.
+    cartes:
+      - titre: Utilisation responsable
+        icone: plant
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377616
+      - titre: Explorer les outils spécialisés en recherche documentaire
+        icone: compass-rose
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5384062
+      - titre: Évaluer les contenus générés
+        icone: check-circle
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377613
+      - titre: Citer, déclarer, documenter
+        icone: path
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377614
+
+  - type: grille-elargissable
+    fond: bleu100
+    titre: Recueillir, gérer et explorer vos données
+    libelle: Données de recherche
+    texte: Service de soutien et d’accompagnement tout au long d’un projet de recherche.
+    cartes:
+      - titre: Repérage de données
+        icone: magnifying-glass
+        appel: Consulter le guide sur les données statistiques
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=728974&p=5229474
+      - titre: Création d’un plan de gestion de données
+        icone: pencil-simple
+        appel: En savoir plus sur la gestion de données
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=730498&p=5343028
+      - titre: Fouille de textes, géoréférencement, visualisation des données
+        icone: chart-scatter
+        appel: Écrivez à l’équipe Recherche et communication savante
+        lien: mailto:recherche@bib.umontreal.ca
+      - titre: Publication des données
+        icone: share-network
+        appel: Guide sur la publication des données
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=730498&p=5243849
+
+  - type: texte-icones
+    titre: Constituer un corpus ou produire des synthèses des connaissances
+    libelle: Corpus et synthèses
+    texte: Nous offrons un service de soutien flexible pour repérer des sources pertinentes, que ce soit pour vos travaux de recherche ou la réalisation de synthèses de connaissances.
+    couleurIcones: bleuPrincipal
+    icones:
+      - icone: books
+        texte: Constitution et mise à jour de corpus documentaire
+      - icone: bell
+        texte: Veille documentaire automatique
+      - icone: stack
+        texte: Synthèse des connaissances
+      - icone: share-network
+        texte: Bibliographies partagées
+
+  - type: liste-liens
+    fond: bleu100
+    titre: Publier et diffuser vos recherches
+    libelle: Publication et diffusion
+    liens:
+      - titre: Conseil et soutien pour la publication et le droit d’auteur
+        description: Protégez vos droits d’auteur tout en respectant ceux de vos collègues, que ce soit durant vos travaux de recherche ou à leur publication.
+        lien: https://boite-outils.bib.umontreal.ca/recherche/droit-auteur
+        appel: Consulter le guide sur le droit d’auteur
+      - titre: Soutien à la publication savante
+        description: Faire rayonner votre recherche dans un monde de surabondance d’information et de mésinformation, c’est une tâche pour laquelle nous pouvons vous aider!
+        lien: /recherche/diffuser/
+        appel: Découvrir nos services de diffusion
+      - titre: Déposer facilement votre article en libre accès
+        description: Participez à la science ouverte, tout en respectant les conditions de diffusion en libre accès des organismes subventionnaires grâce à notre formulaire rapide.
+        lien: https://depot-libre-acces.bib.umontreal.ca/connexion
+        appel: Utiliser le formulaire rapide
+      - titre: Expérience numérique en recherche
+        description: Nous vous offrons l’accès à une panoplie d’outils numériques et de l’aide pour les utiliser afin d’explorer, d’exploiter, d’enrichir et d’analyser vos projets de recherche.
+        lien: mailto:recherche@bib.umontreal.ca
+        appel: Écrire à notre équipe de soutien
+
+  - type: liste-liens
+    titre: Découvrir l’impact de vos recherches
+    libelle: Impact
+    liens:
+      - titre: Soutien au CV descriptif
+        lien: https://boite-outils.bib.umontreal.ca/recherche/profils-chercheurs
+        appel: Guide sur le CV descriptif
+      - titre: Soutien à l’utilisation d’ORCID iD
+        description: Améliorez la découvrabilité de vos travaux de recherche, et optimisez votre visibilité et votre crédibilité dans le monde numérique en utilisant ORCID.
+        lien: https://boite-outils.bib.umontreal.ca/recherche/profils-chercheurs?p=5403769
+        appel: Consultez le guide Découvrabilité de la recherche
+      - titre: Indicateurs d’impact et analyses scientométriques
+        description: Nous pouvons vous conseiller et vous guider dans l’utilisation des méthodes bibliométriques responsables pour mieux documenter vos stratégies, trouver des partenaires de recherche, cartographier les expertises, optimiser vos demandes de financement et comprendre l’impact de votre production scientifique.
+        lien: https://boite-outils.bib.umontreal.ca/recherche#s-lg-box-16938953
+        appel: Explorer les guides sur l’impact de la recherche
+
+  - type: texte
+    fond: bleu100
+    titre: La science ouverte, un engagement des bibliothèques
+    libelle: Science ouverte
+    texte: Consultez nos engagements en matière de science ouverte pour en savoir plus sur les actions des bibliothèques en faveur de la science ouverte.
+    boutons:
+      - texte: Nos engagements en science ouverte
+        lien: /engagements/science-ouverte/

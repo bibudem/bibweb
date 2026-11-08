@@ -1,0 +1,53 @@
+---
+/*
+ * Une ligne de <Modalites>. L'icône est décorative (aria-hidden) : le texte
+ * suffit à porter l'information. `Icon` accepte une icône Phosphor ou une
+ * icône maison (IconeSofia, IconeMenuBurger…) ; un SVG sur mesure se passe dans
+ * le slot « icone ».
+ */
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  /** Composant d'icône (Phosphor ou icône maison) */
+  Icon?: any
+  /** Taille de l'icône en px */
+  taille?: number
+  /** Couleur CSS de l'icône, de préférence un jeton ; celle du texte par défaut */
+  couleur?: string
+  class?: string
+  style?: string
+}
+
+const { Icon, taille = 32, couleur = 'currentColor', class: classe, style } = Astro.props
+---
+
+<li class:list={['modalite', classe]} style={style}>
+  <span class="icone" aria-hidden="true">
+    <slot name="icone">{Icon && <IconeSprite icone={Icon} size={taille} color={couleur} aria-hidden="true" focusable="false" />}</slot>
+  </span>
+  <span class="texte"><slot /></span>
+</li>
+
+<style>
+  .modalite {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  .icone {
+    display: inline-flex;
+    flex: none;
+  }
+
+  /* Le texte peut passer à la ligne et couper un long mot (URL, adresse) :
+     rien ne déborde avec le texte agrandi à 200 % (WCAG 1.4.4, 1.4.10). */
+  .texte {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .texte > :global(p:last-child) {
+    margin-block-end: 0;
+  }
+</style>

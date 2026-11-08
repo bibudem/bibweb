@@ -1,0 +1,395 @@
+---
+/*
+ * Page Nouvelles (ListeNouvelles de coquille-web) : nos communications et la
+ * revue de presse, regroupées par année, avec un filtre Tout / Nouvelles /
+ * Revue de presse.
+ *
+ * - La liste complète est rendue au build ; le filtre est un petit script
+ *   qui masque les éléments des autres types. Sans JavaScript, la liste
+ *   complète s'affiche et les boutons du filtre, inopérants, sont masqués.
+ * - Boutons bascule (aria-pressed) dans un groupe nommé ; le nombre
+ *   d'éléments affichés est annoncé dans une région role="status".
+ * - Le filtre se retrouve dans l'URL (?type=revue-de-presse), pour partager
+ *   un lien vers la revue de presse seule.
+ * - Un second filtre, par sujet (src/data/sujets.ts), se combine au premier :
+ *   /nouvelles/?sujet=livres-rares est la revue de presse « coordonnée » de
+ *   la Bibliothèque des livres rares. Les nombres des boutons de type suivent
+ *   le sujet choisi. Il se distingue du filtre par type : précédé d'une
+ *   étiquette visible « Sujet » (qui nomme aussi le groupe), des étiquettes
+ *   plus petites à coins peu arrondis, une icône d'étiquette, et une coche
+ *   sur le sujet actif (l'état ne repose pas que sur la couleur).
+ * - Lien vers le fil RSS (/nouvelles/rss.xml), hors des groupes de
+ *   boutons : c'est un lien, pas un filtre. Après les filtres dans le HTML
+ *   (dessous sur un téléphone), en haut à droite dès 900 px. Il reste
+ *   visible sans JavaScript.
+ * - `moreLink`, ignoré par la source, n'est pas repris.
+ */
+import ElementNouvelle from './ElementNouvelle.astro'
+import { TYPE_NOUVELLE, TYPE_PRESSE, toutesLesActualites, type Actualite } from './actualites'
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check'
+import { RssSimpleIcon } from '@phosphor-icons/react/dist/ssr/RssSimple'
+import { TagIcon } from '@phosphor-icons/react/dist/ssr/Tag'
+import { SUJETS } from '@/data/sujets'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { id = 'liste-nouvelles', class: classe, style } = Astro.props
+
+const FILTRES = [
+  { valeur: 'tout', libelle: 'Tout', type: '' },
+  { valeur: 'nouvelles', libelle: 'Nouvelles', type: TYPE_NOUVELLE },
+  { valeur: 'revue-de-presse', libelle: 'Revue de presse', type: TYPE_PRESSE },
+]
+
+const nouvelles = await toutesLesActualites()
+const compte = (type: string) => (type ? nouvelles.filter((n) => n.type === type).length : nouvelles.length)
+// Seuls les sujets qui ont au moins une actualité ont leur bouton
+const sujets = SUJETS.filter((s) => nouvelles.some((n) => n.sujets.includes(s.id)))
+
+// Déjà triées par date décroissante : on regroupe les années consécutives
+const groupes = nouvelles.reduce<{ annee: number; items: Actualite[] }[]>((acc, item) => {
+  const dernier = acc.at(-1)
+  if (dernier?.annee === item.annee) dernier.items.push(item)
+  else acc.push({ annee: item.annee, items: [item] })
+  return acc
+}, [])
+
+const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'élément affiché'}`
+---
+
+<div id={id} class:list={['liste-nouvelles', classe]} style={fusionnerStyles(style)} data-liste-nouvelles>
+  <div class="reglages">
+    <div class="filtres" role="group" aria-label="Filtrer les nouvelles">
+      {
+        FILTRES.map(({ valeur, libelle, type }) => (
+          <button type="button" class="filtre" aria-pressed={valeur === 'tout' ? 'true' : 'false'} data-filtre={valeur} data-type={type}>
+            {libelle}
+            <span class="compte" data-compte>{compte(type)}</span>
+          </button>
+        ))
+      }
+    </div>
+    {
+      sujets.length > 0 && (
+        <div class="filtres filtres-sujet" role="group" aria-labelledby={`${id}-sujet`}>
+          <span class="etiquette-sujet" id={`${id}-sujet`}>
+            Sujet
+          </span>
+          {[{ id: '', libelle: 'Tous les sujets' }, ...sujets].map((s) => (
+            <button type="button" class="filtre-sujet" aria-pressed={s.id === '' ? 'true' : 'false'} data-sujet={s.id}>
+              <IconeSprite icone={TagIcon} size={16} aria-hidden="true" className="icone-inactif" />
+              <IconeSprite icone={CheckIcon} size={16} weight="bold" aria-hidden="true" className="icone-actif" />
+              {s.libelle}
+            </button>
+          ))}
+        </div>
+      )
+    }
+    <a class="lien-rss" href="/nouvelles/rss.xml" type="application/rss+xml">
+      <IconeSprite icone={RssSimpleIcon} size={18} weight="bold" aria-hidden="true" />
+      S'abonner au fil RSS
+    </a>
+  </div>
+
+  <p class="visuellement-masque" role="status" data-annonce>{annonce(nouvelles.length)}</p>
+
+  {
+    groupes.length ? (
+      groupes.map(({ annee, items }) => (
+        <section class="annee" aria-labelledby={`${id}-${annee}`} data-annee>
+          <h2 id={`${id}-${annee}`} class="titre-annee">
+            {annee}
+          </h2>
+          <ul class="elements">
+            {items.map((item) => (
+              <ElementNouvelle item={item} data-type={item.type} data-sujets={item.sujets.join(' ') || undefined} />
+            ))}
+          </ul>
+        </section>
+      ))
+    ) : (
+      <p>Aucune nouvelle pour le moment.</p>
+    )
+  }
+</div>
+
+<script>
+  const VALEURS = ['tout', 'nouvelles', 'revue-de-presse']
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-nouvelles]')) {
+    const boutons = [...racine.querySelectorAll<HTMLButtonElement>('[data-filtre]')]
+    const boutonsSujet = [...racine.querySelectorAll<HTMLButtonElement>('[data-sujet]')]
+    const annonce = racine.querySelector<HTMLElement>('[data-annonce]')
+    const elements = [...racine.querySelectorAll<HTMLElement>('li[data-type]')]
+    const annees = [...racine.querySelectorAll<HTMLElement>('[data-annee]')]
+    let valeur = 'tout'
+    let sujet = ''
+
+    const duSujet = (li: HTMLElement) => !sujet || (li.dataset.sujets ?? '').split(' ').includes(sujet)
+
+    function appliquer(majUrl: boolean) {
+      const bouton = boutons.find((b) => b.dataset.filtre === valeur) ?? boutons[0]
+      const type = bouton.dataset.type
+      for (const b of boutons) {
+        b.setAttribute('aria-pressed', String(b === bouton))
+        const compte = b.querySelector<HTMLElement>('[data-compte]')
+        if (compte) compte.textContent = String(elements.filter((li) => duSujet(li) && (!b.dataset.type || li.dataset.type === b.dataset.type)).length)
+      }
+      for (const b of boutonsSujet) b.setAttribute('aria-pressed', String((b.dataset.sujet ?? '') === sujet))
+      let visibles = 0
+      for (const li of elements) {
+        const visible = duSujet(li) && (!type || li.dataset.type === type)
+        li.hidden = !visible
+        if (visible) visibles++
+      }
+      for (const section of annees) section.hidden = !section.querySelector('li[data-type]:not([hidden])')
+      if (annonce) annonce.textContent = `${visibles} ${visibles > 1 ? 'éléments affichés' : 'élément affiché'}`
+      if (majUrl) {
+        const url = new URL(window.location.href)
+        if (valeur === 'tout') url.searchParams.delete('type')
+        else url.searchParams.set('type', valeur)
+        if (sujet) url.searchParams.set('sujet', sujet)
+        else url.searchParams.delete('sujet')
+        window.history.replaceState(window.history.state, '', url)
+      }
+    }
+
+    for (const b of boutons)
+      b.addEventListener('click', () => {
+        valeur = b.dataset.filtre ?? 'tout'
+        appliquer(true)
+      })
+    for (const b of boutonsSujet)
+      b.addEventListener('click', () => {
+        sujet = b.dataset.sujet ?? ''
+        appliquer(true)
+      })
+
+    const parametres = new URLSearchParams(window.location.search)
+    const demande = parametres.get('type')
+    const sujetDemande = parametres.get('sujet')
+    if (demande && VALEURS.includes(demande)) valeur = demande
+    if (sujetDemande && boutonsSujet.some((b) => b.dataset.sujet === sujetDemande)) sujet = sujetDemande
+    if (valeur !== 'tout' || sujet) appliquer(false)
+  }
+</script>
+
+<style>
+  .filtres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-1);
+    margin-bottom: var(--espace-bloc);
+  }
+
+  /* Filtre par type, filtre par sujet, lien RSS : empilés, puis le lien en
+     haut à droite dès 900 px */
+  .reglages {
+    display: grid;
+    align-items: center;
+    gap: var(--espace-element) var(--espace-3);
+    margin-bottom: var(--espace-bloc);
+  }
+
+  .reglages .filtres {
+    margin-bottom: 0;
+  }
+
+  @media (width >= 900px) {
+    .reglages {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .reglages > .filtres {
+      grid-column: 1;
+    }
+
+    .lien-rss {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+
+  /* Cible de 44 px de haut, comme les filtres */
+  .lien-rss {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espace-1);
+    min-height: 2.75rem;
+    color: var(--couleur-lien);
+    font-weight: var(--graisse-moyenne);
+  }
+
+  .lien-rss :global(svg) {
+    flex-shrink: 0;
+    color: var(--rouge-orange);
+  }
+
+  /* Sans JavaScript, le filtre ne ferait rien : la liste reste complète */
+  @media (scripting: none) {
+    .filtres {
+      display: none;
+    }
+  }
+
+  .filtre {
+    min-height: 2.75rem;
+    padding: var(--espace-1) 1.25rem;
+    border: 1px solid var(--bleu-200);
+    border-radius: var(--rayon-plein);
+    background-color: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .filtre:hover {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 6%, transparent);
+  }
+
+  .filtre[aria-pressed='true'] {
+    border-color: var(--bleu-fonce);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+  }
+
+  /* En couleurs forcées, le fond disparaît : un contour épais marque le
+     filtre actif */
+  @media (forced-colors: active) {
+    .filtre[aria-pressed='true'] {
+      outline: 3px solid SelectedItem;
+      outline-offset: -3px;
+    }
+  }
+
+  .compte {
+    margin-left: 0.5em;
+    opacity: 0.8;
+  }
+
+  /* ---- Filtre par sujet : étiquettes, à part du filtre par type ---- */
+  .filtres-sujet {
+    align-items: center;
+  }
+
+  .etiquette-sujet {
+    margin-inline-end: var(--espace-1);
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-forte);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .filtre-sujet {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-tres-petit);
+    background-color: var(--couleur-surface);
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-petit);
+    line-height: 1.3;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      border-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .filtre-sujet :global(svg) {
+    flex-shrink: 0;
+    color: var(--couleur-accent);
+  }
+
+  .filtre-sujet:hover {
+    border-color: var(--couleur-accent);
+  }
+
+  .filtre-sujet[aria-pressed='true'] {
+    border-color: var(--couleur-accent);
+    background-color: var(--couleur-teinte);
+    font-weight: var(--graisse-forte);
+  }
+
+  /* Icône d'étiquette au repos, coche quand le sujet est choisi */
+  .filtre-sujet :global(.icone-actif),
+  .filtre-sujet[aria-pressed='true'] :global(.icone-inactif) {
+    display: none;
+  }
+
+  .filtre-sujet[aria-pressed='true'] :global(.icone-actif) {
+    display: block;
+  }
+
+  @media (forced-colors: active) {
+    .filtre-sujet[aria-pressed='true'] {
+      outline: 3px solid SelectedItem;
+      outline-offset: -3px;
+    }
+  }
+
+  /* Entre deux années ; la dernière laisse la bande donner l'espace du bas */
+  .annee {
+    margin-bottom: var(--espace-blocs);
+  }
+
+  .annee:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .annee[hidden],
+  .annee :global(li[hidden]) {
+    display: none;
+  }
+
+  .titre-annee {
+    margin: 0 0 var(--espace-1);
+    font-size: var(--texte-tres-grand);
+    font-weight: var(--graisse-grasse);
+    line-height: 1.2;
+  }
+
+  @media (width >= 900px) {
+    .titre-annee {
+      font-size: 2.25rem;
+      font-weight: var(--graisse-forte);
+    }
+  }
+
+  /* Deux colonnes dès 900 px : à la mesure d'un paragraphe (52ch), la liste
+     n'occupait que la moitié gauche de la page. Lecture par rangées, de la
+     plus récente à la plus ancienne. */
+  .elements {
+    display: grid;
+    /* Sans minmax(0, …), la colonne ne descend pas sous la ligne de la
+       source et de la date (texte agrandi sur 320 px) */
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: var(--espace-blocs);
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (width >= 900px) {
+    .elements {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+/*
+ * Web components institutionnels, chargés depuis la bibliothèque commune
+ * bibudem/ui (comme HtmlHead.jsx et PageTemplate.jsx de coquille-web).
+ *
+ * - position « haut » : <udem-urgence>, puis <bib-avis> pour les pages de
+ *   niveau 0 et 1, au-dessus de l'en-tête et pleine largeur.
+ * - position « avis » : <bib-avis> des pages de niveau 2 et plus. La source le
+ *   place APRÈS la bannière de section (SuperHeroLvl2), aligné sur les
+ *   gouttières du contenu : cette position se rend donc après le slot
+ *   « avant-contenu » de Base.astro. Elle ne rend rien sous le niveau 2.
+ * - position « bas » : consentement et analytique (Consentement.astro), après
+ *   le pied de page.
+ *
+ * Les scripts sont des modules : ils s'exécutent après l'analyse du document
+ * où qu'ils soient placés, et une même URL n'est exécutée qu'une fois même si
+ * deux positions la déclarent. Les placer à côté de leurs éléments évite de
+ * dépendre de <head> et garde chaque pièce autonome.
+ *
+ * `async` : les modules s'exécutent dans l'ordre du document ; sans lui, les
+ * scripts du site placés après (menu, sommaire « Sur cette page »,
+ * accordéons…) attendaient ces fichiers externes, parfois lents ou bloqués
+ * (loader.js de corvee, refusé par CORS en local). Async, ils s'exécutent dès
+ * leur arrivée, sans retenir les autres. Rien ne dépend de leur ordre : les
+ * composants se définissent eux-mêmes (Retroaction attend whenDefined).
+ */
+import Consentement from './Consentement.astro'
+import { CDN_BIBUDEM } from '@/lib/site'
+
+interface Props {
+  position: 'haut' | 'avis' | 'bas'
+  /** Niveau de page (0 = accueil) : règle la place et le style de <bib-avis> */
+  niveau?: number
+}
+
+const { position, niveau = 0 } = Astro.props
+const CDN = CDN_BIBUDEM
+---
+
+{
+  position === 'haut' && (
+    <>
+      <script is:inline type="module" async src={`${CDN}/udem-urgence.min.js`}></script>
+      <script is:inline type="module" async src={`${CDN}/bib-avis.min.js`}></script>
+      <udem-urgence class="bandeau-institutionnel"></udem-urgence>
+      {niveau < 2 && <bib-avis bouton-fermer class="bandeau-institutionnel avis-pleine-largeur"></bib-avis>}
+    </>
+  )
+}
+
+{
+  position === 'avis' && niveau >= 2 && (
+    <>
+      <script is:inline type="module" async src={`${CDN}/bib-avis.min.js`}></script>
+      <bib-avis bouton-fermer class="avis-contenu"></bib-avis>
+    </>
+  )
+}
+
+{
+  position === 'bas' && (
+    <>
+      <script is:inline type="module" async src="https://corvee.bib.umontreal.ca/loader.js"></script>
+      <Consentement />
+    </>
+  )
+}
+
+<style>
+  udem-urgence,
+  bib-avis {
+    display: block;
+  }
+
+  /* Au-dessus de l'en-tête collant (z-index de l'en-tête + 1, comme dans la
+     source) : l'urgence et l'avis ne passent jamais dessous. */
+  .bandeau-institutionnel {
+    position: relative;
+    z-index: calc(var(--z-entete) + 1);
+  }
+
+  /* Calque de composition propre, comme l'en-tête juste en dessous : évite
+     un repositionnement au défilement observé sur Safari iOS entre ces deux
+     éléments à z-index élevé. */
+  .avis-pleine-largeur {
+    --bib-avis-spacing-inline: 0;
+    transform: translateZ(0);
+  }
+
+  /* Aligné sur les gouttières du contenu (20 px, puis 64 px dès 900 px) et
+     écarté de la bannière de section jusqu'à 1200 px ; au-delà, l'avis
+     reste collé sous la photo, comme dans la source. */
+  .avis-contenu {
+    --bib-avis-spacing-inline: var(--gouttiere);
+    margin-top: var(--espace-2);
+  }
+
+  @media (width >= 1200px) {
+    .avis-contenu {
+      margin-top: 0;
+    }
+  }
+</style>

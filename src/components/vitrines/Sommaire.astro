@@ -1,0 +1,229 @@
+---
+/*
+ * Sommaire « Sur cette page » d'une vitrine : un lien d'ancre par bloc qui a
+ * un `libelle`. Il se place dans la bannière (sous le titre, slot « subTitle »
+ * de BannierePage) et se génère tout seul (le rédacteur ne maintient que les
+ * libellés, dans le YAML).
+ *
+ * Compact : une seule pastille, « Aller à une section », qui ouvre un panneau
+ * de liens en colonnes. Le panneau est posé par-dessus le contenu (position
+ * absolue) : l'ouvrir ne décale rien.
+ * - Un <details> dans un <nav> nommé « Sur cette page » : le résumé est un
+ *   bouton natif (clavier, lecteur d'écran, état ouvert/fermé annoncé), les
+ *   liens sont de vrais liens. Sans JS, il s'ouvre et se referme au clic.
+ * - Le script ajoute les gestes attendus d'un panneau : Échap le ferme et
+ *   rend le focus à la pastille, un clic dehors ou sur un lien le ferme.
+ * - La cible est le titre h2 du bloc (ancre de Titre.astro) ; scroll-padding-top
+ *   évite que l'en-tête collant la recouvre.
+ * - Pastille : 40 px de haut, contour et texte blancs sur la photo (même voile
+ *   que le titre) ; ouverte ou survolée, pleine blanche à texte bleu foncé.
+ *   Le panneau est blanc, texte bleu foncé.
+ */
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  liens: { libelle: string; id: string }[]
+}
+
+const { liens } = Astro.props
+---
+
+<nav class="sommaire theme-clair" aria-label="Sur cette page" data-sommaire>
+    <details>
+      <summary>
+        Aller à une section
+        <IconeSprite icone={CaretDownIcon} size={16} weight="bold" aria-hidden="true" />
+      </summary>
+      <ul class="panneau">
+        {
+          liens.map(({ libelle, id }) => (
+            <li>
+              <a href={`#${id}`}>{libelle}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </details>
+  </nav>
+
+<script>
+  const sommaire = document.querySelector<HTMLElement>('[data-sommaire]')
+  const details = sommaire?.querySelector('details')
+  if (sommaire && details) {
+    const fermer = (rendreFocus = false) => {
+      if (!details.open) return
+      details.open = false
+      if (rendreFocus) details.querySelector('summary')?.focus()
+    }
+    details.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        fermer(true)
+      }
+    })
+    // Un lien d'ancre : le panneau se referme, la page défile vers la cible
+    details.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a')) fermer()
+    })
+    document.addEventListener('click', (e) => {
+      if (!sommaire.contains(e.target as Node)) fermer()
+    })
+    // Le focus quitte le panneau au clavier (Tab hors du dernier lien)
+    sommaire.addEventListener('focusout', (e) => {
+      if (e.relatedTarget && !sommaire.contains(e.relatedTarget as Node)) fermer()
+    })
+  }
+</script>
+
+<style>
+  .sommaire {
+    position: relative;
+  }
+
+  details {
+    display: inline-block;
+  }
+
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espace-1);
+    min-height: 2.5rem;
+    padding: 0.25rem var(--espace-2) 0.25rem 1.125rem;
+    border: 1.5px solid var(--couleur-surface);
+    border-radius: var(--rayon-plein);
+    /* Blanc d'office : plus visible sur la photo de la bannière que le
+       contour seul. Survol et sommaire ouvert : bleu pâle, changement léger */
+    background-color: var(--couleur-surface);
+    color: var(--couleur-texte);
+    font-size: var(--texte-reduit);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    cursor: pointer;
+    list-style: none;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      border-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary :global(svg) {
+    display: block;
+    transition: rotate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  details[open] summary {
+    border-color: var(--bleu-100);
+    background-color: var(--couleur-teinte);
+  }
+
+  details[open] summary :global(svg) {
+    rotate: 180deg;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover {
+      border-color: var(--bleu-100);
+      background-color: var(--couleur-teinte);
+    }
+  }
+
+  summary:focus-visible {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  /* Panneau par-dessus le contenu, sous la pastille */
+  .panneau {
+    display: grid;
+    position: absolute;
+    z-index: var(--z-dessus-2);
+    top: calc(100% + 0.5rem);
+    left: 0;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    width: calc(100vw - 3rem);
+    max-width: 60rem;
+    margin: 0;
+    padding: var(--espace-1);
+    border: 1.5px solid var(--bleu-fonce);
+    border-radius: var(--rayon-petit);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-2);
+    list-style: none;
+    transform-origin: top left;
+    /* Fermeture : plus brève, même chemin (comme le menu) */
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      translate var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Le panneau glisse depuis la pastille en apparaissant */
+  details:not([open]) .panneau {
+    opacity: 0;
+    translate: 0 -0.5rem;
+    scale: 0.98;
+  }
+
+  details[open] .panneau {
+    transition-duration: var(--duree-moyenne-1);
+    transition-timing-function: var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    details[open] .panneau {
+      opacity: 0;
+      translate: 0 -0.5rem;
+      scale: 0.98;
+    }
+  }
+
+  /* Le contenu du <details> reste affiché le temps du fondu de fermeture
+     (sans ::details-content, le panneau disparaît d'un coup) */
+  @supports selector(::details-content) {
+    details::details-content {
+      transition: content-visibility var(--duree-courte-4) allow-discrete;
+    }
+  }
+
+  /* Intitulé centré dans sa case, sur une ou deux lignes */
+  .panneau a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: var(--espace-1) 0.75rem;
+    border-radius: var(--rayon-tres-petit);
+    color: var(--couleur-texte);
+    text-align: center;
+    text-decoration: none;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Survol : le fond seul, sans soulignement */
+  .panneau a:hover {
+    background-color: var(--couleur-teinte);
+  }
+
+  .panneau a:focus-visible {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: -3px;
+  }
+
+  @media (width >= 900px) {
+    .panneau {
+      width: calc(100vw - 8rem);
+    }
+  }
+
+  @media (forced-colors: active) {
+    summary,
+    .panneau {
+      border-color: CanvasText;
+    }
+  }
+</style>

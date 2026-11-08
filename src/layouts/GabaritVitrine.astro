@@ -1,0 +1,176 @@
+---
+/*
+ * Gabarit des vitrines : pages d'accueil et de section décrites en YAML
+ * (fichiers .yaml de src/content/pages, schéma : lib/schema-vitrines.ts).
+ *
+ * Le rédacteur choisit les blocs et leur contenu ; la mise en page est
+ * réglée ici une fois pour toutes :
+ * - la bannière (BannierePage) porte le h1, chaque bloc commence par un h2 ;
+ * - chaque élément de `sections` est une bande pleine largeur (Section) ;
+ * - la première bande, si elle est en couleur, descend de 3rem dès 900 px
+ *   pour ne pas coller au bas de la bannière qu'elle chevauche (le
+ *   `marginTop` que la source répétait à la main) ;
+ * - la bannière de l'accueil (`rechercheSofia`) est la grande BanniereAccueil, avec
+ *   la recherche Sofia en bas ;
+ * - `image-fond` règle sa bande : il y met sa photo. Toutes les bandes ont la même marge (--espace-bande) : la marge
+ *   haute réduite de `grille-elargissable` (40 à 64 px dans la source) est
+ *   abandonnée, elle déséquilibrait sa bande de couleur ;
+ * - deux blocs voisins de même fond (sans photo) ne sont séparés que par une
+ *   marge de bande (`suite` de Section) : chaque bloc reste une bande, mais
+ *   on n'additionne plus deux marges de 96 px sur un même fond ;
+ * - les blocs apparaissent au défilement (`revelation` de Section, voir
+ *   CONVENTIONS, « Mouvement ») ; la bannière n'est jamais animée ;
+ * - une vitrine sous une section (/espaces/blrcs/) garde la mise en page
+ *   pleine largeur des vitrines (niveau 1 pour GabaritPage), avec un fil
+ *   d'Ariane sous la bannière : sans lui, rien ne dirait qu'elle appartient
+ *   à Espaces.
+ */
+import GabaritPage from './GabaritPage.astro'
+import BanniereAccueil from '@/components/contenu/mise-en-page/BanniereAccueil.astro'
+import BannierePage from '@/components/contenu/mise-en-page/BannierePage.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import RechercheSofiaAccueil from '@/components/contenu/dynamiques/RechercheSofiaAccueil.astro'
+import Typographie from '@/components/primitives/Typographie.astro'
+import Section from '@/components/contenu/mise-en-page/Section.astro'
+import Sommaire from '@/components/vitrines/Sommaire.astro'
+import BlocImageTexte from '@/components/vitrines/BlocImageTexte.astro'
+import BlocCartesSections from '@/components/vitrines/BlocCartesSections.astro'
+import BlocTexteIcones from '@/components/vitrines/BlocTexteIcones.astro'
+import BlocIconeTexte from '@/components/vitrines/BlocIconeTexte.astro'
+import BlocListeLiens from '@/components/vitrines/BlocListeLiens.astro'
+import BlocTexte from '@/components/vitrines/BlocTexte.astro'
+import BlocQuoiDeNeuf from '@/components/vitrines/BlocQuoiDeNeuf.astro'
+import BlocGrilleElargissable from '@/components/vitrines/BlocGrilleElargissable.astro'
+import BlocImageFond from '@/components/vitrines/BlocImageFond.astro'
+import BlocCartesRevelation from '@/components/vitrines/BlocCartesRevelation.astro'
+import BlocCarrouselImages from '@/components/vitrines/BlocCarrouselImages.astro'
+import BlocCartesImages from '@/components/vitrines/BlocCartesImages.astro'
+import BlocAccordeons from '@/components/vitrines/BlocAccordeons.astro'
+import BlocFormations from '@/components/vitrines/BlocFormations.astro'
+import BlocPersonnel from '@/components/vitrines/BlocPersonnel.astro'
+import BlocVideo from '@/components/vitrines/BlocVideo.astro'
+import type { Bloc } from '@/components/vitrines/types'
+import type { Vitrine } from '@/lib/contenu'
+import FilAriane from '@/components/coquille/FilAriane.astro'
+import { idDeTitre } from '@/lib/ancres'
+import { sansBase } from '@/lib/chemin'
+import { niveauDe } from '@/lib/contenu'
+import { NOM_SITE } from '@/lib/site'
+import { descriptionVitrine } from '@/lib/extrait'
+
+interface Props {
+  vitrine: Vitrine
+}
+
+const { data } = Astro.props.vitrine
+const url = sansBase(Astro.url.pathname)
+const sousSection = niveauDe(url) >= 2
+const banniere = data.banniere
+const taille = banniere?.taille === 'petite' ? 'small' : 'default'
+// Sans `description`, celle des moteurs et du partage est le début du texte de la page
+const descriptionAuto = descriptionVitrine(data.banniere, data.sections)
+
+/**
+ * Sommaire « Sur cette page » : les blocs qui ont un `libelle` et un titre
+ * (ancre = `id` ou celle que Titre.astro calcule du titre). Il faut au moins
+ * deux liens pour qu'il serve.
+ */
+const liensSommaire = data.sections.flatMap((bloc) => {
+  const titre = 'titre' in bloc && typeof bloc.titre === 'string' ? bloc.titre : undefined
+  if (!bloc.libelle || !titre) return []
+  return [{ libelle: bloc.libelle, id: bloc.id ?? idDeTitre(titre.split('\n').map((l) => l.trim()).join(' ')) }]
+})
+
+/** Le bloc i a le même fond que le précédent (aucun des deux n'a de photo) */
+function memeFond(i: number) {
+  const [avant, bloc] = [data.sections[i - 1], data.sections[i]]
+  return !!avant && avant.type !== 'image-fond' && bloc.type !== 'image-fond' && avant.fond === bloc.fond
+}
+
+/** Réglages de la bande propres à un bloc (voir plus haut) */
+function bande(bloc: Bloc) {
+  if (bloc.type === 'image-fond') return { image: bloc.image, voile: 'droite' as const, style: bloc.cadrage && { '--cadrage': bloc.cadrage } }
+  return {}
+}
+---
+
+<GabaritPage titre={data.title} description={data.description ?? descriptionAuto} noindex={data.noindex} lang={data.lang} niveau={sousSection ? 1 : undefined}>
+  {
+    banniere && (
+      <Fragment>
+        {banniere.rechercheSofia ? (
+          <BanniereAccueil title={banniere.titre} titreSite={NOM_SITE} imageName={banniere.image} portraits={banniere.portraits} cadrage={banniere.cadrage}>
+            {banniere.sousTitre && (
+              <Fragment slot="subTitle">
+                {banniere.sousTitre.map((ligne) => (
+                  <Typographie component="div" variant="subtitle1" class="sous-titre-ligne">
+                    {ligne}
+                  </Typographie>
+                ))}
+              </Fragment>
+            )}
+            <RechercheSofiaAccueil />
+          </BanniereAccueil>
+        ) : banniere.sousTitre || banniere.bouton || liensSommaire.length > 1 ? (
+          <BannierePage title={banniere.titre} titreReduit={banniere.titreReduit} imageName={banniere.image!} cadrage={banniere.cadrage} size={taille}>
+            <Fragment slot="subTitle">
+              {banniere.sousTitre?.map((ligne) => (
+                <Typographie component="div" variant="subtitle1" class="sous-titre-ligne">
+                  {ligne}
+                </Typographie>
+              ))}
+              {banniere.bouton && (
+                <Bouton href={banniere.bouton.lien} light={!banniere.bouton.secondaire} secondary={banniere.bouton.secondaire} variant={banniere.bouton.contour ? 'outlined' : undefined}>
+                  {banniere.bouton.texte}
+                </Bouton>
+              )}
+              {liensSommaire.length > 1 && <Sommaire liens={liensSommaire} />}
+            </Fragment>
+          </BannierePage>
+        ) : (
+          <BannierePage title={banniere.titre} titreReduit={banniere.titreReduit} imageName={banniere.image!} cadrage={banniere.cadrage} size={taille} />
+        )}
+      </Fragment>
+    )
+  }
+  {
+    sousSection && (
+      <div class="conteneur fil-vitrine">
+        <FilAriane url={url} />
+      </div>
+    )
+  }
+  {
+    data.sections.map((bloc, i) => (
+      <Section bg={bloc.fond} marginTop={i === 0 && banniere && !banniere.rechercheSofia && bloc.fond ? '3rem' : undefined} suite={memeFond(i)} revelation {...bande(bloc)}>
+        {bloc.type === 'image-texte' && <BlocImageTexte bloc={bloc} />}
+        {bloc.type === 'cartes-sections' && <BlocCartesSections bloc={bloc} />}
+        {bloc.type === 'texte-icones' && <BlocTexteIcones bloc={bloc} />}
+        {bloc.type === 'icone-texte' && <BlocIconeTexte bloc={bloc} />}
+        {bloc.type === 'liste-liens' && <BlocListeLiens bloc={bloc} />}
+        {bloc.type === 'texte' && <BlocTexte bloc={bloc} />}
+        {bloc.type === 'quoi-de-neuf' && <BlocQuoiDeNeuf bloc={bloc} />}
+        {bloc.type === 'grille-elargissable' && <BlocGrilleElargissable bloc={bloc} />}
+        {bloc.type === 'image-fond' && <BlocImageFond bloc={bloc} />}
+        {bloc.type === 'cartes-revelation' && <BlocCartesRevelation bloc={bloc} />}
+        {bloc.type === 'carrousel-images' && <BlocCarrouselImages bloc={bloc} />}
+        {bloc.type === 'cartes-images' && <BlocCartesImages bloc={bloc} />}
+        {bloc.type === 'accordeons' && <BlocAccordeons bloc={bloc} />}
+        {bloc.type === 'formations' && <BlocFormations bloc={bloc} />}
+        {bloc.type === 'personnel' && <BlocPersonnel bloc={bloc} />}
+        {bloc.type === 'video' && <BlocVideo bloc={bloc} />}
+      </Section>
+    ))
+  }
+</GabaritPage>
+
+<style>
+  /* La bande qui suit garde sa propre marge haute */
+  .fil-vitrine {
+    padding-block-start: var(--espace-4);
+  }
+
+  .fil-vitrine :global(.fil-ariane) {
+    margin-block-end: 0;
+  }
+</style>

@@ -1,0 +1,371 @@
+---
+/*
+ * Recherche Sofia de l'accueil (RechercheSofiaAccueil de coquille-web), en
+ * bas du BanniereAccueil : le logo de Sofia et l'étiquette « Rechercher dans
+ * Sofia » au-dessus d'un champ arrondi qui lance la recherche dans Sofia
+ * (WorldCat Discovery), puis quelques liens vers les autres outils.
+ *
+ * - Un vrai formulaire GET, partagé avec le menu (@/lib/sofia) : sans
+ *   JavaScript, la recherche part quand même.
+ * - Corrigé : le champ a une étiquette visible, avant lui (la source n'avait
+ *   qu'un placeholder et un aria-description non standard, et nommait Sofia
+ *   à droite du champ), le formulaire est un repère role="search", et le
+ *   placeholder passe à 4,5:1.
+ * - Pas de bande grise translucide à bord net (la source) : un dégradé bleu
+ *   foncé monte du bas de la photo. Le texte blanc y fait au moins 8:1 avec
+ *   la photo actuelle ; à remesurer quand la photo change.
+ */
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question'
+import IconeSofia from '@/components/icones/IconeSofia.astro'
+import { ACTION_SOFIA, PARAMETRES_SOFIA, PLACEHOLDER_SOFIA } from '@/lib/sofia'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  class?: string
+  style?: Style
+}
+
+const { class: classe, style } = Astro.props
+
+// Liens à valider avec l'équipe
+const LIENS = [
+  { libelle: 'Recherche avancée', href: 'https://umontreal.on.worldcat.org/advancedsearch' },
+  { libelle: 'Bases de données A-Z', href: 'https://boite-outils.bib.umontreal.ca/az.php' },
+  { libelle: 'Réserves de cours', href: 'https://umontreal.on.worldcat.org/courseReserves/courses' },
+]
+---
+
+<div class:list={['bande', classes(classe)]} style={fusionnerStyles(style)}>
+  <div class="interieur">
+    <form action={ACTION_SOFIA} method="get" role="search" aria-label="Sofia" data-recherche-sofia>
+      {Object.entries(PARAMETRES_SOFIA).map(([nom, valeur]) => <input type="hidden" name={nom} value={valeur} />)}
+      <div class="entete">
+        <label for="recherche-sofia-accueil" class="etiquette">
+          <IconeSofia size={36} class="logo" />
+          <span>Rechercher dans <span class="marque">Sofia</span></span>
+        </label>
+        <a class="aide" href="https://boite-outils.bib.umontreal.ca/trouver-evaluer/sofia">
+          <IconeSprite icone={QuestionIcon} size={20} aria-hidden="true" focusable="false" className="icone-aide" />
+          <span class="aide-texte">Aide sur Sofia</span>
+        </a>
+      </div>
+      <div class="champ surface-claire">
+        <input
+          id="recherche-sofia-accueil"
+          class="saisie"
+          type="search"
+          name="queryString"
+          placeholder={PLACEHOLDER_SOFIA}
+          required
+          autocomplete="off"
+        />
+        <button type="submit" class="bouton">
+          <IconeSprite icone={MagnifyingGlassIcon} size={24} aria-hidden="true" focusable="false" className="icone" />
+          <span class="bouton-texte">Rechercher</span>
+        </button>
+      </div>
+    </form>
+    <ul class="liens">
+      {
+        LIENS.map(({ libelle, href }) => (
+          <li>
+            <a href={href}>{libelle}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<script>
+  import { brancherRechercheSofia } from '@/lib/sofia'
+
+  brancherRechercheSofia()
+</script>
+
+<style>
+  /* Le haut du dégradé, transparent, déborde sur la photo (marge
+     négative) : aucun bord net */
+  .bande {
+    --_hauteur-champ: 56px;
+    color: var(--couleur-sur-fonce);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    margin-top: -4rem;
+    padding-top: var(--espace-8);
+    background: linear-gradient(to top, color-mix(in srgb, var(--bleu-fonce) 85%, transparent) 40%, transparent);
+  }
+
+  .interieur {
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: 1.25rem 16px var(--espace-3);
+  }
+
+  /* Bloc centré dans la page : en-tête, champ et liens partagent la même
+     largeur (52rem au plus dès 900 px) */
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Étiquette à gauche, aide à droite, sur la largeur du champ ; passe à la
+     ligne quand la place manque (texte agrandi) */
+  .entete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-1) var(--espace-3);
+    width: 100%;
+    /* Logo et aide alignés sur la fin de l'arrondi du champ (demi-hauteur) */
+    padding-inline: calc(var(--_hauteur-champ) / 2);
+    box-sizing: border-box;
+  }
+
+  .aide {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: var(--texte-reduit);
+  }
+
+  .aide > :global(.icone-aide) {
+    flex-shrink: 0;
+    fill: currentColor;
+  }
+
+  /* Sous 600 px, l'icône seule (cible de 44 px), pour garder l'étiquette
+     et l'aide sur une ligne : le texte masqué reste le nom du lien */
+  @media (width < 600px) {
+    .entete {
+      column-gap: 0.75rem;
+    }
+
+    .aide {
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      margin-block: -0.5rem;
+      /* L'icône (24 px, centrée dans 44 px) s'aligne, pas sa cible */
+      margin-inline-end: -10px;
+    }
+
+    .aide > :global(.icone-aide) {
+      width: 24px;
+      height: 24px;
+    }
+
+    .aide-texte {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  .etiquette {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+  }
+
+  .etiquette :global(.logo) {
+    flex-shrink: 0;
+    fill: currentColor;
+  }
+
+  .marque {
+    font-weight: var(--graisse-forte);
+  }
+
+  .champ {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+    width: 100%;
+    min-height: var(--_hauteur-champ);
+    padding: 0 0.375rem 0 1.25rem;
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .champ:has(.saisie:focus-visible) {
+    outline: 3px solid var(--couleur-sur-fonce);
+    outline-offset: 3px;
+  }
+
+  .saisie {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--espace-1) 0;
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+  }
+
+  .saisie:focus-visible {
+    outline: none;
+  }
+
+  .saisie::placeholder {
+    color: var(--couleur-texte-secondaire);
+    opacity: 1;
+  }
+
+  /* La croix d'effacement de type=search fait doublon avec le bouton */
+  .saisie::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  /* Loupe seule sur mobile (le texte masqué reste le nom accessible),
+     loupe et « Rechercher » dès 900 px */
+  .bouton {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espace-1);
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding: 0 0.625rem;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--couleur-accent);
+    font: inherit;
+    font-weight: var(--graisse-moyenne);
+    cursor: pointer;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .bouton:hover {
+    background-color: color-mix(in srgb, var(--bleu-principal) 6%, transparent);
+  }
+
+  /* Masqué sur mobile (le bouton n'est qu'une loupe), affiché dès 1200 px */
+  .bouton-texte {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+
+  /* Le SVG vient de React : il ne porte pas l'attribut de portée d'Astro */
+  .bouton > :global(.icone) {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+
+  .liens {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem var(--espace-3);
+    margin: 0.875rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--texte-reduit);
+  }
+
+  /* Liens isolés, hors d'une phrase : pas de soulignement au repos
+     (WCAG 1.4.1 ne vise que les liens dans un texte), il revient au survol
+     et au focus */
+  .aide,
+  .liens a {
+    text-decoration: none;
+    text-underline-offset: 0.2em;
+  }
+
+  .aide:hover,
+  .aide:focus-visible,
+  .liens a:hover,
+  .liens a:focus-visible {
+    text-decoration: underline;
+  }
+
+  @media (width >= 600px) {
+    .interieur {
+      padding-inline: 20px;
+    }
+  }
+
+  /* Dès 900 px, la marge de 40 px des pages dégage aussi le bouton de la
+     poignée fixe des liens rapides (40 px au bord droit) */
+  @media (width >= 900px) {
+    .interieur {
+      padding: var(--espace-3) 40px 1.75rem;
+    }
+
+    .champ {
+      width: min(100%, 52rem);
+    }
+
+    .entete {
+      width: min(100%, 52rem);
+    }
+
+    .bouton {
+      padding-inline: 1.25rem;
+      background-color: var(--bleu-principal);
+      color: var(--couleur-sur-fonce);
+    }
+
+    .bouton:hover {
+      background-color: var(--bleu-principal-fonce);
+    }
+
+    .bouton-texte {
+      position: static;
+      width: auto;
+      height: auto;
+      clip-path: none;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .bande {
+      --_hauteur-champ: 72px;
+    }
+
+    .interieur {
+      padding: var(--espace-4) 64px 2.25rem;
+    }
+
+    .etiquette {
+      font-size: var(--texte-grand);
+    }
+
+    .champ {
+      padding-left: var(--espace-4);
+      font-size: var(--texte-moyen);
+    }
+
+    .bouton {
+      height: 3.25rem;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .champ {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

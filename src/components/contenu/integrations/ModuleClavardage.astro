@@ -1,0 +1,96 @@
+---
+/*
+ * Fenêtre de clavardage LibChat (UneQuestion) intégrée dans la page.
+ *
+ * Dans coquille-web, le module LibChat servait au bouton « Clavarder » des
+ * liens rapides ; ce rôle est repris par src/components/coquille/LiensRapides.astro
+ * (hash 71ff…). Ce composant remplace le WidgetClavardage que
+ * nous-joindre/clavarder.mdx déclarait avec un useEffect : le hash par
+ * défaut est celui de ce widget intégré. Le script n'est chargé qu'une fois
+ * par hash, et un échec de chargement est annoncé dans la page (la source
+ * utilisait alert()).
+ *
+ * Hauteur réservée : la fenêtre LibChat fait 402 px (en px fixes, quelle que
+ * soit la taille du texte). Le conteneur les garde dès le HTML, avec
+ * « Chargement du clavardage… » par-dessus ; sans eux, la fenêtre poussait la
+ * colonne de l'horaire à son arrivée (CLS 0,12 à 390 px). En cas d'échec, la
+ * réserve est levée.
+ */
+interface Props {
+  hash?: string
+  class?: string
+  style?: string
+}
+
+const { hash = '9ee6ed73a6fb1854335aacfa8a7497ef4acaff4303c125783909dacc7b3200b9', class: classe, style } = Astro.props
+---
+
+<div class:list={['libchat-integre', classe]} style={style} data-libchat={hash}>
+  <div id={`libchat_${hash}`} class="cible"></div>
+  <p class="chargement message-chargement">Chargement du clavardage…</p>
+  <p class="erreur" role="status" data-libchat-erreur></p>
+  <noscript><p>Le clavardage a besoin de JavaScript.</p></noscript>
+</div>
+
+<script>
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-libchat]')) {
+    const hash = racine.dataset.libchat
+    if (!hash || document.getElementById(`libchat-script-${hash}`)) continue
+    const script = document.createElement('script')
+    script.id = `libchat-script-${hash}`
+    script.src = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${encodeURIComponent(hash)}`
+    script.async = true
+    script.onerror = () => {
+      const erreur = racine.querySelector<HTMLElement>('[data-libchat-erreur]')
+      racine.dataset.etat = 'erreur'
+      if (erreur) erreur.textContent = 'Le service de clavardage est temporairement indisponible.'
+    }
+    document.body.append(script)
+  }
+</script>
+
+<style>
+  .libchat-integre {
+    position: relative;
+    max-width: 100%;
+  }
+
+  .cible {
+    min-height: 402px;
+  }
+
+  /* Message de chargement (utilitaire .message-chargement) : retiré quand
+     la fenêtre arrive ou en cas d'erreur */
+  .libchat-integre:has(> .cible:not(:empty)) > .chargement,
+  .libchat-integre[data-etat='erreur'] > .chargement {
+    display: none;
+  }
+
+  .libchat-integre[data-etat='erreur'] > .cible {
+    min-height: 0;
+  }
+
+  @media (scripting: none) {
+    .cible {
+      min-height: 0;
+    }
+
+    .chargement {
+      display: none;
+    }
+  }
+
+  /* La boîte injectée par LibChat a une bordure en plus de sa largeur de 100 % */
+  .libchat-integre :global(.lci_chat_load) {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* Toujours rendue (vide, sans hauteur) : une région live doit exister
+     avant qu'on y écrive pour être annoncée */
+  .erreur {
+    margin: 0;
+    color: var(--alerte-erreur-icone);
+    font-weight: var(--graisse-forte);
+  }
+</style>

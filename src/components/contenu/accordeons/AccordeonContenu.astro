@@ -1,0 +1,58 @@
+---
+/*
+ * Contenu d'un volet (d'après coquille-web) : fond de la couleur
+ * du groupe, marges internes en jetons (--espace-3, puis --espace-carte et
+ * --espace-4 dès 900 px), coins du bas arrondis, comme dans le thème de la
+ * source. Repli sans ::details-content :
+ * bref fondu à l'ouverture (transition d'opacité avec @starting-style,
+ * coupée par la réduction des animations).
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { class: classe, style, ...reste } = Astro.props
+---
+
+<div class:list={['details-accordeon', 'surface-claire', classe]} style={fusionnerStyles(style)} {...reste}>
+  <slot />
+</div>
+
+<style>
+  .details-accordeon {
+    padding: var(--espace-3);
+    border-radius: 0 0 var(--rayon-petit) var(--rayon-petit);
+    background-color: var(--accordeon-fond, var(--couleur-teinte));
+  }
+
+  /* Repli des navigateurs sans ::details-content ou sans interpolate-size
+     (Accordeon anime alors hauteur et opacité) : fondu à l'ouverture */
+  @supports not ((interpolate-size: allow-keywords) and selector(::details-content)) {
+    .details-accordeon {
+      transition: opacity var(--duree-moyenne-1) var(--courbe-emphase-deceleree);
+    }
+
+    @starting-style {
+      .details-accordeon {
+        opacity: 0;
+      }
+    }
+  }
+
+  @media (width >= 900px) {
+    .details-accordeon {
+      padding: var(--espace-carte) var(--espace-4);
+    }
+  }
+
+  /* Boutons secondaires (texte seul) : sans fond, ils se fondaient dans
+     celui du volet. Fond blanc, pour qu'on les voie comme des boutons. */
+  .details-accordeon :global(.bouton.variante-text:not(.clair)) {
+    --bouton-fond: var(--couleur-surface);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-accent) 8%, var(--couleur-surface));
+  }
+</style>

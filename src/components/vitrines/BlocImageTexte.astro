@@ -1,0 +1,369 @@
+---
+/*
+ * Bloc « image-texte » : titre, texte et bouton (ou `boutons`, qui se
+ * suivent dans le pied) à côté d'une image décorative (BandeImageTexte).
+ * `positionImage` dit de quel côté est l'image. Le titre, le texte et les
+ * boutons sont dans l'autre colonne, centrés en hauteur à côté de l'image,
+ * qui prend 88 % de sa colonne (options `titreEnColonne` et `imageReduite`,
+ * vraies par défaut). Avec `titreEnColonne: false`, le titre passe au-dessus
+ * des deux colonnes, sur toute la largeur (slot « titre » de BandeImageTexte).
+ * Pas de décalage d'une demi-colonne comme dans la source : le bloc s'aligne
+ * sur les carrousels et les grilles de la vitrine.
+ * Sur un fond foncé, les boutons prennent la variante claire (`light`) : le
+ * bouton bleu foncé ne s'y voyait pas.
+ * `icones` (colonnes) : une liste d'icônes légendées sous le texte, deux
+ * par rangée dès 600 px, comme la grille de texte-icones mais plus ramassée.
+ * Les icônes sont décoratives : leur légende porte le sens.
+ *
+ * Disposition `encart` : un appel à l'action plus ramassé, dans une carte
+ * rose pâle aux coins arrondis (largeur du contenu, pas toute la bande).
+ * Le texte est d'un côté, et l'image remplit l'autre jusqu'au bord de la
+ * carte (cover), fondue dans le rose par un dégradé. Sous 900 px, l'image
+ * passe en bandeau au-dessus du texte. Titre réduit, bouton bleu foncé.
+ * Texte bleu foncé sur rose pâle : 14,75:1. Option `teinteEncart: vertFonce` :
+ * carte vert foncé, texte, liens et focus blancs (11,26:1), bouton clair.
+ * `teinteEncart: bleu` : carte bleu UdeM, texte, liens et focus blancs
+ * (7,1:1), bouton clair.
+ */
+import { Picture } from 'astro:assets'
+import BandeImageTexte from '@/components/contenu/mise-en-page/BandeImageTexte.astro'
+import BoutonVitrine from './BoutonVitrine.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { FONDS } from '@/lib/fonds'
+import { markdownEnLigne } from '@/lib/markdown'
+import { composantIcone } from '@/lib/icones'
+import { couleurPalette } from '@/lib/couleurs'
+import type { BlocDe } from './types'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Props = { bloc: BlocDe<'image-texte'> }
+
+const { bloc } = Astro.props
+const encart = bloc.disposition === 'encart'
+const encartFonce = encart && (bloc.teinteEncart === 'vertFonce' || bloc.teinteEncart === 'bleu')
+const clair = !encart && (bloc.fond !== undefined && FONDS[bloc.fond].ton === 'fonce')
+const boutons = [...(bloc.bouton ? [bloc.bouton] : []), ...(bloc.boutons ?? [])]
+const largeurImage = bloc.image.width
+const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
+const icones = bloc.icones ? await Promise.all(bloc.icones.map((element) => composantIcone(element.icone))) : []
+// Par défaut : blanc sur un fond foncé, bleu foncé sur un fond moyen (comme le texte), bleu principal ailleurs
+const tonFond = bloc.fond ? FONDS[bloc.fond].ton : undefined
+const couleurIcones = bloc.couleurIcones ? couleurPalette(bloc.couleurIcones) : clair ? 'var(--couleur-sur-fonce)' : tonFond === 'moyen' ? 'var(--bleu-fonce)' : 'var(--bleu-principal)'
+---
+
+{
+  encart ? (
+    <div class:list={['encart', { 'encart-vert-fonce': encartFonce, 'encart-bleu': encart && bloc.teinteEncart === 'bleu' }, 'theme-clair', `image-${bloc.positionImage}`]}>
+      <div class="encart-texte">
+        <Titre texte={bloc.titre} id={bloc.id} />
+        <TexteMarkdown texte={bloc.texte} brut />
+        {boutons.length > 0 && (
+          <div class="encart-pied">
+            {boutons.map((bouton) => (
+              <BoutonVitrine bouton={bouton} surFonce={encartFonce} />
+            ))}
+          </div>
+        )}
+      </div>
+      <div class="encart-image" style={[bloc.cadrage && `--cadrage: ${bloc.cadrage}`, bloc.cadrageHorizontal && `--cadrage-x: ${bloc.cadrageHorizontal}`].filter(Boolean).join('; ') || undefined}>
+        <Picture src={bloc.image} formats={['avif', 'webp']} fallbackFormat="webp" widths={[480, 768, 1024, 1536].filter((l) => l < largeurImage).concat(Math.min(largeurImage, 1536))} sizes="(min-width: 1536px) 860px, (min-width: 900px) 55vw, 92vw" alt="" loading="lazy" />
+      </div>
+    </div>
+  ) : (
+    <BandeImageTexte class:list={{ 'image-recadree': bloc.recadrerImage, 'image-reduite': bloc.imageReduite, 'image-petite': bloc.tailleImage === 'petite', 'titre-en-colonne': bloc.titreEnColonne }} Image={bloc.image} alt={bloc.alt} legende={legende} offset={0} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
+      {!bloc.titreEnColonne && <Titre slot="titre" texte={bloc.titre} id={bloc.id} />}
+      {bloc.titreEnColonne && <Titre texte={bloc.titre} id={bloc.id} />}
+      <TexteMarkdown texte={bloc.texte} brut />
+      {bloc.icones && (
+        <ul class="icones" style={`--couleur-icones: ${couleurIcones}`}>
+          {bloc.icones.map((element, i) => {
+            const Icone = icones[i]
+            return (
+              <li>
+                <IconeSprite icone={Icone} size={32} aria-hidden="true" className="icone" />
+                <span>{element.texte}</span>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+      {boutons.length > 0 && (
+        <Fragment slot="footer">
+          {boutons.map((bouton) => (
+            <BoutonVitrine bouton={bouton} surFonce={clair} />
+          ))}
+        </Fragment>
+      )}
+    </BandeImageTexte>
+  )
+}
+
+<style>
+  /* Les options sont des classes posées sur la racine de BandeImageTexte
+     (class relayé, avec l'attribut de portée de ce bloc) : chaque règle
+     part de cette racine, puis atteint l'intérieur du héros par :global.
+     Rien ne déborde hors des blocs image-texte. */
+
+  /* Option `recadrerImage` (disposition en colonnes) : l'image est recadrée en
+     carré (cover), au lieu de garder les proportions d'une image en portrait
+     (portee-scientifique, 949 × 1068) qui étire le bloc. */
+  .image-recadree :global(.colonne-image img) {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  /* Option `imageReduite` : l'image prend 88 % de sa colonne, centrée (dès
+     900 px ; en dessous elle garde toute la largeur) */
+  @media (width >= 900px) {
+    .image-reduite :global(.colonne-image img) {
+      width: 88%;
+    }
+
+    /* Image légendée : la figure prend les 88 %, l'image toute la figure */
+    .image-reduite :global(.colonne-image figure) {
+      width: 88%;
+    }
+
+    .image-reduite :global(.colonne-image figure img) {
+      width: 100%;
+    }
+
+    /* Image à droite : collée au bord droit de sa colonne, l'espace libre
+       côté texte (à gauche, elle l'est déjà par <picture>) */
+    .image-reduite:not(.image-petite) :global(.image-droite .colonne-image img),
+    .image-reduite:not(.image-petite) :global(.image-droite .colonne-image figure) {
+      display: block;
+      margin-inline-start: auto;
+    }
+
+    .image-reduite:not(.image-petite) :global(.image-droite .colonne-image figure img) {
+      margin-inline-start: 0;
+    }
+  }
+
+  /* Option `tailleImage: petite` : l'image prend les deux tiers de sa
+     colonne (et non 88 %), centrée ; sur mobile, 75 % de la largeur. Même
+     spécificité que `imageReduite`, mais placées après elle : elles
+     l'emportent par l'ordre. */
+  .image-petite :global(.colonne-image img),
+  .image-petite :global(.colonne-image figure) {
+    width: 75%;
+  }
+
+  @media (width >= 900px) {
+    .image-petite :global(.colonne-image img),
+    .image-petite :global(.colonne-image figure) {
+      width: 66%;
+    }
+  }
+
+  .image-petite :global(.colonne-image figure img) {
+    width: 100%;
+  }
+
+  /* Option `titreEnColonne` : titre, texte et bouton centrés en hauteur à
+     côté de l'image (le titre est alors dans la colonne : pas de slot
+     « titre », que BandeImageTexte aligne en haut) */
+  @media (width >= 900px) {
+    .titre-en-colonne :global(.rangee) {
+      align-items: center;
+    }
+  }
+
+  /* Option `icones` : icônes légendées sous le texte */
+  .icones {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-element);
+    margin: var(--espace-element) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .icones li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.3;
+  }
+
+  .icones :global(.icone) {
+    flex-shrink: 0;
+    color: var(--couleur-icones);
+  }
+
+  @media (width >= 600px) {
+    .icones {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .encart {
+    --_fond: var(--rose-300);
+    /* Comme le ton « moyen » de Section (theme-clair dans les deux thèmes) :
+       liens, focus et accent en bleu foncé */
+    --couleur-lien: var(--bleu-fonce);
+    --couleur-lien-survol: var(--bleu-fonce);
+    --couleur-focus: var(--bleu-fonce);
+    --rouge-orange-texte: var(--bleu-fonce);
+    display: grid;
+    grid-template-rows: auto auto;
+    overflow: hidden;
+    border-radius: var(--rayon-grand);
+    background-color: var(--_fond);
+    color: var(--bleu-fonce);
+  }
+
+  /* Variante vert foncé : réglages du ton « fonce » de Section (blanc sur
+     vert foncé, 11,26:1 ; accent jaune, 7,4:1) */
+  .encart-vert-fonce {
+    --_fond: var(--vert-fonce);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+    --rouge-orange-texte: var(--jaune);
+    color: var(--couleur-sur-fonce);
+  }
+
+  /* Variante bleu UdeM : mêmes réglages que le vert foncé (blanc sur bleu
+     principal, 7,1:1), pour distinguer un encart de ceux des autres pages */
+  .encart-bleu {
+    --_fond: var(--bleu-principal);
+  }
+
+  .encart-texte {
+    padding: var(--espace-bloc) clamp(1.25rem, 4vw, 3.5rem) clamp(1.75rem, 4vw, 3.5rem);
+  }
+
+  /* Titre plus petit que celui d'une bande entière */
+  .encart :global(h2.titre-bloc) {
+    font-size: clamp(2rem, 1.4rem + 1.6vw, 2.75rem);
+  }
+
+  .encart-texte > :global(p) {
+    max-width: 36rem;
+  }
+
+  .encart-texte > :global(p:last-of-type) {
+    margin-bottom: 0;
+  }
+
+  .encart-pied {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-element);
+    padding-top: var(--espace-bloc);
+  }
+
+  .encart-pied :global(.bouton) {
+    margin: 0;
+  }
+
+  /* L'image remplit sa case ; le dégradé la fond dans le rose du côté du
+     texte (en bas sur mobile) */
+  .encart-image {
+    position: relative;
+    order: -1;
+    /* Téléphone : assez haut pour que la photo montre une personne, pas
+       une bande de décor (11rem la réduisait à un petit visage) */
+    min-height: 18rem;
+  }
+
+  /* Tablette en portrait : le bandeau, pleine largeur, est plus haut pour
+     que la photo ne se réduise pas à une tranche de visage */
+  @media (600px <= width < 900px) {
+    .encart-image {
+      min-height: 17rem;
+    }
+  }
+
+  .encart-image :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* `cadrage` du bloc : la hauteur gardée au recadrage (bandeau large sur
+       tablette en portrait), le centre par défaut */
+    object-position: var(--cadrage-x, 50%) var(--cadrage, 50%);
+  }
+
+  /* Fondu adouci : opacité en courbe (paliers d'une sortie douce) sur 60 %
+     de l'image, au lieu d'une rampe linéaire qui laissait une bande grise
+     et une cassure nette */
+  .encart-image {
+    --_fondu:
+      color-mix(in srgb, var(--_fond) 100%, transparent) 0%,
+      color-mix(in srgb, var(--_fond) 95%, transparent) 6%,
+      color-mix(in srgb, var(--_fond) 86%, transparent) 12%,
+      color-mix(in srgb, var(--_fond) 74%, transparent) 18%,
+      color-mix(in srgb, var(--_fond) 60%, transparent) 24%,
+      color-mix(in srgb, var(--_fond) 45%, transparent) 30%,
+      color-mix(in srgb, var(--_fond) 31%, transparent) 36%,
+      color-mix(in srgb, var(--_fond) 19%, transparent) 42%,
+      color-mix(in srgb, var(--_fond) 9%, transparent) 48%,
+      color-mix(in srgb, var(--_fond) 3%, transparent) 54%,
+      color-mix(in srgb, var(--_fond) 0%, transparent) 60%;
+  }
+
+  /* Empilé (sous 900 px) : le fondu ne couvre que le tiers du bas de la
+     photo (il en prenait 60 % et effaçait le cou et les épaules) */
+  .encart-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--_fondu)) bottom / 100% 55% no-repeat;
+  }
+
+  @media (width >= 900px) {
+    .encart {
+      grid-template-rows: none;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+    }
+
+    .encart-texte {
+      padding: clamp(2.5rem, 4vw, 3.5rem);
+    }
+
+    /* L'image déborde sous la marge du texte : le fondu s'y étale au lieu
+       de commencer au bord de l'image et d'en assombrir la moitié */
+    .encart-texte {
+      position: relative;
+      z-index: var(--z-dessus-1);
+    }
+
+    .encart-image {
+      align-self: stretch;
+      order: 0;
+      min-height: 18rem;
+      margin-inline-start: -10rem;
+    }
+
+    .encart-image::after {
+      background: linear-gradient(to right, var(--_fondu));
+    }
+
+    .image-gauche {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+
+    .image-gauche .encart-image {
+      order: -1;
+      margin-inline: 0 -10rem;
+    }
+
+    .image-gauche .encart-image::after {
+      background: linear-gradient(to left, var(--_fondu));
+    }
+  }
+
+  @media (forced-colors: active) {
+    .encart {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

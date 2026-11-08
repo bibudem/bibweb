@@ -1,0 +1,38 @@
+---
+/*
+ * Titre d'un bloc de vitrine : un h2 (sous le h1 de la bannière), à
+ * l'apparence h2 du thème. `id` donne l'ancre publique (/recherche/#orcid) ;
+ * sans `id`, il est calculé à partir du texte, comme pour les titres
+ * Markdown. Le lien d'ancre est le même que celui des pages de texte
+ * (accessible, visible au survol ou au focus).
+ *
+ * Un retour à la ligne dans le texte (YAML `|`) devient un <br> : le titre
+ * passe à la ligne à cet endroit, quelle que soit la largeur. L'ancre et le
+ * nom du lien d'ancre gardent le texte sur une ligne.
+ *
+ * Le titre ouvre toujours son bloc : rien au-dessus (la bande ou la colonne
+ * donne l'espace), --espace-titre dessous, le même dans tous les blocs.
+ */
+import Typographie from '@/components/primitives/Typographie.astro'
+import { ID_ICONE_ANCRE, idDeTitre, nomLienAncre } from '@/lib/ancres'
+
+interface Props {
+  texte: string
+  id?: string
+}
+
+const lignes = Astro.props.texte.split('\n').map((ligne) => ligne.trim())
+const texte = lignes.join(' ')
+const id = Astro.props.id ?? idDeTitre(texte)
+---
+
+<Typographie component="h2" variant="h2" id={id} class="titre-ancre titre-bloc">
+  {lignes.map((ligne, i) => (i > 0 ? [<br />, ligne] : ligne))}<a href={`#${id}`} class="ancre-titre"><span class="visuellement-masque">{nomLienAncre(texte)}</span><svg aria-hidden="true" focusable="false" width="1em" height="1em" fill="currentColor"><use href={`#${ID_ICONE_ANCRE}`} /></svg></a>
+</Typographie>
+
+<style>
+  /* h2 en plus de la classe : l'emporte sur la marge de .typo-h2 (Typographie) */
+  h2.titre-bloc {
+    margin-block: 0 var(--espace-titre);
+  }
+</style>

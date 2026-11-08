@@ -1,0 +1,95 @@
+---
+/*
+ * Flèches Précédent et Suivant d'un carrousel (cercle et flèche des icônes
+ * arrow-*-circle.svg de la source), avec la région role="status" qui annonce
+ * les cartes visibles après un clic. Branchées par src/lib/carrousel.ts ;
+ * masquées tant que le script n'a pas vu que la rangée défile (attribut
+ * `hidden`, retiré par le script) : sans JavaScript, la rangée se parcourt au
+ * doigt ou à la barre de défilement.
+ */
+interface Props {
+  /** id de la piste qu'elles font défiler (aria-controls) */
+  piste: string
+  class?: string
+}
+
+// `reste` porte l'attribut de portée du parent : son style s'applique à `class`
+const { piste, class: classe, ...reste } = Astro.props
+const FLECHE = 'm16.492 24.587 7.031-7.031a.586.586 0 0 1 .828.828l-6.03 6.031h15.772a.586.586 0 1 1 0 1.172H18.321l6.03 6.031a.586.586 0 0 1-.828.828l-7.031-7.03a.586.586 0 0 1 0-.829z'
+---
+
+<div class:list={['commandes', classe]} hidden data-commandes {...reste}>
+  <button type="button" class="commande" aria-controls={piste} aria-disabled="true" data-precedent>
+    <svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true" focusable="false"><circle cx="25" cy="25" r="25" opacity=".1"></circle><path d={FLECHE}></path></svg>
+    <span class="visuellement-masque">Cartes précédentes</span>
+  </button>
+  <button type="button" class="commande" aria-controls={piste} data-suivant>
+    <svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true" focusable="false" class="vers-droite"><circle cx="25" cy="25" r="25" opacity=".1"></circle><path d={FLECHE}></path></svg>
+    <span class="visuellement-masque">Cartes suivantes</span>
+  </button>
+  <span class="visuellement-masque" role="status" data-position></span>
+</div>
+
+<style>
+  .commandes {
+    display: flex;
+    gap: var(--espace-1);
+  }
+
+  .commandes[hidden] {
+    display: none;
+  }
+
+  .commande {
+    display: inline-flex;
+    padding: 8px;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--couleur-lien);
+    cursor: pointer;
+    transition: background-color var(--duree-courte-3) var(--courbe-standard);
+  }
+
+  .commande:hover {
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  .commande svg {
+    display: block;
+    width: 50px;
+    height: 50px;
+    fill: currentColor;
+  }
+
+  .vers-droite {
+    transform: scaleX(-1);
+  }
+
+  .commande[aria-disabled='true'] {
+    opacity: 0.38;
+    cursor: default;
+  }
+
+  .commande[aria-disabled='true']:hover {
+    background-color: transparent;
+  }
+
+  /* Couleurs forcées : un contour de bouton (la pastille à 10 % ne se voit
+     pas) ; désactivée, la commande garde un contour en pointillé et passe en
+     GrayText sans l'opacité de 0,38, qui la rendait presque invisible sur
+     fond noir. La marge interne compense le contour : même taille. */
+  @media (forced-colors: active) {
+    .commande {
+      padding: 6px;
+      border: 2px solid ButtonText;
+    }
+
+    .commande[aria-disabled='true'] {
+      border-style: dashed;
+      border-color: GrayText;
+      color: GrayText;
+      opacity: 1;
+    }
+  }
+</style>

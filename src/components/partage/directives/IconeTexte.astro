@@ -1,0 +1,34 @@
+---
+/*
+ * Directive :::icone-texte (RenduDirectives) : le texte (slot) et une grande
+ * icône dans un carré. L'icône est chargée par RenduDirectives.
+ */
+import IconeCarree from '@/components/contenu/cartes/IconeCarree.astro'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  Icone: any
+  fond?: string
+}
+
+const { Icone, fond } = Astro.props
+---
+
+<div class="icone-texte">
+  <div class="icone-texte-texte">
+    <slot />
+  </div>
+  <IconeCarree color={fond} style={{ maxWidth: '100%' }}>
+    <IconeSprite icone={Icone} aria-hidden="true" focusable="false" />
+  </IconeCarree>
+</div>
+
+<style>
+  /* Texte et grande icône dans un carré (8/12 et 4/12, comme la source) */
+  .icone-texte {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: center;
+    margin-block: var(--espace-bloc);
+  }
+</style>

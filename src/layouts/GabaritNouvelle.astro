@@ -1,0 +1,142 @@
+---
+/*
+ * Gabarit d'une nouvelle (NouvelleTemplate) : fil d'Ariane sans le maillon
+ * de l'année, en-tête de l'article (titre, date, image), contenu, puis les
+ * données structurées NewsArticle. Contrairement à coquille-web, le titre,
+ * la date et l'image viennent du frontmatter : le contenu n'a plus à répéter
+ * le titre en Typographie (14 nouvelles le faisaient). Quand ce titre
+ * différait du `title` (3 nouvelles), il est repris dans `titreAffiche`.
+ * L'article est une colonne de 50rem centrée dans la page.
+ */
+import { sansBase } from '@/lib/chemin'
+import { jsonLd } from '@/lib/json-ld'
+import { Picture } from 'astro:assets'
+import Base from './Base.astro'
+import FilAriane from '@/components/coquille/FilAriane.astro'
+import Retroaction from '@/components/coquille/Retroaction.astro'
+import type { Nouvelle } from '@/lib/contenu'
+import { descriptionAuto } from '@/lib/extrait'
+import { NOM_ORGANISATION } from '@/lib/site'
+
+interface Props {
+  nouvelle: Nouvelle
+}
+
+const { nouvelle } = Astro.props
+const { title, titreAffiche, date, authors, newsImage } = nouvelle.data
+const dateIso = date.toISOString().slice(0, 10)
+const description = descriptionAuto(nouvelle.body, title, nouvelle.filePath?.endsWith('.md'))
+const dateTexte = new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long', timeZone: 'UTC' }).format(date)
+
+const donneesStructurees = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: title,
+  description,
+  datePublished: `${dateIso}T00:00:00-05:00`,
+  dateModified: `${dateIso}T00:00:00-05:00`,
+  ...(authors?.length && { author: authors.map((a) => ({ '@type': 'Person', name: a.split(',')[0].trim() })) }),
+  publisher: { '@type': 'Organization', name: NOM_ORGANISATION },
+}
+---
+
+<Base titre={title} description={description} niveau={3} typeOg="article">
+  <script slot="head" type="application/ld+json" set:html={jsonLd(donneesStructurees)} />
+  <div class="conteneur nouvelle">
+    <FilAriane url={sansBase(Astro.url.pathname)} />
+    <main id="contenu-principal">
+      <article>
+        <header class="entete-article">
+          <h1>{titreAffiche ?? title}</h1>
+          <p class="date"><time datetime={dateIso}>{dateTexte}</time></p>
+        </header>
+        {
+          newsImage?.src && (
+            <figure class="image-article">
+              <Picture src={newsImage.src} alt={newsImage.alt ?? ''} formats={['avif', 'webp']} fallbackFormat="webp" widths={[600, 900, 1200]} sizes="(min-width: 900px) 800px, 100vw" loading="eager" fetchpriority="high" />
+              {(newsImage.legend || newsImage.caption || newsImage.source) && (
+                <figcaption>
+                  {newsImage.legend ?? newsImage.caption}
+                  {newsImage.source && <span class="credit">Photo : {newsImage.source}</span>}
+                </figcaption>
+              )}
+            </figure>
+          )
+        }
+        <div class="corps-article">
+          <slot />
+        </div>
+      </article>
+    </main>
+    <Retroaction />
+  </div>
+</Base>
+
+<style>
+  .nouvelle {
+    padding-block: 60px var(--espace-4);
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  /* Une colonne de lecture centrée, fil d'Ariane compris : calée à gauche
+     d'un conteneur de 1536 px, elle laissait la moitié droite vide */
+  article,
+  .nouvelle > :global(.fil-ariane) {
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+
+  .entete-article h1 {
+    font-size: 2.5rem;
+    margin-block: var(--espace-1) 0.75rem;
+  }
+
+  @media (width >= 900px) {
+    .entete-article h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  /* Intertitres (## du Markdown) : h2 pour la structure, taille h3 comme le
+     faisait la source (composant de texte de MUI, component="h2" variant="h3") ; à la taille
+     h2, ils dépassaient le titre de l'article */
+  .corps-article :global(h2) {
+    font-size: var(--texte-tres-grand);
+    font-weight: var(--graisse-grasse);
+    line-height: 1.2;
+  }
+
+  @media (width >= 900px) {
+    .corps-article :global(h2) {
+      font-size: 2.25rem;
+      font-weight: var(--graisse-forte);
+    }
+  }
+
+  .date {
+    color: var(--rouge-orange-texte);
+    font-size: var(--texte-petit);
+  }
+
+  .image-article {
+    margin: var(--espace-4) 0;
+  }
+
+  .image-article :global(img) {
+    width: 100%;
+    border-radius: var(--rayon-moyen);
+  }
+
+  figcaption {
+    margin-top: var(--espace-1);
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+  }
+
+  .credit {
+    display: block;
+  }
+</style>

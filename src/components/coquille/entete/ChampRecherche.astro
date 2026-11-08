@@ -1,0 +1,134 @@
+---
+/*
+ * Champ de recherche : un vrai formulaire GET (repère « recherche » nommé,
+ * étiquette visible, champ et bouton loupe). Sert à la recherche du haut du
+ * menu (RechercheMenu) et à la page de résultats (/resultats/).
+ *
+ * Sans JavaScript, le formulaire part vers `action` avec ses champs cachés.
+ * Les scripts qui l'enrichissent (lib/sofia.ts, RechercheMenu) le repèrent
+ * par les attributs data-* transmis au <form>.
+ *
+ * Texte du champ à 16 px au moins : iOS ne zoome pas la page à la saisie.
+ *
+ * Emplacements : `portee` dans la barre, avant la saisie (choix de
+ * l'endroit où chercher), le défaut sous le champ (suggestions) ; voir
+ * RechercheMenu.
+ */
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  id: string
+  etiquette: string
+  /** Nom du repère « recherche » */
+  nom: string
+  action: string
+  /** Nom du paramètre de la requête */
+  parametre: string
+  caches?: [string, string][]
+  placeholder?: string
+  class?: string
+}
+
+const { id, etiquette, nom, action, parametre, caches = [], placeholder, class: classe, ...reste } = Astro.props
+---
+
+<form class:list={['recherche', classe]} action={action} method="get" role="search" aria-label={nom} {...reste}>
+  {caches.map(([cle, valeur]) => <input type="hidden" name={cle} value={valeur} />)}
+  <label class="etiquette" for={id}>{etiquette}</label>
+  <div class="champ">
+    <slot name="portee" />
+    <input id={id} class="saisie" type="search" name={parametre} placeholder={placeholder} required autocomplete="off" enterkeyhint="search" />
+    <button type="submit" class="bouton" aria-label="Chercher">
+      <IconeSprite icone={MagnifyingGlassIcon} size={22} weight="bold" aria-hidden="true" />
+    </button>
+  </div>
+  <slot />
+</form>
+
+<style>
+  .recherche {
+    position: relative;
+  }
+
+  .etiquette {
+    display: block;
+    margin: 0 0 var(--espace-1);
+    color: var(--couleur-accent);
+    font-size: var(--texte-tres-petit);
+    font-weight: var(--graisse-forte);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .champ {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+    min-height: 3.25rem;
+    padding: 0 0.25rem 0 var(--espace-2);
+    border: 1px solid var(--couleur-texte-secondaire);
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-surface);
+  }
+
+  .champ:has(.saisie:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .saisie {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--espace-1) 0;
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: max(1rem, 16px);
+  }
+
+  .saisie:focus-visible {
+    outline: none;
+  }
+
+  .saisie::placeholder {
+    color: var(--couleur-texte-secondaire);
+    opacity: 1;
+  }
+
+  .saisie::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .bouton {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--taille-cible);
+    height: var(--taille-cible);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: var(--bleu-principal);
+    color: var(--couleur-sur-fonce);
+    cursor: pointer;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-2) var(--courbe-standard);
+  }
+
+  .bouton:hover {
+    background-color: var(--bleu-principal-fonce);
+  }
+
+  .bouton:active {
+    scale: 0.95;
+  }
+
+  .bouton:focus-visible {
+    outline-offset: 2px;
+  }
+</style>

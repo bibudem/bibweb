@@ -1,0 +1,337 @@
+---
+/*
+ * Rendu d'une page Markdown (.md) : remplace les marqueurs posés par
+ * src/plugins/directives.mjs par les composants du MDX, pour que les pages de
+ * texte aient le même balisage et les mêmes styles que les pages MDX.
+ *
+ * Usage : <RenduDirectives><Content /></RenduDirectives>. Le contenu est
+ * d'abord rendu en HTML, puis découpé en arbre (lireMarqueurs). Chaque
+ * directive est rendue par son composant, et ses enfants par ce même
+ * composant (Astro.self).
+ *
+ * Les images locales du Markdown arrivent aussi en marqueurs : on les rend
+ * avec <Picture> (avif et webp, plusieurs largeurs), comme le MDX, au lieu de
+ * l'unique taille qu'Astro produit pour une image Markdown.
+ *
+ * Les directives à gabarit ou à styles propres (cartes, image-texte,
+ * galerie, logos, icone-texte, encadrés, tableau) ont leur composant dans
+ * directives/ : RenduDirectives charge leurs icônes et leurs images, puis
+ * rend leurs enfants dans leur slot.
+ */
+import type { ImageMetadata } from 'astro'
+import { Picture } from 'astro:assets'
+import Modalites from '@/components/contenu/modalites/Modalites.astro'
+import Modalite from '@/components/contenu/modalites/Modalite.astro'
+import Alerte from '@/components/primitives/Alerte.astro'
+import TitreAlerte from '@/components/primitives/TitreAlerte.astro'
+import Citation from '@/components/primitives/Citation.astro'
+import Bouton from '@/components/primitives/Bouton.astro'
+import Lien from '@/components/primitives/Lien.astro'
+import Separateur from '@/components/primitives/Separateur.astro'
+import Section from '@/components/contenu/mise-en-page/Section.astro'
+import ListeLiens from '@/components/contenu/mise-en-page/ListeLiens.astro'
+import ElementListeLiens from '@/components/contenu/mise-en-page/ElementListeLiens.astro'
+import Chiffres from '@/components/contenu/mise-en-page/Chiffres.astro'
+import GroupeAccordeons from '@/components/contenu/accordeons/GroupeAccordeons.astro'
+import Accordeon from '@/components/contenu/accordeons/Accordeon.astro'
+import AccordeonTitre from '@/components/contenu/accordeons/AccordeonTitre.astro'
+import AccordeonContenu from '@/components/contenu/accordeons/AccordeonContenu.astro'
+import { composantIcone } from '@/lib/icones'
+import { contientMarqueurs, lireMarqueurs } from '@/plugins/marqueurs-directives.mjs'
+import Cartes from './directives/Cartes.astro'
+import ImageTexte from './directives/ImageTexte.astro'
+import Galerie from './directives/Galerie.astro'
+import FigureGalerie from './directives/FigureGalerie.astro'
+import Logos from './directives/Logos.astro'
+import Logo from './directives/Logo.astro'
+import IconeTexte from './directives/IconeTexte.astro'
+import Encadres from './directives/Encadres.astro'
+import Encadre from './directives/Encadre.astro'
+import Tableau from './directives/Tableau.astro'
+import { directives, estDirective, type Noeud } from './directives/types'
+import { largeurs, sansConversion } from './directives/images'
+
+interface Props {
+  /** Usage interne (récursion) ; sinon, le contenu vient du slot */
+  noeuds?: Noeud[]
+}
+
+let noeuds = Astro.props.noeuds
+let html = ''
+if (!noeuds) {
+  html = Astro.slots.has('default') ? await Astro.slots.render('default') : ''
+  noeuds = contientMarqueurs(html) ? (lireMarqueurs(html) as Noeud[]) : undefined
+}
+
+// Les boutons qui se suivent forment un groupe : côte à côte, avec un espace
+// sous le groupe avant le paragraphe suivant ; centré si l'un d'eux le demande
+function grouperBoutons(liste: Noeud[]) {
+  const resultat: Noeud[] = []
+  for (const noeud of liste) {
+    const groupe = [...resultat].reverse().find((n) => typeof n !== 'string' || n.trim())
+    if (estDirective(noeud) && noeud.nom === 'bouton') {
+      if (groupe && estDirective(groupe) && groupe.nom === 'boutons') {
+        while (resultat.at(-1) !== groupe) resultat.pop()
+        groupe.enfants.push(noeud)
+        if (noeud.attributs.alignement === 'centre') groupe.attributs.centre = true
+      } else {
+        resultat.push({ nom: 'boutons', attributs: { centre: noeud.attributs.alignement === 'centre' }, enfants: [noeud] })
+      }
+    } else {
+      resultat.push(noeud)
+    }
+  }
+  return resultat
+}
+if (noeuds) noeuds = grouperBoutons(noeuds)
+
+// Images du contenu, chargées à la demande. Le plugin a déjà vérifié que le
+// fichier existe et donne son chemin depuis la racine du projet. Sans les
+// bannières ni les photos du personnel : lib/bannieres.ts et
+// contenu/personnel/photos.ts les importent déjà toutes, et Vite avertissait à
+// chaque build d'un import à la demande sans effet (INEFFECTIVE_DYNAMIC_IMPORT).
+const IMAGES = import.meta.glob<{ default: ImageMetadata }>([
+  '/src/content/**/*.{jpg,jpeg,png,webp,avif,gif,svg,JPG,JPEG,PNG,WEBP}',
+  '!/src/content/pages/images/super-heroes/**',
+  '!/src/content/personnel/photos/**',
+])
+
+async function chargerImage(src: string) {
+  const charger = IMAGES[src]
+  if (!charger) throw new Error(`RenduDirectives : image introuvable (${src}).`)
+  return (await charger()).default
+}
+
+// Icônes et images de ce niveau (et des cartes, rendues ici), chargées avant le rendu
+const ressources = new Map<Noeud, any>()
+for (const noeud of directives(noeuds ?? [])) {
+  const a = noeud.attributs
+  if (noeud.nom === 'modalite') ressources.set(noeud, await composantIcone(a.icone))
+  else if (noeud.nom === 'image') ressources.set(noeud, await chargerImage(a.src))
+  else if (noeud.nom === 'image-texte') ressources.set(noeud, await chargerImage(a.image))
+  else if (noeud.nom === 'figure' || noeud.nom === 'logo') ressources.set(noeud, await chargerImage(a.src))
+  else if (noeud.nom === 'icone-texte' || (noeud.nom === 'encadre' && a.icone)) ressources.set(noeud, await composantIcone(a.icone))
+  else if (noeud.nom === 'cartes') {
+    for (const carte of directives(noeud.enfants)) {
+      ressources.set(carte, carte.attributs.image ? await chargerImage(carte.attributs.image) : await composantIcone(carte.attributs.icone))
+    }
+  }
+}
+
+// Les boutons qui terminent un bloc image-texte vont dans son pied : sous
+// l'image sur un téléphone, comme le footer de BandeImageTexte dans le MDX
+function separerBoutons(enfants: Noeud[]) {
+  const contenu = [...enfants]
+  const boutons: Noeud[] = []
+  while (contenu.length) {
+    const dernier = contenu.at(-1)!
+    if (typeof dernier === 'string' && !dernier.trim()) contenu.pop()
+    else if (estDirective(dernier) && dernier.nom === 'bouton') boutons.unshift(contenu.pop()!)
+    else break
+  }
+  return { contenu, boutons }
+}
+
+const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', attention: 'warning', erreur: 'error' }
+---
+
+{/* Une seule expression : un blanc entre deux s'ajouterait au rendu (dans un lien) */}{
+  !noeuds ? <Fragment set:html={html} /> : noeuds.map((noeud) => {
+    if (typeof noeud === 'string') return <Fragment set:html={noeud} />
+    const { nom, attributs: a, enfants } = noeud
+    switch (nom) {
+      case 'modalites':
+        return (
+          <Modalites>
+            <Astro.self noeuds={enfants} />
+          </Modalites>
+        )
+      case 'modalite':
+        return (
+          <Modalite Icon={ressources.get(noeud)} taille={a.taille} couleur={a.couleur}>
+            <Astro.self noeuds={enfants} />
+          </Modalite>
+        )
+      case 'alerte':
+        return (
+          <Alerte severity={SEVERITES[a.type ?? 'info'] as 'info'}>
+            {a.titre && <TitreAlerte>{a.titre}</TitreAlerte>}
+            <Astro.self noeuds={enfants} />
+          </Alerte>
+        )
+      case 'boutons':
+        return (
+          <div class:list={['boutons', { centre: a.centre }]}>
+            {directives(noeud.enfants).map((bouton) => (
+              <Bouton href={bouton.attributs.lien} primary={bouton.attributs.type !== 'secondaire'} secondary={bouton.attributs.type === 'secondaire'}>
+                <Astro.self noeuds={bouton.enfants} />
+              </Bouton>
+            ))}
+          </div>
+        )
+      case 'a':
+        // Sur une ligne : un blanc autour du slot s'afficherait dans le lien
+        return <Lien to={a.href} title={a.title} target={a.target} rel={a.rel}><Astro.self noeuds={enfants} /></Lien>
+      case 'section':
+        return (
+          <Section bg={a.fond} id={a.id}>
+            <Astro.self noeuds={enfants} />
+          </Section>
+        )
+      case 'image': {
+        const image = ressources.get(noeud) as ImageMetadata
+        return sansConversion(image) ? (
+          <img src={image.src} width={image.width} height={image.height} alt={a.alt} loading="lazy" decoding="async" />
+        ) : (
+          <Picture src={image} alt={a.alt} formats={['avif', 'webp']} fallbackFormat="webp" {...largeurs(image)} loading="lazy" decoding="async" />
+        )
+      }
+      case 'cartes':
+        return (
+          <Cartes
+            forme={a.forme}
+            couleur={a.couleur}
+            niveau={a.niveau}
+            cartes={directives(enfants).map((carte) => ({ titre: carte.attributs.titre, lien: carte.attributs.lien, appel: carte.attributs.appel, ressource: ressources.get(carte) }))}
+          />
+        )
+      case 'liens':
+        return (
+          <ListeLiens>
+            {directives(enfants).map((lien) => (
+              <ElementListeLiens title={lien.attributs.titre} description={lien.attributs.description} href={lien.attributs.lien} niveauTitre={a.niveau} />
+            ))}
+          </ListeLiens>
+        )
+      case 'image-texte': {
+        if (a.taille === 'petite') {
+          return (
+            <ImageTexte image={ressources.get(noeud)} position={a.position} taille="petite" alt={a.alt}>
+              <Astro.self noeuds={enfants} />
+            </ImageTexte>
+          )
+        }
+        const { contenu, boutons } = separerBoutons(enfants)
+        return (
+          <ImageTexte image={ressources.get(noeud)} position={a.position}>
+            <Astro.self noeuds={contenu} />
+            {boutons.length > 0 && (
+              <Fragment slot="footer">
+                <Astro.self noeuds={boutons} />
+              </Fragment>
+            )}
+          </ImageTexte>
+        )
+      }
+      case 'galerie':
+        return (
+          <Galerie>
+            <Astro.self noeuds={enfants} />
+          </Galerie>
+        )
+      case 'figure':
+        return (
+          <FigureGalerie image={ressources.get(noeud)} alt={a.alt}>
+            <Astro.self noeuds={enfants} />
+          </FigureGalerie>
+        )
+      case 'logos':
+        return (
+          <Logos>
+            <Astro.self noeuds={enfants} />
+          </Logos>
+        )
+      case 'logo':
+        return <Logo image={ressources.get(noeud)} alt={a.alt} lien={a.lien} />
+      case 'icone-texte':
+        return (
+          <IconeTexte Icone={ressources.get(noeud)} fond={a.fond}>
+            <Astro.self noeuds={enfants} />
+          </IconeTexte>
+        )
+      case 'chiffres':
+        return <Chiffres forme={a.forme} groupes={a.groupes} />
+      case 'encadres':
+        return (
+          <Encadres fond={a.fond}>
+            <Astro.self noeuds={enfants} />
+          </Encadres>
+        )
+      case 'encadre':
+        return (
+          <Encadre Icone={ressources.get(noeud)} taille={a.taille} couleur={a.couleur}>
+            <Astro.self noeuds={enfants} />
+          </Encadre>
+        )
+      case 'separateur':
+        return <Separateur />
+      case 'citation':
+        return (
+          <Citation source={a.source}>
+            <Astro.self noeuds={enfants} />
+          </Citation>
+        )
+      case 'accordeon':
+        return (
+          <GroupeAccordeons>
+            <Astro.self noeuds={enfants} />
+          </GroupeAccordeons>
+        )
+      case 'volet':
+        return (
+          <Accordeon id={a.id}>
+            <AccordeonTitre niveauTitre={a.niveau}>{a.titre}</AccordeonTitre>
+            <AccordeonContenu>
+              <Astro.self noeuds={enfants} />
+            </AccordeonContenu>
+          </Accordeon>
+        )
+      case 'tableau':
+        return (
+          <Tableau enfants={enfants} titre={a.titre}>
+            <Astro.self noeuds={enfants} />
+          </Tableau>
+        )
+      case 'tete':
+        return (
+          <thead>
+            <Astro.self noeuds={enfants} />
+          </thead>
+        )
+      case 'corps':
+        return (
+          <tbody>
+            <Astro.self noeuds={enfants} />
+          </tbody>
+        )
+      case 'rangee':
+        return (
+          <tr class="rangee">
+            <Astro.self noeuds={enfants} />
+          </tr>
+        )
+      case 'cellule':
+        return (
+          <td data-cellule class:list={['cellule', a.align && `aligne-${a.align}`]}>
+            <Astro.self noeuds={enfants} />
+          </td>
+        )
+      default:
+        throw new Error(`RenduDirectives : directive « ${nom} » sans composant.`)
+    }
+  })
+}
+
+<style>
+  /* Groupe de ::bouton : la marge du haut vient de Bouton (1rem) */
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--espace-element);
+    margin-block-end: var(--espace-element);
+  }
+
+  .boutons.centre {
+    justify-content: center;
+  }
+</style>

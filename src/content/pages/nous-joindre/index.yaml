@@ -1,0 +1,46 @@
+# Page vitrine /nous-joindre/ : voir docs/REDACTION.md, section « Vitrines »
+title: Nous joindre
+crumbLabel: Nous joindre
+# Menu de gauche : les deux cartes qui mènent hors de /nous-joindre/, dans l'ordre de la page
+secondaryNav:
+  links:
+    - title: Horaires et lieux
+      url: /horaires/
+      order: 5
+    - title: Joindre la Bibliothèque des livres rares
+      url: /espaces/blrcs/#nous-joindre
+      order: 6
+
+banniere:
+  titre: Nous joindre
+  image: default
+  taille: petite
+
+sections:
+  - type: liste-liens
+    presentation: cartes
+    liens:
+      - titre: Nous écrire
+        description: Posez votre question par formulaire, notre équipe vous répond.
+        lien: /nous-joindre/nous-ecrire/
+        icone: envelope-simple
+      - titre: Clavarder
+        description: Discutez en direct avec un membre de l’équipe, selon l’horaire du service.
+        lien: /nous-joindre/clavarder/
+        icone: chats-circle
+      - titre: Notre équipe
+        description: Trouvez les coordonnées du personnel et votre bibliothécaire disciplinaire.
+        lien: /nous-joindre/notre-equipe/
+        icone: address-book
+      - titre: Suggestion d’achat
+        description: Proposez un document à ajouter à nos collections.
+        lien: /nous-joindre/suggestion-achat/
+        icone: book-bookmark
+      - titre: Horaires et lieux
+        description: Consultez les heures d’ouverture et l’adresse de chaque bibliothèque.
+        lien: /horaires/
+        icone: clock-countdown
+      - titre: Joindre la Bibliothèque des livres rares
+        description: Coordonnées de la Bibliothèque des livres rares et collections spéciales.
+        lien: /espaces/blrcs/#nous-joindre
+        icone: scroll

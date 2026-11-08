@@ -1,0 +1,252 @@
+---
+/*
+ * Bande pleine largeur (Section de coquille-web).
+ *
+ * - Espacement vertical : --espace-bande (48 px, 64 px dès 900 px, 96 px
+ *   dès 1200 px, comme la source). La marge haute du premier enfant et la
+ *   marge basse du dernier sont annulées : la bande seule fait l'espace, que
+ *   le bloc commence par un titre, une image ou une carte. Marges latérales
+ *   internes 16 / 20 / 40 / 64 px, contenu limité à 1536 px.
+ * - `bg` : clé de couleur du thème. La couleur du texte est choisie par
+ *   contraste calculé (comme contrastText de la source, seuil 4,5:1), et on
+ *   corrige ce que la source laissait passer : liens bleus, focus bleu et
+ *   texte orange illisibles sur les fonds foncés ou moyens (1,6:1 pour un
+ *   lien sur vert foncé, 2:1 sur violet).
+ * - `image` : photo en fond (cover) sous un voile noir, texte blanc. Le voile
+ *   de la source (40 %) laissait le texte à 2,85:1 devant les zones claires
+ *   d'une photo (fenêtres de « S'engager pour une science ouverte ») : il
+ *   passe à 60 %, ce qui garde 4,5:1 même sur du blanc pur (il en faut au
+ *   moins 55 %). `voile="droite"` (bloc image-fond des vitrines) : dès
+ *   900 px, la photo, sans voile, remplit la moitié gauche et le texte est
+ *   sur le bleu UdeM uni de la moitié droite.
+ *   Rendue avec <Picture> plutôt qu'en background CSS, pour profiter des
+ *   formats et des tailles d'astro:assets.
+ * - `marginTop` : 3rem dès 900 px (rattrape le chevauchement de BannierePage).
+ * - `suite` (vitrines) : la bande prolonge la précédente, de même fond ; elle
+ *   n'a pas de marge haute, pour que deux blocs voisins de même fond soient
+ *   séparés par une seule marge de bande, et non par deux.
+ * - Corrigé : tous les styles étaient posés par useEffect, donc absents au
+ *   SSR (section transparente au premier affichage).
+ * - `revelation` (vitrines) : chaque bloc de la bande apparaît au défilement
+ *   (src/lib/animations.ts). Absent des pages de texte : on n'anime pas ce
+ *   qu'on lit.
+ * - Abandonnés, jamais utilisés dans le contenu : parallax, overlay,
+ *   overlayOpacity.
+ */
+import type { ImageMetadata } from 'astro'
+import { Picture } from 'astro:assets'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { FONDS } from '@/lib/fonds'
+
+interface Props {
+  bg?: string
+  image?: ImageMetadata | string
+  /** Texte de remplacement de l'image ; décorative par défaut */
+  imageAlt?: string
+  /** Voile sous le texte : uniforme (par défaut) ou foncé à droite seulement dès 900 px */
+  voile?: 'uniforme' | 'droite'
+  marginTop?: boolean | string
+  suite?: boolean
+  revelation?: boolean
+  fixedWidth?: boolean
+  minHeight?: string
+  textAlign?: 'left' | 'center' | 'right'
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { bg, image, imageAlt = '', voile = 'uniforme', marginTop, suite = false, revelation = false, fixedWidth = false, minHeight, textAlign, id, class: classe, style, ...reste } = Astro.props
+
+if (bg && image) throw new Error('Section : les propriétés `image` et `bg` sont mutuellement exclusives.')
+const fond = bg ? FONDS[bg as keyof typeof FONDS] : undefined
+if (bg && !fond) throw new Error(`Section : la couleur « ${bg} » n'existe pas dans le thème (${Object.keys(FONDS).join(', ')}).`)
+
+const ton = image ? 'fonce' : fond?.ton
+const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !== 'false'
+---
+
+<section
+  id={id}
+  class:list={['section', ton && `ton-${ton}`, ton === 'moyen' && 'theme-clair', { 'avec-image fond-photo': image, 'voile-droite': image && voile === 'droite', 'marge-haut': margeHaut, suite, 'largeur-fixe': fixedWidth }, classe]}
+  style={fusionnerStyles({ '--section-fond': fond?.couleur, minHeight: minHeight !== 'auto' ? minHeight : undefined, textAlign }, style)}
+  {...reste}
+>
+  {
+    image &&
+      (typeof image === 'string' ? (
+        <img class="section-image fond-photo-image" src={image} alt={imageAlt} loading="lazy" decoding="async" />
+      ) : (
+        <Picture
+          class="section-image fond-photo-image"
+          src={image}
+          formats={['avif', 'webp']} fallbackFormat="webp"
+          widths={[640, 960, 1280, 1920, 2400].filter((l) => l <= image.width)}
+          sizes="100vw"
+          alt={imageAlt}
+          loading="lazy"
+        />
+      ))
+  }
+  <div class="interieur" data-revelation={revelation ? 'zone' : undefined}><slot /></div>
+</section>
+
+<style>
+  .section {
+    position: relative;
+    padding-block: var(--espace-bande);
+    background-color: var(--section-fond, transparent);
+  }
+
+  .suite {
+    padding-block-start: 0;
+  }
+
+  .interieur {
+    position: relative;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  /* Un <script> ou un <style> rendu dans la bande ne compte pas */
+  .interieur > :global(:nth-child(1 of :not(script, style))) {
+    margin-block-start: 0;
+  }
+
+  .interieur > :global(:nth-last-child(1 of :not(script, style))) {
+    margin-block-end: 0;
+  }
+
+  @media (width >= 600px) {
+    .interieur {
+      padding-inline: 20px;
+    }
+  }
+
+  @media (width >= 900px) {
+    .marge-haut {
+      margin-top: var(--espace-6);
+    }
+
+    .interieur {
+      padding-inline: 40px;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .interieur {
+      padding-inline: 64px;
+    }
+  }
+
+  /* fixedWidth : Container « fixed » de MUI, largeur du palier atteint, sans
+     marges latérales internes */
+  .largeur-fixe {
+    margin-inline: auto;
+  }
+
+  .largeur-fixe > .interieur {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  @media (width >= 600px) {
+    .largeur-fixe {
+      max-width: 600px;
+    }
+  }
+
+  @media (width >= 900px) {
+    .largeur-fixe {
+      max-width: 900px;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .largeur-fixe {
+      max-width: 1200px;
+    }
+  }
+
+  @media (width >= 1536px) {
+    .largeur-fixe {
+      max-width: 1536px;
+    }
+  }
+
+  /* ---- Tons (voir src/lib/fonds.ts) ---- */
+  /* --couleur-focus-bande : couleur du focus *sur la bande*, que les cartes à
+     surface claire (.surface-claire remet --couleur-focus au bleu) prennent
+     pour le contour qu'elles tracent à l'extérieur d'elles-mêmes, sur la
+     bande : le bleu n'y faisait que 1,7:1 sur le vert foncé (WCAG 2.4.13) */
+  .ton-fonce {
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
+    --couleur-focus-bande: var(--couleur-sur-fonce);
+    /* Le jaune garde l'accent : 4,66:1 sur bleu principal, 7,4:1 sur vert foncé */
+    --rouge-orange-texte: var(--jaune);
+    color: var(--couleur-sur-fonce);
+  }
+
+  .ton-moyen {
+    --couleur-lien: var(--couleur-texte);
+    --couleur-lien-survol: var(--couleur-texte);
+    --couleur-focus: var(--bleu-fonce);
+    --couleur-focus-bande: var(--bleu-fonce);
+    --rouge-orange-texte: var(--couleur-texte);
+    color: var(--couleur-texte);
+  }
+
+  .ton-clair {
+    color: var(--couleur-texte);
+  }
+
+  /* ---- Image de fond ---- */
+  /* Photo et voile : utilitaire .fond-photo de global.css (--cadrage :
+     `cadrage` du bloc image-fond) */
+  .avec-image {
+    --voile-opacite: 60%;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  /* Texte dans la moitié droite (bloc image-fond) : dès 900 px, deux
+     colonnes sans superposition. La photo, sans voile, remplit la moitié
+     gauche ; le texte est sur le bleu UdeM uni de la moitié droite */
+  @media (width >= 900px) {
+    /* Bleu UdeM plutôt que le bleu nuit du pied de page, qu'il précède
+       presque (texte blanc à environ 7:1) */
+    .voile-droite {
+      background-color: var(--bleu-principal);
+    }
+
+    .voile-droite::before {
+      content: none;
+    }
+
+    .voile-droite :global(.section-image) {
+      width: 50%;
+    }
+  }
+
+  /* Le fond seul ne délimite pas la bande en couleurs forcées */
+  @media (forced-colors: active) {
+    .ton-fonce,
+    .ton-moyen,
+    .ton-clair {
+      border-block: 1px solid CanvasText;
+    }
+
+    /* La suite d'une bande de même fond : pas de filet entre les deux, il
+       couperait le titre (la bande n'a pas de marge haute) */
+    .suite {
+      border-block-start: 0;
+    }
+
+    .section:has(+ .suite) {
+      border-block-end: 0;
+    }
+  }
+</style>

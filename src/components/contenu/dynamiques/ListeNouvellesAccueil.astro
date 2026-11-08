@@ -1,0 +1,38 @@
+---
+/*
+ * Colonne « Nouvelles » de la section Quoi de neuf (accueil) : nos
+ * communications et la revue de presse, mêlées par date. Lue au build,
+ * elle s'affiche sans JavaScript.
+ */
+import ColonneQuoiDeNeuf from './ColonneQuoiDeNeuf.astro'
+import ElementNouvelle from './ElementNouvelle.astro'
+import { toutesLesActualites } from './actualites'
+import type { Style } from '@/lib/styles'
+
+interface Props {
+  title?: string
+  id?: string
+  limit?: number
+  moreLink?: string
+  moreText?: string
+  class?: string
+  style?: Style
+}
+
+const { title = 'Nouvelles', id, limit = 4, moreLink = '/nouvelles/', moreText = 'Toutes nos nouvelles', class: classe, style } = Astro.props
+const nouvelles = (await toutesLesActualites()).slice(0, limit)
+---
+
+<ColonneQuoiDeNeuf title={title} id={id} moreText={moreText} moreLink={moreLink} class={classe} style={style}>
+  {
+    nouvelles.length ? (
+      <ul>
+        {nouvelles.map((item) => (
+          <ElementNouvelle item={item} compact dateEnGrand />
+        ))}
+      </ul>
+    ) : (
+      <p>Aucune nouvelle pour le moment</p>
+    )
+  }
+</ColonneQuoiDeNeuf>

@@ -1,0 +1,285 @@
+---
+/*
+ * Élément de liste riche (d'après coquille-web) : titre,
+ * description, et à droite un bouton (`linkText`) ou une pastille fléchée ;
+ * toute la carte est cliquable.
+
+ * Présentation en cartes séparées (plus de filets entre les éléments) : un
+ * fond légèrement teinté, sans bordure, et un espace entre les cartes.
+ * Au survol et au focus, le fond s'assombrit, la carte se soulève (ombre au
+ * survol) et la pastille se remplit. Les filets entraient en conflit avec le fond arrondi du
+ * survol, et les zones de deux éléments voisins se touchaient.
+ *
+ * Corrigé : la source imbriquait un lien (Button ou IconButton href) dans un
+ * autre lien (ListItemButton), ce qui est invalide, et la pastille n'avait
+ * pas de nom. Il n'y a plus qu'un lien, sur le titre ; son ::after couvre la
+ * ligne pour la garder entièrement cliquable. La pastille devient un simple
+ * repère visuel (aria-hidden) ; le texte du bouton (`linkText`) décrit le
+ * lien (aria-describedby), dont le nom reste court (le titre, plus
+ * « (PDF) » pour un PDF). Le niveau du titre (h3 en dur) devient réglable, sans changer
+ * sa taille : propre au composant, elle ne suit plus celle des h2 et h3 du
+ * thème (jusqu'à 3,5rem), trop grande pour un titre d'élément de liste.
+ *
+ * Couleurs : `color="vertFonce"` (sur une Section vert foncé) met une
+ * pastille vert pâle avec une flèche bleu foncé (7,32:1 ; la flèche blanche
+ * de la source n'atteignait que 2,48:1).
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import PastilleFleche from '@/components/partage/PastilleFleche.astro'
+import { lienCarte } from '@/lib/liens'
+import { idUnique } from '@/lib/ids'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  title: string
+  description?: string
+  href: string
+  linkText?: string | null
+  color?: 'default' | 'vertFonce'
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  class?: string
+  style?: Style
+}
+
+const { title, description, href, linkText = null, color = 'default', niveauTitre = 3, class: classe, style, ...reste } = Astro.props
+if (!href) throw new Error(`ElementListeLiens « ${title} » : la propriété \`href\` est requise.`)
+// Annonce « (PDF) » comme les autres cartes ; l'appel visible (linkText),
+// caché aux lecteurs d'écran dans la pastille, décrit le lien
+const { interne, rel, annonce } = lienCarte(href)
+const idAppel = linkText ? idUnique('appel') : undefined
+const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
+const Titre = `h${niveauTitre}`
+---
+
+<li class:list={['element-riche', 'carte-lien', `couleur-${color}`, classe]} style={fusionnerStyles(style)} {...reste}>
+  <div class="texte">
+    <Titre class="titre">
+      <a class="lien-etire lien-ligne" href={href} rel={rel} aria-describedby={idAppel}>
+        {title}
+        {annonce && <span class="visuellement-masque">{annonce}</span>}
+      </a>
+    </Titre>
+    {description && <div class="description">{description}</div>}
+  </div>
+  {
+    linkText ? (
+      <span class:list={['bouton', { externe: !interne }]} aria-hidden="true">
+        {/* aria-describedby lit un élément caché : l'appel n'est pas lu deux fois */}
+        <span id={idAppel}>{linkText}</span>
+        <IconeSprite icone={Fleche} size={24} aria-hidden="true" focusable="false" />
+      </span>
+    ) : (
+      <PastilleFleche class="pastille" externe={!interne} petite />
+    )
+  }
+</li>
+
+<style>
+  .element-riche {
+    /* Pastille (PastilleFleche) : pleine, plus vive et un peu plus grande au survol */
+    --pastille-fond: var(--bleu-fonce);
+    --pastille-fond-actif: var(--bleu-principal);
+    --pastille-encre: var(--couleur-sur-fonce);
+    --pastille-echelle-active: 1.1;
+    --rayon-lien-etire: var(--rayon-moyen);
+    --carte-fond: color-mix(in srgb, currentColor 4%, transparent);
+    --carte-fond-survol: color-mix(in srgb, currentColor 8%, transparent);
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espace-element);
+    padding: var(--espace-element) 1.25rem;
+    border-radius: var(--rayon-moyen);
+    background-color: var(--carte-fond);
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Espace entre les cartes, et sous le texte d'introduction */
+  .element-riche + .element-riche {
+    margin-top: 0.75rem;
+  }
+
+  .element-riche:first-child {
+    margin-top: var(--espace-element);
+  }
+
+  .couleur-vertFonce {
+    --pastille-fond: var(--vert-pale);
+    --pastille-fond-actif: var(--couleur-sur-fonce);
+    --pastille-encre: var(--bleu-fonce);
+    --carte-fond: color-mix(in srgb, currentColor 7%, transparent);
+    --carte-fond-survol: color-mix(in srgb, currentColor 14%, transparent);
+  }
+
+
+  .texte {
+    flex: 1 1 auto;
+    width: 100%;
+    margin-block: 4px;
+  }
+
+  /* Même taille quel que soit le niveau (h2 sans titre de bloc, h3 sinon) */
+  .titre {
+    margin-block: 0.5em;
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-forte);
+    line-height: 1.25;
+  }
+
+  .lien-ligne:focus-visible {
+    outline: none;
+  }
+
+  /* Le lien s'étire sur la carte (.lien-etire) ; son ::after porte aussi
+     l'anneau de focus, à l'intérieur de la carte */
+  .lien-ligne:focus-visible::after {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: -3px;
+  }
+
+  /* Survol et focus : le fond fonce (titre non souligné). Pas de carte qui
+     se soulève (déplacement et ombre) : effet retiré à la demande. */
+  @media (hover: hover) and (pointer: fine) {
+    .element-riche:hover {
+      background-color: var(--carte-fond-survol);
+    }
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) {
+    background-color: var(--carte-fond-survol);
+  }
+
+  .description {
+    padding-top: 0.25rem;
+    /* 17 px au texte par défaut, comme la source ; suit le réglage de
+       texte du navigateur */
+    font-size: var(--texte-courant);
+    line-height: 1.4;
+  }
+
+  .bouton,
+  .pastille {
+    flex: none;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Bouton secondaire (à contour), sur tous les fonds : contour et texte de
+     la couleur du texte de la bande (bleu foncé sur fond clair, blanc sur
+     fond foncé), fond transparent. La carte entière est le lien ; le bouton
+     plein bleu foncé de la source se voyait à peine sur le vert foncé. */
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 3.125rem;
+    padding: 6px 16px 6px 25px;
+    border: 1px solid currentColor;
+    border-radius: var(--rayon-plein);
+    background-color: transparent;
+    color: inherit;
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-normale);
+    letter-spacing: 0.02857em;
+    /* Texte agrandi sur écran étroit : l'appel passe à la ligne au lieu de
+       pousser la page au-delà de l'écran (WCAG 1.4.10) */
+    max-width: 100%;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .bouton :global(svg) {
+    fill: currentColor;
+  }
+
+  /* Survol et focus : la flèche du bouton avance d'un cran (celle de la
+     pastille : .carte-lien de global.css). Survol réservé aux pointeurs fins :
+     au toucher, un survol fantôme resterait après le tapotement. */
+  .bouton > :global(svg) {
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+    will-change: transform;
+  }
+
+  /* will-change : la pastille garde son calque en permanence. Sans lui, le
+     navigateur la promeut au début de l'agrandissement et la redessine à la
+     fin, et la flèche sautait d'un demi-pixel (le « glitch » au survol). */
+  .pastille {
+    will-change: scale;
+  }
+
+  .pastille > :global(svg) {
+    will-change: transform;
+  }
+
+  .bouton {
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .element-riche:hover .bouton {
+      background-color: color-mix(in srgb, currentColor 12%, transparent);
+    }
+
+    .element-riche:hover .bouton > :global(svg) {
+      transform: translateX(3px);
+    }
+
+    .element-riche:hover .bouton.externe > :global(svg) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) .bouton {
+    background-color: color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) .pastille {
+    scale: 1.1;
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) .bouton > :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) .bouton.externe > :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  @media (width >= 900px) {
+    .element-riche {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .titre {
+      font-size: var(--texte-tres-grand);
+    }
+
+    .texte > * {
+      max-width: 83.3333%;
+    }
+
+    .bouton,
+    .pastille {
+      margin-bottom: 0;
+    }
+  }
+
+  @media (width >= 1200px) {
+    .texte > * {
+      max-width: 66.6667%;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .element-riche {
+      border: 1px solid CanvasText;
+    }
+
+    .bouton {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+/*
+ * Surface (MUI Paper) : fond du thème, coins de 4 px, ombre légère
+ * (elevation 1 par défaut) ou contour (variant="outlined").
+ */
+import { fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  elevation?: number
+  variant?: 'elevation' | 'outlined'
+  square?: boolean
+  component?: string
+  class?: string
+  style?: string | Record<string, string | number>
+}
+
+const { elevation = 1, variant = 'elevation', square = false, component = 'div', class: classe, style, ...reste } = Astro.props
+const Balise = typeof component === 'string' ? component : 'div'
+---
+
+<Balise
+  class:list={['papier', 'surface-claire', { contour: variant === 'outlined', ombre: variant !== 'outlined' && elevation > 0, carre: square }, classe]}
+  style={fusionnerStyles(style)}
+  {...reste}><slot /></Balise
+>
+
+<style>
+  .papier {
+    border-radius: var(--rayon-minuscule);
+    background-color: var(--couleur-fond);
+    color: var(--couleur-texte);
+  }
+
+  .ombre {
+    box-shadow: var(--ombre-1);
+  }
+
+  .contour {
+    border: 1px solid var(--couleur-bordure);
+  }
+
+  .carre {
+    border-radius: 0;
+  }
+
+  /* L'ombre disparaît en couleurs forcées : un contour la remplace */
+  @media (forced-colors: active) {
+    .ombre {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

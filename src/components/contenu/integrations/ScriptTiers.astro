@@ -1,0 +1,163 @@
+---
+/*
+ * Conteneur + script tiers qui y injecte un formulaire (LibWizard) ou un
+ * widget (UneQuestion), d'après coquille-web.
+ *
+ * La source réinjectait le script à chaque montage React pour contourner la
+ * déduplication de gatsby-script lors des navigations clientes. Le site
+ * Astro recharge la page à chaque navigation : une balise <script> placée
+ * juste après le conteneur suffit, et le navigateur l'exécute à chaque
+ * visite. is:inline la laisse telle quelle (Astro ne la regroupe pas).
+ *
+ * Hauteur réservée : le formulaire arrive une à deux secondes après la page
+ * et poussait le pied de page hors de l'écran (CLS 0,18 à 0,38). `hauteur`
+ * (et `hauteurLarge`, dès 1200 px) réservent la place mesurée du formulaire,
+ * un peu en dessous de sa hauteur finale pour ne jamais laisser de vide.
+ * En rem si le contenu suit la taille du texte (iframe LibWizard), en px s'il
+ * est en px fixes (widget UneQuestion). Pendant l'attente, « Chargement du
+ * formulaire… » s'affiche dans la place réservée ; si le script ne se charge
+ * pas, un message le dit et la réserve est levée.
+ *
+ * Le widget UneQuestion insère son HTML et sa feuille de style au même
+ * moment : rendu une fraction de seconde sans styles, il se décalait de 8 px
+ * une fois la feuille arrivée (CLS 0,09 à 390 px). Le contenu reste donc
+ * masqué (visibility, place gardée) jusqu'au chargement des feuilles de style
+ * en attente, 3 s au plus. Le masquage est posé par le script : sans lui,
+ * rien n'est masqué.
+ */
+interface Props {
+  /** id du <div> que le script tiers cherche pour y injecter son contenu */
+  containerId: string
+  src: string
+  /** Hauteur réservée avant l'arrivée du formulaire (longueur CSS : « 120rem », « 860px ») */
+  hauteur?: string
+  /** Hauteur réservée dès 1200 px, si elle diffère */
+  hauteurLarge?: string
+  class?: string
+  style?: string
+}
+
+const { containerId, src, hauteur, hauteurLarge, class: classe, style } = Astro.props
+if (!containerId || !src) throw new Error('ScriptTiers : containerId et src sont obligatoires.')
+const reserve = [hauteur && `--hauteur-reservee: ${hauteur}`, hauteurLarge && `--hauteur-reservee-large: ${hauteurLarge}`, style].filter(Boolean).join('; ') || undefined
+// Échec du script tiers (réseau, bloqueur) : message dans la page, réserve levée
+const surErreur =
+  "var r=this.previousElementSibling;r.dataset.etat='erreur';r.querySelector('[data-erreur]').textContent='Le formulaire n’a pas pu être chargé. Rechargez la page ou réessayez plus tard.'"
+---
+
+<div class:list={['script-tiers', classe]} style={reserve} data-script-tiers>
+  <div id={containerId} class="cible"></div>
+  <p class="chargement message-chargement">Chargement du formulaire…</p>
+  <p class="erreur" role="status" data-erreur></p>
+  <noscript><p>Ce formulaire a besoin de JavaScript pour s'afficher.</p></noscript>
+</div>
+<script is:inline async src={src} onerror={surErreur}></script>
+
+<script>
+  const DELAI_FEUILLE = 3000
+  const DELAI_MAX = 8000
+
+  // Promesse résolue au chargement (ou à l'échec) d'une feuille de style, ou après DELAI_FEUILLE
+  const feuillePrete = (lien: HTMLLinkElement) =>
+    new Promise<void>((fin) => {
+      lien.addEventListener('load', () => fin(), { once: true })
+      lien.addEventListener('error', () => fin(), { once: true })
+      setTimeout(fin, DELAI_FEUILLE)
+    })
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-script-tiers]')) {
+    const cible = racine.querySelector<HTMLElement>('.cible')
+    if (!cible) continue
+    racine.dataset.attente = ''
+    const reveler = () => delete racine.dataset.attente
+    const filet = setTimeout(reveler, DELAI_MAX)
+
+    const verifier = () => {
+      if (!cible.childElementCount) return false
+      const enAttente = [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].filter((lien) => !lien.sheet)
+      Promise.all(enAttente.map(feuillePrete)).then(() =>
+        requestAnimationFrame(() => {
+          clearTimeout(filet)
+          reveler()
+        }),
+      )
+      return true
+    }
+
+    if (!verifier()) {
+      const observateur = new MutationObserver(() => {
+        if (verifier()) observateur.disconnect()
+      })
+      observateur.observe(cible, { childList: true })
+    }
+  }
+</script>
+
+<style>
+  .script-tiers {
+    position: relative;
+    /* Les formulaires tiers fixent parfois une largeur : pas de défilement horizontal de la page */
+    max-width: 100%;
+    overflow-x: auto;
+    min-height: var(--hauteur-reservee, auto);
+  }
+
+  @media (width >= 1200px) {
+    .script-tiers {
+      min-height: var(--hauteur-reservee-large, var(--hauteur-reservee, auto));
+    }
+  }
+
+  /* Par-dessus la place réservée : son retrait ne déplace pas le formulaire */
+  /* Contenu arrivé, mais ses styles pas encore : invisible, place gardée */
+  .script-tiers[data-attente] > .cible {
+    visibility: hidden;
+  }
+
+  .script-tiers:not([data-attente]):has(> .cible:not(:empty)) > .chargement,
+  .script-tiers[data-etat='erreur'] > .chargement {
+    display: none;
+  }
+
+  .script-tiers[data-etat='erreur'] {
+    min-height: 0;
+  }
+
+  /* Toujours rendue (vide, sans hauteur) : une région live doit exister
+     avant qu'on y écrive pour être annoncée */
+  .erreur {
+    margin: 0;
+    font-weight: var(--graisse-forte);
+  }
+
+  /* Widget UneQuestion (LibAnswers, /nous-joindre/nous-ecrire/) : injecté
+     dans la page, pas dans une iframe, donc stylable ici. Ses styles
+     (Bootstrap 3) donnent aux étiquettes des boutons radio 20 px de haut,
+     sous la cible minimale de 24 px (WCAG 2.5.8), et au bouton d'envoi
+     34 px, sous les 44 px d'une commande principale sur mobile. Les
+     formulaires LibWizard sont dans des iframes d'un autre domaine : rien
+     à faire ici. */
+  .script-tiers :global(.s-la-askform .radio label) {
+    padding-block: 2px;
+  }
+
+  .script-tiers :global(.s-la-askform .s-la-askform-button) {
+    min-height: var(--taille-cible);
+  }
+
+  @media (width >= 900px) {
+    .script-tiers :global(.s-la-askform .s-la-askform-button) {
+      min-height: 0;
+    }
+  }
+
+  @media (scripting: none) {
+    .script-tiers {
+      min-height: 0;
+    }
+
+    .chargement {
+      display: none;
+    }
+  }
+</style>

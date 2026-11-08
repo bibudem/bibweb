@@ -1,0 +1,148 @@
+---
+/*
+ * Bloc « video » : titre, texte, puis une vidéo YouTube en 16:9.
+ *
+ * Rien ne vient de YouTube avant le clic (ni lecteur, ni vignette, ni
+ * témoin) : la page reste légère et ne transmet rien à Google sans geste de
+ * la personne. Le bouton de lecture est d'abord un lien vers la vidéo sur
+ * YouTube (il fonctionne sans JavaScript) ; le script le remplace au clic
+ * par le lecteur youtube-nocookie, qui démarre et reçoit le focus.
+ * Le lecteur et le lien portent le titre de la vidéo (WCAG 4.1.2) ; la
+ * transcription, si elle existe, est liée sous la vidéo (WCAG 1.2).
+ */
+import { PlayIcon } from '@phosphor-icons/react/dist/ssr/Play'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+type Props = { bloc: BlocDe<'video'> }
+
+const { bloc } = Astro.props
+const lienYouTube = `https://www.youtube.com/watch?v=${bloc.youtube}`
+---
+
+<Titre texte={bloc.titre} id={bloc.id} />
+{bloc.texte && <TexteMarkdown texte={bloc.texte} brut />}
+<div class="cadre" data-video={bloc.youtube} data-titre-video={bloc.titreVideo}>
+  <a class="lecture" href={lienYouTube}>
+    <span class="pastille" aria-hidden="true"><IconeSprite icone={PlayIcon} size="2.5rem" weight="fill" /></span>
+    <span class="texte-lecture">
+      <span class="action">Lire la vidéo</span>
+      <span class="titre-video">{bloc.titreVideo}</span>
+    </span>
+  </a>
+</div>
+{
+  bloc.transcription && (
+    <p class="transcription">
+      <a href={bloc.transcription}>Lire la transcription de la vidéo</a>
+    </p>
+  )
+}
+
+<script>
+  for (const cadre of document.querySelectorAll<HTMLElement>('[data-video]')) {
+    const lien = cadre.querySelector<HTMLAnchorElement>('.lecture')
+    lien?.addEventListener('click', (evenement) => {
+      // Ctrl/Cmd-clic : ouvrir YouTube dans un onglet, comme tout lien
+      if (evenement.metaKey || evenement.ctrlKey || evenement.shiftKey) return
+      evenement.preventDefault()
+      const lecteur = document.createElement('iframe')
+      lecteur.src = `https://www.youtube-nocookie.com/embed/${cadre.dataset.video}?autoplay=1&rel=0`
+      lecteur.title = cadre.dataset.titreVideo ?? 'Vidéo'
+      lecteur.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'
+      lecteur.allowFullscreen = true
+      lecteur.referrerPolicy = 'strict-origin-when-cross-origin'
+      lien.replaceWith(lecteur)
+      lecteur.focus()
+    })
+  }
+</script>
+
+<style>
+  .cadre {
+    position: relative;
+    max-inline-size: 60rem;
+    margin-block-start: var(--espace-bloc);
+    margin-inline: auto;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--rayon-carte);
+    background-color: var(--bleu-fonce);
+  }
+
+  .cadre :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .lecture {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espace-element);
+    padding: var(--espace-carte);
+    color: var(--couleur-sur-fonce);
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .lecture:focus-visible {
+    outline: 3px solid var(--couleur-sur-fonce);
+    outline-offset: -6px;
+  }
+
+  .pastille {
+    display: grid;
+    place-items: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: var(--rayon-plein);
+    /* Icône blanche sur rouge orangé : 3,4:1, assez pour un élément graphique (WCAG 1.4.11) */
+    background-color: var(--rouge-orange);
+    color: var(--couleur-sur-fonce);
+    transition: transform var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .lecture:hover .pastille {
+    transform: scale(1.08);
+  }
+
+  .texte-lecture {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .action {
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-moyenne);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .titre-video {
+    max-inline-size: 36ch;
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-forte);
+    line-height: 1.3;
+  }
+
+  .transcription {
+    margin-block: var(--espace-element) 0;
+    text-align: center;
+  }
+
+  @media (forced-colors: active) {
+    .cadre {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

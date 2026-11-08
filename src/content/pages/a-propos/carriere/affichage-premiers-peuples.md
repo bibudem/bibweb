@@ -1,0 +1,33 @@
+---
+title: Affichage destiné aux étudiants et étudiantes issues des Premiers Peuples
+crumbLabel: Premiers Peuples
+secondaryNav:
+  title: Premiers Peuples
+  order: 2
+superHero:
+  imageName: espaces
+  title: À propos
+---
+## Affichage destiné aux étudiants et étudiantes issues des Premiers Peuples
+
+Un stage rémunéré offert pour une durée de 2 ans. [Offre d’emploi détaillée (PDF)](/a-propos/programme-etudiant-premiers-peuples-web.pdf).
+
+Les bibliothèques et la Division des archives et de la gestion de l’information offrent aux étudiantes et étudiants issus des Premiers Peuples une première expérience d’emploi rémunéré durant les deux années d’études du programme de maîtrise en sciences de l’information de l’École de bibliothéconomie et sciences de l’information (EBSI).
+
+Les tâches et l’horaire de travail seront déterminés selon l’intérêt de la personne retenue et les besoins des équipes au moment de l’embauche.
+
+Afin de réunir expérience d’emploi et réussite dans les études, la personne retenue travaillera à temps partiel pendant l’année scolaire (15 h/semaine), puis, si elle le désire, à temps plein durant la période estivale (35 h/semaine).
+
+### Profil
+- Être inscrit ou inscrite à temps plein au programme de maîtrise en sciences de l’information de l’EBSI.
+- Être issu ou issue des Premiers Peuples et être reconnu ou reconnue ainsi par ces derniers.
+- Maîtriser le français.
+
+### Documents à fournir
+
+La demande doit être présentée à l’adresse courriel [acces-egalite@drh.umontreal.ca](mailto:acces-egalite@drh.umontreal.ca).
+
+- Une courte lettre de présentation décrivant les objectifs poursuivis dans le cadre du programme et les projets futurs de la personne dans le domaine des sciences de l’information.
+- Une preuve que la personne détient un statut lié aux Premières Nations, Métis ou Inuit au Canada.
+- Un curriculum vitae.
+- Des références seront demandées.

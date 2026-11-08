@@ -1,0 +1,274 @@
+---
+/*
+ * Bouton du contenu (d'après coquille-web, sur MUI Button et la surcharge
+ * du thème). Un <a> si `href` est fourni, sinon un <button>.
+ *
+ * - primary (par défaut) : plein bleu foncé ; secondary : texte bleu.
+ * - Avec href : flèche de fin ArrowRight (famille Bibliothèques) ou
+ *   ArrowUpRight (externe), 24 px, qui avance d'un cran au survol et au
+ *   focus. Un PDF s'ouvre dans un nouvel onglet, sans l'icône PDF du CSS
+ *   global, comme dans la source ; les deux sont annoncés en texte masqué.
+ * - `retour` : lien de retour (page 404 vers l'accueil) ; flèche vers la
+ *   gauche avant le texte, qui recule d'un cran au survol et au focus, au
+ *   lieu de la flèche de fin.
+ * - `light` (inopérant dans la source) : variante pour fond foncé.
+ * - Corrigé : `rel` fourni n'est plus écrasé, et une adresse absolue d'un
+ *   sous-domaine des Bibliothèques reste un lien ordinaire.
+ */
+import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft'
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import { analyserLien, annonceLien } from '@/lib/liens'
+import { fusionnerStyles } from '@/lib/styles'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  primary?: boolean
+  secondary?: boolean
+  href?: string
+  /** bleuFonce, bleuPrincipal ou blue (palette du thème) */
+  color?: string
+  variant?: 'contained' | 'text' | 'outlined'
+  size?: 'small' | 'medium' | 'large'
+  light?: boolean
+  disableEndIcon?: boolean
+  retour?: boolean
+  target?: string
+  rel?: string
+  type?: 'button' | 'submit' | 'reset'
+  class?: string
+  style?: string | Record<string, string | number>
+}
+
+const {
+  primary,
+  secondary,
+  href,
+  color,
+  variant,
+  size = 'medium',
+  light = false,
+  disableEndIcon = false,
+  retour = false,
+  target,
+  rel,
+  type = 'button',
+  class: classe,
+  style,
+  ...reste
+} = Astro.props
+
+const estPrimaire = !secondary || primary === true
+const variante = variant ?? (estPrimaire ? 'contained' : 'text')
+const couleur = color ?? (estPrimaire ? 'bleuFonce' : 'bleuPrincipal')
+
+const estLien = typeof href === 'string'
+const { interne, pdf } = analyserLien(href)
+const cible = pdf ? '_blank' : target
+const nouvelOnglet = cible === '_blank'
+const relFinal = estLien && (!interne || nouvelOnglet) ? [...new Set([...(rel ?? '').split(/\s+/).filter(Boolean), 'noopener'])].join(' ') : rel
+const annonce = estLien ? annonceLien({ pdf, nouvelOnglet }) : ''
+const IconeFin = estLien && !disableEndIcon && !retour ? (interne ? ArrowRightIcon : ArrowUpRightIcon) : null
+
+// La source utilisait « no-pdf-icon » ; le CSS global d'ici attend « sans-icone-pdf »
+const classeAuteur = classe?.replace(/\bno-pdf-icon\b/g, 'sans-icone-pdf')
+const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `taille-${size}`, { clair: light, 'sans-icone-pdf': pdf && !classeAuteur?.includes('sans-icone-pdf') }, classeAuteur]
+---
+
+{
+  estLien ? (
+    <a href={href} target={cible} rel={relFinal} class:list={listeClasses} style={fusionnerStyles(style)} {...reste}>
+      {estLien && retour && <IconeSprite icone={ArrowLeftIcon} size={24} aria-hidden="true" focusable="false" className="icone-debut" />}
+      <span class="libelle"><slot /></span>
+      {annonce && <span class="visuellement-masque">{annonce}</span>}
+      {IconeFin && <IconeSprite icone={IconeFin} size={24} aria-hidden="true" focusable="false" className={interne ? 'icone-fin' : 'icone-fin icone-externe'} />}
+    </a>
+  ) : (
+    <button type={type} class:list={listeClasses} style={fusionnerStyles(style)} {...reste}>
+      <span class="libelle"><slot /></span>
+    </button>
+  )
+}
+
+<style>
+  .bouton {
+    /* Couleurs propres à chaque variante, redéfinies plus bas */
+    --bouton-fond: transparent;
+    --bouton-texte: var(--couleur-accent);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-accent) 6%, transparent);
+    --bouton-texte-survol: var(--bouton-texte);
+    --bouton-bordure: transparent;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    /* Jamais plus large que son conteneur ; un mot trop long pour la largeur
+       (texte agrandi sur 320 px) se coupe plutôt que de déborder (WCAG 1.4.10) */
+    max-width: 100%;
+    min-height: 3.125rem;
+    margin-top: var(--espace-2);
+    padding: 6px 20px 6px 25px;
+    border: 1px solid var(--bouton-bordure);
+    border-radius: var(--rayon-plein);
+    background-color: var(--bouton-fond);
+    color: var(--bouton-texte);
+    font-family: var(--police-sans);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-normale);
+    letter-spacing: 0.02857em;
+    /* Un libellé long passe à la ligne : interligne lisible, aligné au
+       début (une ligne seule reste centrée par justify-content) */
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    text-align: start;
+    text-decoration: none;
+    text-transform: none;
+    cursor: pointer;
+    transition:
+      background-color var(--duree-moyenne-1) var(--courbe-standard),
+      color var(--duree-moyenne-1) var(--courbe-standard),
+      border-color var(--duree-moyenne-1) var(--courbe-standard);
+  }
+
+  .bouton:hover {
+    background-color: var(--bouton-fond-survol);
+    color: var(--bouton-texte-survol);
+  }
+
+  .libelle :global(p) {
+    margin: 0;
+  }
+
+  /* Le SVG vient de React : il ne porte pas l.attribut de portée d.Astro */
+  .bouton > :global(.icone-fin) {
+    flex-shrink: 0;
+    margin-inline-end: -4px;
+    fill: currentColor;
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  /* Survol et focus : la flèche avance d'un cran vers sa destination (→ vers
+     la droite, ↗ en diagonale), comme dans Quoi de neuf et les listes de
+     liens. Survol réservé aux pointeurs fins : au toucher, il resterait
+     après le tapotement. */
+  @media (hover: hover) and (pointer: fine) {
+    .bouton:hover > :global(.icone-fin) {
+      transform: translateX(3px);
+    }
+
+    .bouton:hover > :global(.icone-externe) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .bouton:focus-visible > :global(.icone-fin) {
+    transform: translateX(3px);
+  }
+
+  .bouton > :global(.icone-debut) {
+    flex-shrink: 0;
+    margin-inline-start: -4px;
+    fill: currentColor;
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .bouton:hover > :global(.icone-debut) {
+      transform: translateX(-3px);
+    }
+  }
+
+  .bouton:focus-visible > :global(.icone-debut) {
+    transform: translateX(-3px);
+  }
+
+  .bouton:focus-visible > :global(.icone-externe) {
+    transform: translate(2px, -2px);
+  }
+
+  /* ---- Plein ---- */
+  /* Survol : bleu principal, comme les boutons des listes de liens. Le
+     bleu foncé survol de la source (presque noir) se distinguait à peine.
+     Blanc sur bleu principal : 7,10:1. */
+  .variante-contained {
+    --bouton-fond: var(--couleur-fond-fort);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-fond-survol: var(--couleur-fond-fort-survol);
+  }
+
+  .variante-contained.couleur-bleuPrincipal,
+  .variante-contained.couleur-blue,
+  .variante-contained.couleur-primary {
+    --bouton-fond: var(--bleu-principal);
+    --bouton-fond-survol: var(--bleu-principal-fonce);
+  }
+
+  /* ---- Texte et contour ---- */
+  .variante-text.couleur-bleuFonce,
+  .variante-outlined.couleur-bleuFonce {
+    --bouton-texte: var(--couleur-texte);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-texte) 6%, transparent);
+  }
+
+  .variante-outlined {
+    --bouton-bordure: currentColor;
+  }
+
+  /* ---- Fond foncé (light) ---- */
+  .clair.variante-contained {
+    --bouton-fond: var(--couleur-sur-fonce);
+    --bouton-texte: var(--bleu-fonce);
+    --bouton-fond-survol: var(--bleu-100);
+  }
+
+  .clair.variante-text,
+  .clair.variante-outlined {
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-sur-fonce) 12%, transparent);
+  }
+
+  /* ---- Classes utilitaires du thème de la source ---- */
+  .blueOutlineNoIcon {
+    --bouton-fond: transparent;
+    --bouton-texte: var(--couleur-accent);
+    --bouton-bordure: var(--couleur-accent);
+    --bouton-fond-survol: var(--bleu-principal);
+    --bouton-texte-survol: var(--couleur-sur-fonce);
+  }
+
+  .blueOutlineNoIcon > :global(.icone-fin) {
+    display: none;
+  }
+
+  .mt1 {
+    margin-top: 8px;
+  }
+
+  .right,
+  .center,
+  .left {
+    display: flex;
+    width: fit-content;
+  }
+
+  .right {
+    margin-inline-start: auto;
+  }
+
+  .center {
+    margin-inline: auto;
+  }
+
+  .left {
+    margin-inline-end: auto;
+  }
+
+  /* Le fond seul ne trace pas le bouton en couleurs forcées */
+  @media (forced-colors: active) {
+    .bouton {
+      border-color: ButtonText;
+    }
+  }
+</style>

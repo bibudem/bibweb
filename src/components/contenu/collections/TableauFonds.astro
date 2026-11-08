@@ -1,0 +1,277 @@
+---
+/*
+ * Répertoire des fonds et collections de la Bibliothèque des livres rares
+ * (page « Nos fonds et collections » de la plateforme Collections spéciales,
+ * reprise sur /espaces/blrcs/fonds-collections/). Données :
+ * src/data/fonds-collections.ts.
+ *
+ * Tout le tableau est rendu au build : sans JavaScript, on lit les 38 fonds
+ * d'un trait. Le script ajoute ensuite, en amélioration progressive, le
+ * filtre par période et par catégorie (nombre de résultats annoncé,
+ * role="status") et le tri par nom ou par catégorie (boutons dans les en-têtes,
+ * aria-sort), comme dans la source.
+ *
+ * Corrections par rapport à la source : liens « Consulter » nommés d'après
+ * leur fonds (ils étaient tous identiques pour un lecteur d'écran), case vide
+ * annoncée « aucun », en-tête « Périodes couvertes » (« Périodique couvert »).
+ */
+import Tableau from '@/components/primitives/Tableau.astro'
+import ChampListe from '@/components/primitives/ChampListe.astro'
+import { FONDS, PERIODES } from '@/data/fonds-collections'
+import { idUnique } from '@/lib/ids'
+
+const categories = [...new Set(FONDS.flatMap((f) => (f.categorie ? [f.categorie] : [])))].sort((a, b) => a.localeCompare(b, 'fr'))
+const periodes = PERIODES.filter((p) => FONDS.some((f) => f.periodes.includes(p)))
+const ids = { periode: idUnique('fonds-periode'), categorie: idUnique('fonds-categorie') }
+const total = FONDS.length
+const annonce = (n: number) => `${n} ${n > 1 ? 'fonds et collections' : 'fonds ou collection'}`
+---
+
+<div class="tableau-fonds" data-tableau-fonds>
+  <form class="filtres" aria-label="Filtrer les fonds et collections" data-filtres>
+    <ChampListe pour={ids.periode} libelle="Période">
+      <select id={ids.periode} name="periode" data-filtre="periode">
+        <option value="">Toutes les périodes</option>
+        {periodes.map((p) => <option value={p}>{p}</option>)}
+      </select>
+    </ChampListe>
+    <ChampListe pour={ids.categorie} libelle="Catégorie">
+      <select id={ids.categorie} name="categorie" data-filtre="categorie">
+        <option value="">Toutes les catégories</option>
+        {categories.map((c) => <option value={c}>{c}</option>)}
+      </select>
+    </ChampListe>
+  </form>
+
+  <p class="compte" role="status" data-statut>{annonce(total)}</p>
+
+  <Tableau titre="Fonds et collections de la Bibliothèque des livres rares et collections spéciales">
+    <thead>
+      <tr class="rangee">
+        <th class="cellule" scope="col" data-colonne="nom">
+          <button type="button" class="tri" data-tri="nom">Fonds ou collection<span class="fleche" aria-hidden="true"></span></button>
+        </th>
+        <th class="cellule" scope="col" data-colonne="categorie">
+          <button type="button" class="tri" data-tri="categorie">Catégorie<span class="fleche" aria-hidden="true"></span></button>
+        </th>
+        <th class="cellule" scope="col">Périodes couvertes</th>
+        <th class="cellule" scope="col">Sofia</th>
+        <th class="cellule" scope="col">Numérisations</th>
+      </tr>
+    </thead>
+    <tbody data-corps>
+      {
+        FONDS.map((f) => (
+          <tr class="rangee" data-nom={f.nom} data-categorie={f.categorie ?? ''} data-periodes={JSON.stringify(f.periodes)}>
+            <th class="cellule" scope="row">
+              <span class="nom">{f.nom}</span>
+              <span class="genre">{f.genre}</span>
+            </th>
+            <td data-cellule class="cellule">
+              {f.categorie ?? (
+                <Fragment>
+                  <span aria-hidden="true">—</span>
+                  <span class="visuellement-masque">Aucune</span>
+                </Fragment>
+              )}
+            </td>
+            <td data-cellule class="cellule">
+              <ul class="periodes">
+                {f.periodes.map((p) => (
+                  <li>{p}</li>
+                ))}
+              </ul>
+            </td>
+            <td data-cellule class="cellule">
+              {f.sofia ? (
+                <a href={f.sofia}>
+                  Consulter<span class="visuellement-masque"> {f.nom} dans Sofia</span>
+                </a>
+              ) : (
+                <Fragment>
+                  <span aria-hidden="true">—</span>
+                  <span class="visuellement-masque">Aucun lien</span>
+                </Fragment>
+              )}
+            </td>
+            <td data-cellule class="cellule">
+              {f.numerisations ? (
+                <a href={f.numerisations}>
+                  Consulter<span class="visuellement-masque"> les numérisations de {f.nom}</span>
+                </a>
+              ) : (
+                <Fragment>
+                  <span aria-hidden="true">—</span>
+                  <span class="visuellement-masque">Aucune numérisation</span>
+                </Fragment>
+              )}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </Tableau>
+  <p class="aucun" hidden data-aucun>Aucun fonds ne correspond à ces critères.</p>
+</div>
+
+<script>
+  const annonce = (n: number) => (n === 0 ? 'Aucun fonds ne correspond à ces critères.' : `${n} ${n > 1 ? 'fonds et collections' : 'fonds ou collection'}`)
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-tableau-fonds]')) {
+    const filtres = [...racine.querySelectorAll<HTMLSelectElement>('[data-filtre]')]
+    const statut = racine.querySelector<HTMLElement>('[data-statut]')!
+    const aucun = racine.querySelector<HTMLElement>('[data-aucun]')!
+    const corps = racine.querySelector<HTMLElement>('[data-corps]')!
+    const lignes = [...corps.querySelectorAll<HTMLTableRowElement>(':scope > tr')]
+    const ordreInitial = [...lignes]
+    const boutonsTri = [...racine.querySelectorAll<HTMLButtonElement>('[data-tri]')]
+    let tri: { cle: string; sens: 1 | -1 } | null = null
+
+    function filtrer() {
+      const [periode, categorie] = ['periode', 'categorie'].map((n) => filtres.find((f) => f.dataset.filtre === n)?.value ?? '')
+      let visibles = 0
+      for (const ligne of lignes) {
+        const visible =
+          (!periode || (JSON.parse(ligne.dataset.periodes ?? '[]') as string[]).includes(periode)) && (!categorie || ligne.dataset.categorie === categorie)
+        ligne.hidden = !visible
+        if (visible) visibles++
+      }
+      statut.textContent = annonce(visibles)
+      aucun.hidden = visibles > 0
+    }
+
+    // Premier clic : ordre croissant ; deuxième : décroissant ; troisième :
+    // ordre d'origine (celui de la plateforme, par catégorie)
+    function trier(cle: string) {
+      tri = tri?.cle !== cle ? { cle, sens: 1 } : tri.sens === 1 ? { cle, sens: -1 } : null
+      const ordre = tri
+        ? [...lignes].sort((a, b) => tri!.sens * (a.dataset[tri!.cle] ?? '').localeCompare(b.dataset[tri!.cle] ?? '', 'fr'))
+        : ordreInitial
+      corps.append(...ordre)
+      for (const bouton of boutonsTri) {
+        const entete = bouton.closest('th')!
+        if (tri?.cle === bouton.dataset.tri) entete.setAttribute('aria-sort', tri.sens === 1 ? 'ascending' : 'descending')
+        else entete.removeAttribute('aria-sort')
+      }
+    }
+
+    for (const f of filtres) f.addEventListener('change', filtrer)
+    for (const b of boutonsTri) b.addEventListener('click', () => trier(b.dataset.tri!))
+  }
+</script>
+
+<style>
+  .filtres {
+    display: grid;
+    gap: var(--espace-element);
+    margin-block-end: var(--espace-element);
+  }
+
+  @media (width >= 600px) {
+    .filtres {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-inline-size: 40rem;
+    }
+  }
+
+  /* Sans JavaScript, les filtres et le tri ne feraient rien */
+  @media (scripting: none) {
+    .filtres {
+      display: none;
+    }
+
+    .tri {
+      pointer-events: none;
+    }
+
+    .fleche {
+      display: none;
+    }
+  }
+
+  .compte {
+    margin-block: 0 var(--espace-element);
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+  }
+
+  .tri {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: var(--taille-cible);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .tri:hover {
+    text-decoration: underline;
+  }
+
+  /* Deux triangles au repos, un seul dans le sens du tri */
+  .fleche {
+    width: 0.625rem;
+    height: 0.875rem;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 0l5 6H0zM5 14L0 8h10z'/%3E%3C/svg%3E") center / contain no-repeat;
+    opacity: 0.6;
+  }
+
+  [aria-sort='ascending'] .fleche {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 0l5 6H0z'/%3E%3C/svg%3E");
+    opacity: 1;
+  }
+
+  [aria-sort='descending'] .fleche {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 14L0 8h10z'/%3E%3C/svg%3E");
+    opacity: 1;
+  }
+
+  .nom {
+    display: block;
+    font-weight: var(--graisse-moyenne);
+  }
+
+  .genre {
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-normale);
+  }
+
+  .periodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .periodes li {
+    padding: 0.125rem var(--espace-1);
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-teinte);
+    font-size: var(--texte-tres-petit);
+    white-space: nowrap;
+  }
+
+  @media (forced-colors: active) {
+    .periodes li {
+      border: 1px solid CanvasText;
+    }
+  }
+
+  tr[hidden] {
+    display: none;
+  }
+
+  .aucun {
+    margin-block: var(--espace-element) 0;
+  }
+</style>

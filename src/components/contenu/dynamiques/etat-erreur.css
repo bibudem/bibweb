@@ -1,0 +1,67 @@
+/*
+ * État d'erreur commun des contenus chargés dans le navigateur : événements,
+ * formations, horaires du jour et page /horaires/. Même message (« … ne sont
+ * pas disponibles pour le moment. »), même bouton « Réessayer », même place
+ * (celle du contenu attendu).
+ *
+ * Feuille partagée plutôt que styles scopés : l'îlot React de /horaires/
+ * (src/components/ilots/horaires/) l'importe aussi. Classes préfixées
+ * « etat-erreur ».
+ *
+ * Le bouton est à contour : son bord gauche s'aligne sur le message. L'ancien
+ * bouton texte (Bouton secondary) avait une marge interne sans bord visible,
+ * et son libellé paraissait décalé de 26 px.
+ */
+.etat-erreur {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espace-element);
+}
+
+.etat-erreur[hidden] {
+  display: none;
+}
+
+.etat-erreur > p {
+  margin: 0;
+}
+
+/* Conteneur qui reçoit le focus pendant le nouveau chargement (brancherReessayer) :
+   il n'est pas une commande, il n'a pas de contour de focus. */
+[data-focus-programme]:focus {
+  outline: none;
+}
+
+.etat-erreur-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-1);
+  min-height: var(--taille-cible);
+  margin: 0;
+  padding: 0 var(--espace-2);
+  border: 1px solid currentColor;
+  border-radius: var(--rayon-plein);
+  background: transparent;
+  color: var(--couleur-accent);
+  font-family: var(--police-sans);
+  font-size: var(--texte-petit);
+  font-weight: var(--graisse-moyenne);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color var(--duree-moyenne-1) var(--courbe-standard);
+}
+
+.etat-erreur-bouton:hover {
+  background-color: color-mix(in srgb, var(--bleu-principal) 6%, transparent);
+}
+
+.etat-erreur-bouton svg {
+  flex: none;
+}
+
+@media (forced-colors: active) {
+  .etat-erreur-bouton {
+    border-color: ButtonText;
+  }
+}

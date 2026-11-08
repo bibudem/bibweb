@@ -1,0 +1,76 @@
+---
+/*
+ * Icône dans un carré de couleur (d'après coquille-web).
+ *
+ * Carré de 10,875 × 11,875rem centré, coins small. Comme dans la source,
+ * l'icône est forcée à 5,25rem et prend la couleur du fond assombrie de 80 %
+ * (darken de MUI : chaque canal × 0,2, d'où le color-mix à 20 % avec du
+ * noir) ; les `color` passés à l'icône dans le MDX restent sans effet.
+ * Contraste de l'icône sur son fond : 6,5 à 12,6:1 sur les fonds clairs.
+ * Corrigé : sur bleu 600 et vert foncé, l'icône assombrie de la source
+ * n'avait que 1,9:1 et 1,75:1 et se voyait à peine. Sur ces deux fonds, elle
+ * est plutôt éclaircie (moitié fond, moitié blanc) : 3,75:1 sur bleu 600 et
+ * 4,02:1 sur vert foncé, au-delà des 3:1 d'un élément graphique, tout en
+ * gardant la teinte du carré.
+ *
+ * L'icône passe dans le slot. Elle est décorative (aria-hidden) : le titre voisin porte
+ * le sens.
+ */
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { couleurPalette } from '@/lib/couleurs'
+
+interface Props {
+  /** Clé de la palette (vertPale, bleu600…) ou couleur CSS */
+  color?: string
+  class?: string
+  style?: Style
+}
+
+const { color = 'transparent', class: classe, style, ...reste } = Astro.props
+
+if (!Astro.slots.has('default')) throw new Error('IconeCarree : l’icône passe dans le slot.')
+
+const fond = couleurPalette(color) ?? 'transparent'
+// Fonds trop foncés pour une icône assombrie (voir plus haut)
+const fondFonce = fond === 'var(--bleu-principal-fonce)' || fond === 'var(--vert-fonce)'
+---
+
+<div class:list={['carre', { 'fond-fonce': fondFonce }, classe]} style={fusionnerStyles({ '--_fond': fond }, style)} {...reste}>
+  <div class="icone" aria-hidden="true"><slot /></div>
+</div>
+
+<style>
+  .carre {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 10.875rem;
+    /* Avec le texte agrandi à 200 %, 10,875rem dépassait la largeur d'un
+       téléphone (370 px) */
+    max-width: 100%;
+    height: 11.875rem;
+    margin-inline: auto;
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond);
+  }
+
+  .icone {
+    display: flex;
+  }
+
+  .icone :global(svg) {
+    width: 5.25rem;
+    height: 5.25rem;
+    fill: color-mix(in srgb, var(--_fond) 20%, var(--couleur-voile));
+  }
+
+  .fond-fonce .icone :global(svg) {
+    fill: color-mix(in srgb, var(--_fond) 50%, var(--couleur-surface));
+  }
+
+  @media (forced-colors: active) {
+    .icone :global(svg) {
+      fill: CanvasText;
+    }
+  }
+</style>

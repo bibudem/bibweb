@@ -1,0 +1,42 @@
+---
+/*
+ * Bloc « grille-elargissable » (accueil, « Mille et une façons
+ * d'apprendre ») : titre, texte, cartes à icône compactes en rangées de
+ * deux dès 600 px (GrilleElargissable), puis un bouton centré. Marges de la
+ * source : 2,5rem au-dessus de la grille et du bouton.
+ */
+import GrilleElargissable from '@/components/contenu/cartes/GrilleElargissable.astro'
+import CarteIcone from '@/components/contenu/cartes/CarteIcone.astro'
+import BoutonVitrine from './BoutonVitrine.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'grille-elargissable'> }
+
+const { bloc } = Astro.props
+const icones = await Promise.all(bloc.cartes.map((carte) => composantIcone(carte.icone)))
+---
+
+<Titre texte={bloc.titre} id={bloc.id} />
+{bloc.texte && <TexteMarkdown texte={bloc.texte} brut />}
+<GrilleElargissable style={{ marginTop: 'var(--espace-bloc)' }}>
+  {bloc.cartes.map((carte, i) => <CarteIcone fullWidth color={bloc.couleurCartes} title={carte.titre} Icon={icones[i]} moreText={carte.appel} href={carte.lien} />)}
+</GrilleElargissable>
+{
+  bloc.bouton && (
+    <div class="pied-bloc">
+      <BoutonVitrine bouton={bloc.bouton} fond={bloc.fond} />
+    </div>
+  )
+}
+
+<style>
+  /* Bouton centré sous la grille */
+  .pied-bloc {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--espace-5);
+  }
+</style>

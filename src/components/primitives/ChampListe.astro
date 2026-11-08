@@ -1,0 +1,87 @@
+---
+/*
+ * Liste déroulante de filtre : libellé visible au-dessus, boîte bordée et
+ * flèche maison. Le <select> vient du slot, avec ses id, name et data-*
+ * (le script de la page s'y attache) ; `pour` est son id.
+ *
+ * Partagée par le répertoire du personnel et le répertoire des fonds de la
+ * Bibliothèque des livres rares.
+ */
+interface Props {
+  /** id du <select> du slot */
+  pour: string
+  libelle: string
+  class?: string
+}
+
+const { pour, libelle, class: classe } = Astro.props
+---
+
+<div class:list={['champ-liste', classe]}>
+  <label for={pour}>{libelle}</label>
+  <div class="boite">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .champ-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  label {
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-forte);
+  }
+
+  .boite {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--couleur-texte-secondaire);
+    border-radius: var(--rayon-moyen);
+    background: var(--couleur-surface);
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .boite:focus-within {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .boite :global(select) {
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
+    padding-inline-end: var(--espace-4);
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-courant);
+    text-overflow: ellipsis;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .boite :global(select:focus-visible) {
+    outline: none;
+  }
+
+  /* Flèche de la liste, en masque pour suivre la couleur des jetons */
+  .boite::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: 0.875rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z'/%3E%3C/svg%3E") center / contain no-repeat;
+    pointer-events: none;
+  }
+</style>

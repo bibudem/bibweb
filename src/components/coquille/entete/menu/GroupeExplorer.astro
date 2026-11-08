@@ -1,0 +1,103 @@
+---
+/*
+ * « Explorer » du menu (PanneauMenu) : Accueil et les pages principales, en
+ * grand. Sous 1200 px seulement (la barre de bureau les montre déjà).
+ *
+ * PanneauMenu passe `class="groupe"` : sa propre portée de style atteint
+ * ainsi la racine (placement dans la grille, entrée en décalage).
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { sansBase } from '@/lib/chemin'
+import { PAGES_PRINCIPALES, estCourante } from '@/data/navigation'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  /** id du menu : préfixe de l'id du surtitre */
+  id: string
+  class?: string
+  style?: string
+}
+
+const { id, class: classe, style, ...reste } = Astro.props
+const chemin = sansBase(Astro.url.pathname)
+const PAGES = [{ url: '/', libelle: 'Accueil' }, ...PAGES_PRINCIPALES]
+const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(chemin, url))
+---
+
+<div class:list={[classe, 'explorer']} style={style} {...reste}>
+  <p class="surtitre" id={`${id}-explorer`}>Explorer</p>
+  <ul class="pages" aria-labelledby={`${id}-explorer`}>
+    {
+      PAGES.map(({ url, libelle }) => (
+        <li>
+          <a href={url} aria-current={courante(url) ? 'page' : undefined}>
+            <span>{libelle}</span>
+            <IconeSprite icone={ArrowRightIcon} size={22} aria-hidden="true" className="fleche" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .pages a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-2);
+    min-height: 3.5rem;
+    padding-block: var(--espace-1);
+    border-bottom: 1px solid var(--couleur-bordure);
+    font-size: var(--texte-tres-grand);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
+    transition: color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .pages a:hover {
+    color: var(--couleur-lien);
+  }
+
+  .pages li:first-child a {
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .pages :global(.fleche) {
+    color: var(--couleur-accent);
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .pages a:focus-visible :global(.fleche) {
+    translate: 4px 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pages a:hover :global(.fleche) {
+      translate: 4px 0;
+    }
+  }
+
+  /* Page courante : graisse et pastille, pas la seule couleur */
+  .pages li a[aria-current='page'] {
+    color: var(--couleur-texte);
+    font-weight: var(--graisse-forte);
+  }
+
+  .pages a[aria-current='page'] > span::before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.625rem;
+    border-radius: 50%;
+    background-color: var(--rouge-orange);
+    vertical-align: 0.2em;
+  }
+
+  @media (forced-colors: active) {
+    .pages a[aria-current='page'] {
+      text-decoration: underline;
+    }
+  }
+</style>

@@ -1,0 +1,206 @@
+---
+/*
+ * Bouton « Retour en haut de la page », fixé en bas à droite.
+ *
+ * - Il apparaît quand on a défilé de plus d'un écran et demi, et disparaît en
+ *   haut de page. Masqué, il est `visibility: hidden` : il sort aussi de
+ *   l'ordre de tabulation et de l'arbre d'accessibilité. Sans JS, il reste
+ *   masqué (le défilement natif suffit : Début, ou le lien d'évitement).
+ * - Un vrai <button> avec un nom accessible (l'icône est décorative). Cible de
+ *   48 px (WCAG 2.5.8 demande 24 px).
+ * - Au clic : défilement jusqu'en haut (instantané avec mouvement réduit, via
+ *   la règle globale de scroll-behavior), puis le focus revient au début du
+ *   document sans le montrer : le Tab suivant atteint le lien d'évitement,
+ *   comme à l'arrivée sur la page. Laisser le focus sur le bouton, devenu
+ *   masqué, le ferait disparaître sous le clavier (WCAG 2.4.3).
+ * - ≥ 900 px : à gauche de la poignée du tiroir des liens rapides (40 px) ; elle est
+ *   centrée en hauteur, le bouton est en bas : pas de recouvrement.
+ *   < 900 px : au-dessus de la barre des liens rapides, et il descend avec
+ *   elle quand elle se retire au défilement vers le bas.
+ * - Bleu principal, comme le tiroir des liens rapides (bleu foncé au
+ *   survol). Contraste du pictogramme blanc : 7,1:1 au repos.
+ * - Infobulle « Retour en haut » à gauche, au survol et au focus clavier,
+ *   comme la poignée du tiroir : Échap la ferme, le pointeur peut passer
+ *   dessus (WCAG 1.4.13).
+ * - Focus : anneau marine avec un liseré blanc, lisible sur fond clair comme
+ *   sur les bandes foncées.
+ * - Mode contraste forcé : bordure système. Impression : masqué.
+ */
+import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+---
+
+<button type="button" class="retour-haut infobulle infobulle-gauche" data-retour-haut aria-label="Retour en haut de la page" data-infobulle="Retour en haut">
+  <IconeSprite icone={ArrowUpIcon} size={24} weight="bold" aria-hidden="true" />
+</button>
+
+<script>
+  const bouton = document.querySelector<HTMLButtonElement>('[data-retour-haut]')
+  if (bouton) {
+    let enAttente = false
+    const mettreAJour = () => {
+      enAttente = false
+      bouton.toggleAttribute('data-visible', window.scrollY > window.innerHeight * 1.5)
+    }
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (enAttente) return
+        enAttente = true
+        requestAnimationFrame(mettreAJour)
+      },
+      { passive: true },
+    )
+    window.addEventListener('resize', mettreAJour, { passive: true })
+
+    // Échap ferme l'infobulle ; elle revient au prochain survol ou focus
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && bouton.matches(':hover, :focus-visible')) bouton.setAttribute('data-infobulle-fermee', '')
+    })
+    for (const evenement of ['pointerleave', 'blur']) {
+      bouton.addEventListener(evenement, () => bouton.removeAttribute('data-infobulle-fermee'))
+    }
+    mettreAJour()
+
+    bouton.addEventListener('click', () => {
+      window.scrollTo({ top: 0 })
+      // Point de départ de la navigation au clavier : le haut du document
+      const corps = document.body
+      corps.setAttribute('tabindex', '-1')
+      corps.style.outline = 'none'
+      corps.focus({ preventScroll: true })
+      corps.addEventListener(
+        'blur',
+        () => {
+          corps.removeAttribute('tabindex')
+          corps.style.removeProperty('outline')
+        },
+        { once: true },
+      )
+    })
+  }
+</script>
+
+<style>
+  .retour-haut {
+    --_ecart: 1rem;
+    display: grid;
+    position: fixed;
+    z-index: var(--z-entete);
+    right: var(--_ecart);
+    bottom: calc(var(--hauteur-liens-rapides, 86px) + var(--_ecart));
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: var(--bleu-principal);
+    box-shadow: var(--ombre-2);
+    color: var(--couleur-sur-fonce);
+    cursor: pointer;
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 0.75rem;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard-acceleree),
+      translate var(--duree-courte-4) var(--courbe-standard-acceleree),
+      visibility 0s linear var(--duree-courte-4),
+      background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .retour-haut[data-visible] {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity var(--duree-moyenne-1) var(--courbe-standard-deceleree),
+      translate var(--duree-moyenne-1) var(--courbe-standard-deceleree),
+      visibility 0s,
+      background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Sous 900 px, la barre des liens rapides sort de l'écran au défilement
+     vers le bas, au rythme du doigt (LiensRapides) : le bouton descend avec
+     elle, jusqu'à l'écart habituel du bas de l'écran. transform s'ajoute au
+     translate de l'apparition sans le remplacer. */
+  @media (width < 900px) {
+    .retour-haut {
+      transform: translateY(min(var(--decalage-liens-rapides, 0px), var(--hauteur-liens-rapides, 86px) - env(safe-area-inset-bottom, 0px)));
+      transition:
+        opacity var(--duree-courte-4) var(--courbe-standard-acceleree),
+        translate var(--duree-courte-4) var(--courbe-standard-acceleree),
+        visibility 0s linear var(--duree-courte-4),
+        background-color var(--duree-courte-4) var(--courbe-standard),
+        transform var(--duree-courte-4) var(--courbe-standard);
+    }
+
+    .retour-haut[data-visible] {
+      transition:
+        opacity var(--duree-moyenne-1) var(--courbe-standard-deceleree),
+        translate var(--duree-moyenne-1) var(--courbe-standard-deceleree),
+        visibility 0s,
+        background-color var(--duree-courte-4) var(--courbe-standard),
+        transform var(--duree-courte-4) var(--courbe-standard);
+    }
+
+    /* Pendant que le doigt déplace la barre, le bouton la suit sans retard */
+    :global(body:has([data-liens-rapides-mobile][data-suit])) .retour-haut {
+      transition-duration: var(--duree-courte-4), var(--duree-courte-4), 0s, var(--duree-courte-4), 0s;
+    }
+
+    :global(body:has([data-liens-rapides-mobile][data-suit])) .retour-haut[data-visible] {
+      transition-duration: var(--duree-moyenne-1), var(--duree-moyenne-1), 0s, var(--duree-courte-4), 0s;
+    }
+
+    /* Le focus ramène la barre entière : le bouton reprend sa place au-dessus */
+    :global(body:has([data-liens-rapides-mobile]:focus-within)) .retour-haut {
+      transform: none;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .retour-haut:hover {
+      background-color: var(--bleu-fonce);
+    }
+  }
+
+  /* Infobulle (utilitaire .infobulle de global.css) : muette tant que le
+     bouton est masqué, sa visibilité l'emporterait sur celle du bouton */
+  .retour-haut:not([data-visible]) {
+    --infobulle-visibilite: hidden;
+    --infobulle-opacite: 0;
+  }
+
+  .retour-haut:focus-visible {
+    outline: 3px solid var(--bleu-fonce);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px var(--couleur-surface);
+  }
+
+  .retour-haut :global(svg) {
+    display: block;
+  }
+
+  @media (width >= 900px) {
+    .retour-haut {
+      --_ecart: 1.5rem;
+      right: calc(40px + var(--_ecart));
+      bottom: var(--_ecart);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .retour-haut {
+      border: 2px solid ButtonText;
+      background-color: ButtonFace;
+      color: ButtonText;
+    }
+  }
+
+  @media print {
+    .retour-haut {
+      display: none;
+    }
+  }
+</style>

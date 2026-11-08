@@ -1,0 +1,58 @@
+---
+/*
+ * Icône rendue par la planche de la page (src/lib/sprite.ts) : le dessin est
+ * écrit une fois dans un <symbol>, chaque usage n'est plus qu'un <use>.
+ *
+ * `icone` est un composant Phosphor (`@phosphor-icons/react/dist/ssr/<Nom>`,
+ * export `<Nom>Icon`) ou une icône maison (src/components/icones/), comme
+ * les props `Icon` des cartes. Le <svg> produit reprend les attributs de
+ * Phosphor (largeur, hauteur, fill="currentColor") et ceux du
+ * parent (aria-hidden, focusable, classe, attribut de portée), de sorte que
+ * les styles qui visaient l'icône en ligne s'appliquent tels quels. Les
+ * icônes maison passent par IconeSvg, qui fait de même.
+ *
+ * Le dessin d'un symbole n'est pas stylable par le CSS de la page : les
+ * couleurs passent par currentColor ou par des variables CSS (LogoOrcid).
+ */
+import { symbolePhosphor, type Graisse } from '@/lib/sprite'
+
+interface Props {
+  /** Composant Phosphor ou icône maison */
+  icone: any
+  /** Nombre (px) ou longueur CSS ; 1em par défaut, comme Phosphor */
+  size?: number | string
+  weight?: Graisse
+  /** Couleur de remplissage ; currentColor par défaut */
+  color?: string
+  mirrored?: boolean
+  /** Titre de l'icône (<title>), comme `alt` de Phosphor */
+  alt?: string
+  class?: string
+  className?: string
+  style?: string
+  role?: string
+  'aria-hidden'?: 'true' | 'false' | boolean
+  'aria-label'?: string
+  focusable?: 'true' | 'false' | boolean
+}
+
+const { icone, ...props } = Astro.props
+const { size = '1em', weight = 'regular', color = 'currentColor', mirrored = false, alt, class: classe, className, ...reste } = props
+
+// Composant Phosphor : forwardRef (preact/compat) nommé « <Nom>Icon »
+const phosphor = icone?.$$typeof === Symbol.for('react.forward_ref') && /Icon$/.test(icone.displayName ?? '')
+
+const Composant = icone
+// Ni viewBox ni xmlns : le symbole porte le sien et s'étire sur le <svg> (le
+// <use> en occupe 100 %), et xmlns est inutile dans du HTML. Autant d'octets
+// de moins sur chacune des ~600 icônes du répertoire du personnel.
+const id = phosphor ? symbolePhosphor(Astro.locals, icone, weight).id : ''
+---
+
+{
+  phosphor ? (
+    <svg width={size} height={size} fill={color} transform={mirrored ? 'scale(-1, 1)' : undefined} class:list={[classe, className]} {...reste}>{alt && <title>{alt}</title>}<use href={`#${id}`} /></svg>
+  ) : (
+    Composant && <Composant {...props} />
+  )
+}

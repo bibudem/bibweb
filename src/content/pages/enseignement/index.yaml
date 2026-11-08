@@ -1,0 +1,169 @@
+# Page vitrine /enseignement/ : voir docs/REDACTION.md, section « Vitrines »
+# Version précédente : docs/archives/enseignement-2026-11-05.yaml
+title: Enseignement
+crumbLabel: Enseignement
+
+banniere:
+  titre: Épauler l’enseignement, c’est notre rayon
+  titreReduit: true
+  sousTitre:
+    - "Pour le personnel enseignant : réserve de cours, droit d’auteur, formations en classe, salles, technologies et ressources éducatives libres."
+  image: enseignement
+  cadrage: 10%
+
+sections:
+  - type: liste-liens
+    titre: 5,75 M de titres à portée de main
+    libelle: Collections
+    liens:
+      - titre: Réserve de cours
+        description: Pour assurer à toutes les personnes inscrites à votre cours l’accès aux lectures et documents complémentaires.
+        lien: /enseignement/reserve/
+        appel: Mettre un livre à la réserve
+      - titre: Suggestion d’achat
+        description: Il vous manque un document qui serait utile pour vos cours? Nous l’achèterons pour vous!
+        lien: /nous-joindre/suggestion-achat/
+        appel: Faire une suggestion
+      - titre: Droit d’auteur
+        description: Pour respecter le droit d’auteur tout en donnant accès à la documentation nécessaire à vos étudiants et étudiantes.
+        lien: https://umontreal.ca.panopto.com/Panopto/Pages/Viewer.aspx?id=5d866c03-9380-4feb-8a7e-b33200fcd1c0
+        appel: Voir la capsule
+      - titre: Faire une déclaration de reproduction
+        description: Pour utiliser du matériel protégé dans votre cours, vous devez déclarer vos reproductions en vertu de la licence Copibec, via l’outil Savia.
+        lien: https://boite-outils.bib.umontreal.ca/recherche/declaration-reproduction
+        appel: Faire une déclaration
+      - titre: Collections spéciales
+        description: Pour intégrer les documents historiques à vos cours, consultez nos quelque 175 000 documents anciens, rares ou précieux conservés à la Bibliothèque des livres rares et collections spéciales.
+        lien: /espaces/blrcs/
+        appel: Découvrir les collections spéciales
+
+  - type: grille-elargissable
+    fond: bleu100
+    titre: Explorez l’intelligence artificielle générative
+    libelle: IA générative
+    texte: Pour utiliser l’IAg de façon efficace, éthique et responsable à l’Université, consultez nos ressources spécialisées.
+    cartes:
+      - titre: Utilisation responsable
+        icone: plant
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377616
+      - titre: Explorer les outils spécialisés en recherche documentaire
+        icone: compass-rose
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5384062
+      - titre: Évaluer les contenus générés
+        icone: check-circle
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377613
+      - titre: Citer, déclarer, documenter
+        icone: path
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377614
+
+  - type: texte-icones
+    titre: Inscrivez-nous à votre cours
+    libelle: Inscrire votre cours
+    texte: Pour intégrer facilement les notions de recherche d’information et d’évaluation de la crédibilité et de la pertinence des sources dans vos cours, faites appel à notre équipe spécialisée!
+    boutons:
+      - texte: Voir des sujets de formation
+        lien: /enseignement/formations-cours/
+        secondaire: true
+      - texte: Trouvez votre bibliothécaire disciplinaire
+        lien: /nous-joindre/notre-equipe/
+    couleurIcones: bleuPrincipal
+    icones:
+      - icone: chalkboard-teacher
+        texte: Création de formations sur mesure pour votre cours
+      - icone: mountains
+        texte: Collaboration avec votre bibliothécaire dans StudiUM
+      - icone: toolbox
+        texte: Création de guides de sources et outils pertinents
+      - icone: medal
+        texte: Identification de ressources pertinentes pour vos cours
+
+  - type: image-texte
+    fond: bleu100
+    titre: Ajoutez une touche techno
+    libelle: Technologies
+    texte: |
+      Ateliers, laboratoire de visualisation, studios d’enregistrement et d’édition, nos espaces de création numérique offrent plusieurs possibilités pour intégrer les technologies créatives et la production média à votre enseignement :
+
+      - Enseigner dans nos espaces de création
+      - Produire du contenu pour un cours
+      - Intégrer les technologies dans les travaux pratiques
+    image: ./images/touche-techno.webp
+    positionImage: gauche
+    bouton:
+      texte: Découvrir nos espaces
+      lien: /espaces/
+
+  - type: carrousel-images
+    fond: vertFonce
+    titre: Changez de décor!
+    libelle: Espaces
+    titresSansSerif: true
+    texte: Consultez notre répertoire de salles pour donner un cours dans un environnement pensé pour l’apprentissage de groupe, le partage des connaissances ou le visionnement multimédia en groupe.
+    cartes:
+      - titre: Salle didactique
+        image: ../images/didactheque.webp
+        lien: https://calendrier.bib.umontreal.ca/space/19189
+        appel: Bibliothèque Thérèse-Gouin-Décarie
+      - titre: Atelier de zines
+        image: ./images/BLSH-zines.webp
+        lien: https://studio.bib.umontreal.ca/espaces/zines
+        appel: Bibliothèque des lettres et sciences humaines
+      - titre: Salle didactique
+        image: ./images/didactheque-laval.webp
+        lien: https://calendrier.bib.umontreal.ca/space/17823
+        appel: Bibliothèque du campus de l’UdeM à Laval
+      - titre: Salle multifonctionnelle
+        image: ./images/salle-multifonctionnelle-1.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34414
+        appel: Campus de Saint-Hyacinthe
+      - titre: Espace d’innovation et de créativité
+        image: ./images/math-info-2477-08.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34410
+        appel: Bibliothèque de mathématiques et informatique
+      - titre: Salle de travail en équipe
+        image: ./images/math-info-travail-equipe-2420-7.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34412
+        appel: Bibliothèque de mathématiques et informatique
+      - titre: Salle multifonctionnelle
+        image: ./images/math-info-2465-11.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34413
+        appel: Bibliothèque de mathématiques et informatique
+      - titre: Salle Perrault
+        image: ./images/lrcs-perrault.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34702
+        appel: Bibliothèque des livres rares et collections spéciales
+      - titre: Espace d’innovation et de créativité
+        image: ./images/salle-travail-equipe_MY.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34702
+        appel: Bibliothèque Marguerite-d’Youville
+
+  - type: texte
+    titre: Faites rayonner vos REL avec nos services en soutien à la création et la diffusion
+    libelle: Ressources éducatives libres
+    texte: Depuis la demande de subvention jusqu’à la concrétisation du projet, nous travaillons à vos côtés pour maximiser la réussite et la visibilité du matériel pédagogique que vous voulez publier en libre accès (ressources éducatives libres, ou REL).
+    boutons:
+      - texte: Voir le guide associé
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/rel
+      - texte: Plateforme d’édition Pressbooks
+        lien: https://rel.bib.umontreal.ca/
+        secondaire: true
+        contour: true
+
+  - type: texte-icones
+    fond: bleu100
+    titre: Aider les étudiants et étudiantes, c’est réussir ensemble
+    libelle: Réussite étudiante
+    texte: Parlez de nos services aux personnes inscrites à vos cours qui pourraient en bénéficier!
+    bouton:
+      texte: Découvrir le soutien aux études
+      lien: /etudes/
+    couleurIcones: bleuPrincipal
+    icones:
+      - icone: magnifying-glass
+        texte: Développement d’une stratégie de recherche et conseils sur les outils de recherche
+      - icone: head-circuit
+        texte: Conseil sur l’utilisation responsable de l’intelligence artificielle
+      - icone: laptop
+        texte: Initiation aux logiciels bibliographiques
+      - icone: copyright
+        texte: Réponses aux questions de droits d’auteur

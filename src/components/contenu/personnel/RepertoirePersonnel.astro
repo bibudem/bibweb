@@ -1,0 +1,663 @@
+---
+/*
+ * Répertoire du personnel (RepertoirePersonnel de coquille-web).
+ *
+ * Toute la liste est rendue au build, en HTML : sans JavaScript, on lit les
+ * 141 fiches d'un trait. Le script (repertoire.ts ; filtre et pages dans
+ * filtre.ts) ajoute ensuite, en amélioration progressive, la recherche, les
+ * filtres par bibliothèque et par discipline, la synchronisation avec l'ancre de l'URL (#sante, #droit…,
+ * utilisée par les liens des fiches de bibliothèques), le préremplissage par
+ * ?q= (résultats « Personnel » de la recherche du site) et la pagination de
+ * 8 fiches, comme dans la source.
+ *
+ * Corrections par rapport à la source : libellés visibles sur les champs,
+ * nombre de résultats annoncé (role="status"), liens tel: valides, lien
+ * Teams (récupéré mais jamais affiché), noms accessibles explicites sur les
+ * liens, ancre mise à jour sans polluer l'historique ni remonter en haut de
+ * la page, photos recadrées et optimisées au build.
+ */
+import { Picture } from 'astro:assets'
+import { PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone'
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple'
+import { MicrosoftTeamsLogoIcon } from '@phosphor-icons/react/dist/ssr/MicrosoftTeamsLogo'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+import { XIcon } from '@phosphor-icons/react/dist/ssr/X'
+import ChampListe from '@/components/primitives/ChampListe.astro'
+import LogoOrcid from '@/components/icones/LogoOrcid.astro'
+import { personnel } from '@/lib/personnel'
+import { bibliotheques } from '@/data/bibliotheques'
+import { normaliserMots, cle, majuscule, SEPARATEUR } from './normaliser'
+import { lienTelephone } from '@/lib/telephone.mjs'
+import { idUnique } from '@/lib/ids'
+import { photoDe } from './photos'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  /** Niveau du titre de chaque fiche (nom de la personne) : 2 sous un h1, 3 sous un h2 */
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  class?: string
+  style?: string
+}
+
+const { niveauTitre = 3, class: classe, style } = Astro.props
+const Titre = `h${niveauTitre}` as 'h3'
+
+
+
+const personnes = personnel()
+
+// Valeurs des listes : une option par valeur distincte (comparée sans
+// accents ni casse), libellé de la première occurrence, tri alphabétique.
+function options(valeurs: string[]) {
+  const parCle = new Map<string, string>()
+  for (const valeur of valeurs) if (!parCle.has(cle(valeur))) parCle.set(cle(valeur), majuscule(valeur))
+  return [...parCle].map(([valeur, libelle]) => ({ valeur, libelle })).sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'))
+}
+
+// Le tableur mêle bibliothèques, directions et services : d'où le libellé
+// « bibliothèques ou directions » de la source.
+const optionsBibliotheques = options(personnes.flatMap((p) => p.bibliotheques)).map((o) => {
+  const bib = bibliotheques.find((b) => [b.id, b.titre, b.autreTitre, ...b.alias].some((v) => cle(v) === o.valeur))
+  return { ...o, ancre: bib?.id }
+})
+
+// Le menu en groupes, d'après le début du nom (un ajout au répertoire se
+// range de lui-même) ; le reste, ce sont les services et les équipes
+const GROUPES_BIBLIOTHEQUES = [
+  { libelle: 'Bibliothèques', test: (l: string) => /^biblioth[eè]que\b/i.test(l) },
+  { libelle: 'Centres de conservation', test: (l: string) => /^centre de conservation\b/i.test(l) },
+  { libelle: 'Directions', test: (l: string) => /^direction\b/i.test(l) },
+  { libelle: 'Services et équipes', test: () => true },
+]
+// Directions : la Direction des bibliothèques en tête, les autres en retrait
+// dessous, et sous chaque direction ses équipes : une équipe (« Expérience
+// numérique en bibliothèque ») relève de la direction de la plupart de ses
+// membres (leur champ `direction`). Un <optgroup> ne s'imbrique pas : le
+// retrait est fait d'espaces insécables, que les lecteurs d'écran ne lisent
+// pas et que l'étiquette du filtre actif retire.
+const DIRECTION_PARENT = /^direction des biblioth[eè]ques$/i
+const groupeDe = (libelle: string) => GROUPES_BIBLIOTHEQUES.findIndex((h) => h.test(libelle))
+const INDEX_DIRECTIONS = GROUPES_BIBLIOTHEQUES.findIndex((g) => g.libelle === 'Directions')
+const directions = optionsBibliotheques.filter((o) => groupeDe(o.libelle) === INDEX_DIRECTIONS)
+const directionDeLEquipe = new Map<string, string>()
+for (const o of optionsBibliotheques.filter((o) => groupeDe(o.libelle) === GROUPES_BIBLIOTHEQUES.length - 1)) {
+  const compte = new Map<string, number>()
+  for (const p of personnes) if (p.direction && p.bibliotheques.some((b) => cle(b) === o.valeur)) compte.set(cle(p.direction), (compte.get(cle(p.direction)) ?? 0) + 1)
+  const [majoritaire] = [...compte].sort((a, b) => b[1] - a[1])[0] ?? []
+  if (majoritaire && directions.some((d) => d.valeur === majoritaire)) directionDeLEquipe.set(o.valeur, majoritaire)
+}
+type OptionMenu = (typeof optionsBibliotheques)[number] & { niveau: number }
+const avecEquipes = (d: (typeof optionsBibliotheques)[number], niveau: number): OptionMenu[] => [
+  { ...d, niveau },
+  ...optionsBibliotheques.filter((o) => directionDeLEquipe.get(o.valeur) === d.valeur).map((o) => ({ ...o, niveau: niveau + 1 })),
+]
+const parent = directions.find((o) => DIRECTION_PARENT.test(o.libelle))
+const menuDirections: OptionMenu[] = parent
+  ? [...avecEquipes(parent, 0), ...directions.filter((o) => o !== parent).flatMap((o) => avecEquipes(o, 1))]
+  : directions.flatMap((o) => avecEquipes(o, 0))
+const groupesBibliotheques = GROUPES_BIBLIOTHEQUES.map((g, i) => ({
+  libelle: g.libelle,
+  options:
+    i === INDEX_DIRECTIONS
+      ? menuDirections
+      : optionsBibliotheques.filter((o) => groupeDe(o.libelle) === i && !directionDeLEquipe.has(o.valeur)).map((o) => ({ ...o, niveau: 0 })),
+})).filter((g) => g.options.length)
+// Un seul filtre, en deux groupes : les disciplines d'études, puis les
+// expertises et services (Papyrus, ressources humaines…), pour retrouver aussi
+// la personne responsable d'un service
+const optionsDisciplines = options(personnes.flatMap((p) => p.disciplines))
+const optionsExpertises = options(personnes.flatMap((p) => p.expertises)).filter((o) => !optionsDisciplines.some((d) => d.valeur === o.valeur))
+
+// Ancre de l'URL → option : l'id de la fiche (#sante), son titre, son autre
+// titre, ou le nom tel qu'il figure dans le tableur (ancien format de la source).
+const ancres: Record<string, string> = {}
+for (const o of optionsBibliotheques) {
+  ancres[o.valeur] = o.valeur
+  const bib = bibliotheques.find((b) => b.id === o.ancre)
+  if (bib) for (const v of [bib.id, bib.titre, bib.autreTitre]) ancres[cle(v)] = o.valeur
+}
+
+const fiches = personnes.map((p) => ({
+  ...p,
+  photoImage: photoDe(p),
+  hrefTelephone: p.telephone ? lienTelephone(p.telephone) : undefined,
+  hrefTeams: p.teams && /^https:\/\//.test(p.teams) ? p.teams : undefined,
+  // « d'Alexandre », « de Viviane » : élision devant une voyelle ou un h muet
+  deNom: /^[aeiouyhàâäéèêëîïôöùûü]/i.test(p.prenom) ? `d’${p.nomComplet}` : `de ${p.nomComplet}`,
+  texte: normaliserMots([p.nom, p.prenom, p.fonction, p.disciplines.join(' '), p.expertises.join(' '), p.bibliotheques.join(' '), p.direction].join(' ')),
+  // Comme la source : la première lettre en majuscule, la suite telle quelle
+  disciplinesAffichees: p.disciplines.map((d, i) => (i === 0 ? majuscule(d) : d)).join(', '),
+  expertisesAffichees: p.expertises.map((d, i) => (i === 0 ? majuscule(d) : d)).join(', '),
+}))
+
+const total = fiches.length
+const n = idUnique('repertoire')
+const ids = { q: `${n}-q`, bib: `${n}-bib`, disc: `${n}-disc` }
+---
+
+<div class:list={['repertoire', classe]} style={style} data-repertoire data-ancres={JSON.stringify(ancres)}>
+  <form class="filtres" role="search" aria-label="Répertoire du personnel" data-filtres>
+    <div class="champ">
+      <label for={ids.q}>Rechercher</label>
+      <div class="boite">
+        <IconeSprite icone={MagnifyingGlassIcon} size={24} aria-hidden="true" />
+        <input type="search" id={ids.q} name="q" placeholder="Chercher un nom, une discipline, etc." autocomplete="off" spellcheck="false" data-recherche />
+      </div>
+    </div>
+    <ChampListe pour={ids.bib} libelle="Bibliothèque ou direction">
+      <select id={ids.bib} name="bibliotheque" data-filtre="bibliotheque">
+        <option value="">Toutes les bibliothèques ou directions</option>
+        {
+          groupesBibliotheques.map((g) => (
+            <optgroup label={g.libelle}>
+              {g.options.map((o) => (
+                <option value={o.valeur} data-ancre={o.ancre}>
+                  {'\u00a0\u00a0\u00a0'.repeat(o.niveau) + o.libelle}
+                </option>
+              ))}
+            </optgroup>
+          ))
+        }
+      </select>
+    </ChampListe>
+    <ChampListe pour={ids.disc} libelle="Discipline ou expertise">
+      <select id={ids.disc} name="discipline" data-filtre="discipline">
+        <option value="">Toutes les disciplines et expertises</option>
+        <optgroup label="Disciplines">
+          {optionsDisciplines.map((o) => <option value={o.valeur}>{o.libelle}</option>)}
+        </optgroup>
+        <optgroup label="Expertises et services">
+          {optionsExpertises.map((o) => <option value={o.valeur}>{o.libelle}</option>)}
+        </optgroup>
+      </select>
+    </ChampListe>
+  </form>
+
+  <div class="actifs" hidden data-actifs></div>
+  <template data-icone-retirer><IconeSprite icone={XIcon} size={18} weight="bold" aria-hidden="true" /></template>
+
+  <p class="compte" role="status" data-statut>{total} personnes</p>
+
+  <ul class="fiches" aria-label="Membres du personnel" data-liste>
+    {
+      fiches.map((p) => (
+        <li class="fiche" data-texte={p.texte} data-bibliotheque={[...new Set([...p.bibliotheques, ...(p.direction ? [p.direction] : [])].map((b) => cle(b)))].join(SEPARATEUR)} data-discipline={[...p.disciplines, ...p.expertises].map((d) => cle(d)).join(SEPARATEUR)}>
+          <div class="entete">
+            {/* alt vide : le nom est juste à côté, une description répéterait le titre */}
+            {p.photoImage && <Picture class="photo" src={p.photoImage} alt="" width={100} height={100} densities={[1, 2]} fit="cover" position="center" formats={['avif', 'webp']} fallbackFormat="webp" loading="lazy" decoding="async" />}
+            <Titre class="nom">{p.nomComplet}</Titre>
+          </div>
+          <div class="details">
+            <div>
+              <p class="fonction">{majuscule(p.fonction)}</p>
+              {p.direction && <p class="direction">{majuscule(p.direction)}</p>}
+              {p.disciplines.length > 0 && <p class="disciplines">{p.disciplinesAffichees}</p>}
+              {p.expertises.length > 0 && <p class="disciplines expertises">{p.expertisesAffichees}</p>}
+            </div>
+            <ul class="contacts">
+              {p.telephone && (
+                <li>
+                  {p.hrefTelephone ? (
+                    <a href={p.hrefTelephone}>
+                      <IconeSprite icone={PhoneIcon} size={25} aria-hidden="true" />
+                      <span>
+                        <span class="visuellement-masque">Appeler {p.nomComplet} au </span>
+                        {p.telephone}
+                      </span>
+                    </a>
+                  ) : (
+                    <span class="sans-lien">
+                      <IconeSprite icone={PhoneIcon} size={25} aria-hidden="true" />
+                      <span>
+                        <span class="visuellement-masque">Téléphone : </span>
+                        {p.telephone}
+                      </span>
+                    </span>
+                  )}
+                </li>
+              )}
+              {p.courriel && (
+                <li>
+                  <a href={`mailto:${p.courriel}`}>
+                    <IconeSprite icone={EnvelopeSimpleIcon} size={25} aria-hidden="true" />
+                    <span class="courriel">
+                      <span class="visuellement-masque">Écrire à {p.nomComplet} : </span>
+                      {p.courriel}
+                    </span>
+                  </a>
+                </li>
+              )}
+              {p.hrefTeams && (
+                <li>
+                  <a href={p.hrefTeams} target="_blank" rel="noopener noreferrer">
+                    <IconeSprite icone={MicrosoftTeamsLogoIcon} size={25} aria-hidden="true" />
+                    <span>
+                      Clavarder sur Teams<span class="visuellement-masque"> avec {p.nomComplet} (nouvel onglet)</span>
+                    </span>
+                  </a>
+                </li>
+              )}
+              {p.orcid && (
+                <li>
+                  <a href={`https://orcid.org/${p.orcid}`} target="_blank" rel="noopener noreferrer">
+                    <LogoOrcid size={25} />
+                    <span>
+                      Profil ORCID<span class="visuellement-masque"> {p.deNom} (nouvel onglet)</span>
+                    </span>
+                  </a>
+                </li>
+              )}
+            </ul>
+            {
+              p.bibliotheques.length > 0 && (
+                <ul class="bibliotheques">
+                  {p.bibliotheques.map((b) => (
+                    <li>{majuscule(b)}</li>
+                  ))}
+                </ul>
+              )
+            }
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <nav class="pagination" aria-label="Pagination du répertoire" hidden data-pagination>
+    <ul data-pages></ul>
+  </nav>
+</div>
+
+<script>
+  import { initialiser } from './repertoire'
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-repertoire]')) initialiser(racine)
+</script>
+
+<style>
+  .repertoire {
+    padding-block: var(--espace-4);
+    scroll-margin-top: var(--hauteur-entete);
+  }
+
+  .repertoire [hidden] {
+    display: none !important;
+  }
+
+  /* ---- Filtres ---- */
+  .filtres {
+    display: grid;
+    gap: var(--espace-2);
+    margin-block-end: var(--espace-3);
+  }
+
+  /* Les filtres sont rendus visibles dès le HTML : les révéler au chargement
+     du script poussait la liste de 267 px à 390 px (CLS 0,20). Sans
+     JavaScript, ils ne serviraient à rien : on les masque alors. */
+  @media (scripting: none) {
+    .filtres {
+      display: none;
+    }
+  }
+
+  @media (width >= 900px) {
+    .filtres {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .champ {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .champ label {
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-forte);
+  }
+
+  .boite {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+    min-height: 2.5rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--couleur-texte-secondaire);
+    border-radius: var(--rayon-moyen);
+    background: var(--couleur-surface);
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .boite:focus-within {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .boite input {
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-courant);
+  }
+
+  .boite input:focus-visible {
+    outline: none;
+  }
+
+  .boite input::placeholder {
+    color: var(--couleur-texte-secondaire);
+    opacity: 1;
+  }
+
+  /* ---- Filtres actifs ---- */
+  .actifs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-1);
+    margin-block-end: var(--espace-2);
+  }
+
+  .actifs :global(.puce) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.625rem 0.25rem 0.875rem;
+    border: 1px solid transparent;
+    border-radius: var(--rayon-plein);
+    background: var(--couleur-teinte);
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-petit);
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .actifs :global(.puce svg) {
+    flex: none;
+    color: var(--couleur-accent);
+  }
+
+  .actifs :global(.puce:hover) {
+    background: var(--couleur-teinte-forte);
+  }
+
+  /* ---- Résultats ---- */
+  .compte {
+    margin-block: 0 var(--espace-1);
+    color: var(--couleur-texte-secondaire);
+    font-size: var(--texte-petit);
+  }
+
+  .fiches {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fiches:focus-visible {
+    outline-offset: 6px;
+  }
+
+  /* Mêmes marge interne et rayon que les autres cartes du site */
+  .fiche {
+    padding: var(--espace-carte);
+    border-radius: var(--rayon-carte);
+    background: var(--couleur-fond);
+    box-shadow: var(--ombre-1);
+  }
+
+  .entete {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--espace-2);
+    text-align: center;
+  }
+
+  .entete :global(.photo) {
+    flex: none;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--couleur-bordure);
+  }
+
+  .nom {
+    margin: 0;
+    padding: var(--espace-2) 0;
+    font-size: var(--texte-moyen);
+    font-weight: var(--graisse-forte);
+    line-height: 1.1;
+  }
+
+  @media (width >= 600px) {
+    .entete {
+      flex-direction: row;
+      text-align: start;
+    }
+
+    .nom {
+      padding: var(--espace-4);
+    }
+  }
+
+  .details {
+    display: grid;
+    gap: var(--espace-2);
+    margin-block-start: var(--espace-2);
+  }
+
+  /* Texte agrandi à 200 % sur 320 px : sans min-width: 0, une colonne de la
+     grille et ses liens (Teams, ORCID) débordaient de la fiche (WCAG 1.4.10) */
+  .details > *,
+  .contacts a > span {
+    min-width: 0;
+  }
+
+  .details,
+  .contacts a {
+    overflow-wrap: anywhere;
+  }
+
+  @media (width >= 900px) {
+    .details {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .details p {
+    margin: 0;
+  }
+
+  .details .fonction {
+    margin-block: var(--espace-1) 0.75rem;
+    font-weight: var(--graisse-forte);
+  }
+
+  .direction {
+    padding-inline-end: var(--espace-1);
+  }
+
+  .details .disciplines {
+    margin-block-start: var(--espace-1);
+    padding-inline-end: var(--espace-1);
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-normale);
+    line-height: 1.43;
+  }
+
+  .contacts,
+  .bibliotheques {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contacts {
+    gap: 0.75rem;
+  }
+
+  .contacts a,
+  .contacts .sans-lien {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espace-1);
+    min-height: 24px;
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-normale);
+  }
+
+  .contacts a {
+    color: var(--couleur-lien);
+    text-decoration: none;
+  }
+
+  .contacts a:hover span {
+    text-decoration: underline;
+  }
+
+  .contacts :global(svg) {
+    flex: none;
+    color: var(--couleur-accent);
+  }
+
+  /* Une adresse sans espace ne doit pas faire déborder la carte à 320 px */
+  .courriel {
+    overflow-wrap: anywhere;
+  }
+
+  .bibliotheques {
+    font-size: var(--texte-petit);
+    font-weight: var(--graisse-normale);
+    line-height: 1.43;
+  }
+
+  /* ---- Pagination ---- */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-block-start: var(--espace-6);
+  }
+
+  /* Sous 600 px : cibles tactiles de 44 px (2.25rem au-delà, si le texte est
+     agrandi), sans écart ni voisines de la page courante, pour que la rangée
+     (7 boutons au plus) tienne dans 350 px. */
+  .pagination ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pagination :global(.seulement-large) {
+    display: none;
+  }
+
+  .pagination :global(button) {
+    display: inline-grid;
+    place-items: center;
+    min-width: max(var(--taille-cible), 2.25rem);
+    height: max(var(--taille-cible), 2.25rem);
+    padding-inline: 0.375rem;
+    border: 1px solid transparent;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: var(--texte-petit);
+    cursor: pointer;
+  }
+
+  .pagination :global(button:hover:not(:disabled, [aria-current])) {
+    background: var(--couleur-teinte);
+  }
+
+  .pagination :global(button[aria-current]) {
+    background: var(--bleu-principal);
+    color: var(--couleur-sur-fonce);
+    cursor: default;
+  }
+
+  .pagination :global(button:disabled) {
+    color: var(--couleur-texte-secondaire);
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .pagination :global(.ellipse) {
+    min-width: 1.5rem;
+    text-align: center;
+  }
+
+  @media (width >= 600px) {
+    .pagination ul {
+      gap: 0.25rem;
+    }
+
+    .pagination :global(.seulement-large) {
+      display: revert;
+    }
+
+    .pagination :global(.seulement-compacte) {
+      display: none;
+    }
+
+    .pagination :global(button) {
+      min-width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .pagination :global(.ellipse) {
+      min-width: 2rem;
+    }
+  }
+
+  .pagination :global(.fleche) {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-block-start: 2px solid currentColor;
+    border-inline-end: 2px solid currentColor;
+  }
+
+  .pagination :global(.fleche-precedente) {
+    transform: translateX(15%) rotate(-135deg);
+  }
+
+  .pagination :global(.fleche-suivante) {
+    transform: translateX(-15%) rotate(45deg);
+  }
+
+  /* La page courante ne repose pas sur la seule couleur de fond */
+  @media (forced-colors: active) {
+    .pagination :global(button[aria-current]) {
+      border-color: CanvasText;
+      border-width: 2px;
+    }
+
+    .boite {
+      border-color: CanvasText;
+    }
+
+    .actifs :global(.puce) {
+      border-color: ButtonText;
+    }
+  }
+</style>

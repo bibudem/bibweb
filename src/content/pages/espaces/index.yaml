@@ -1,0 +1,143 @@
+# Page vitrine /espaces/ : voir docs/REDACTION.md, section « Vitrines »
+title: Espaces
+
+banniere:
+  titre: De l’espace pour réfléchir, découvrir et s’enrichir
+  sousTitre:
+    - "Étudier en solo ou en équipe, créer, se détendre : les espaces de nos 14 bibliothèques, sur tous les campus."
+  image: espaces
+  cadrage: 40%
+
+sections:
+  - type: image-texte
+    disposition: encart
+    titre: Trouver un lieu
+    libelle: Trouver un lieu
+    texte: Les bibliothèques de l’UdeM, c’est un réseau de 14 bibliothèques. Si vous êtes sur un campus UdeM, il y a probablement une bibliothèque près de vous! Explorez notre répertoire pour planifier votre visite!
+    image: ../images/super-heroes/facade.webp
+    bouton:
+      texte: Choisir une bibliothèque
+      lien: /horaires/
+
+  - type: cartes-revelation
+    titre: On s’adapte à vos besoins
+    libelle: Adaptation à vos besoins
+    texte: Besoin de concentration pour étudier? Un travail à faire en équipe? Nos bibliothèques sont aménagées pour faire cohabiter travail de groupe et étude en silence, avec ou sans réservation.
+    lienTout:
+      texte: Réserver une salle
+      lien: https://calendrier.bib.umontreal.ca/r
+      nouvelOnglet: true
+    cartes:
+      - titre: Salles de travail individuel
+        image: ../images/salle-individuelle.webp
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Cabines insonorisées
+        image: ../images/cabine.webp
+        bouton:
+          texte: Réservez votre cabine
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salles silencieuses
+        image: ../images/salle-silencieuse.webp
+        texte: Ouvertes en tout temps, sans réservation
+      - titre: Salles de travail pour 2 à 8 personnes
+        image: images/grande-salle-equipe.webp
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salles individuelles pour cycles supérieurs
+        image: images/cycle-sup.webp
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salle commune réservée aux cycles supérieurs
+        image: images/cycle-sup-droit-doctorat.webp
+        texte: À la Bibliothèque de droit. Informez-vous au comptoir de la bibliothèque pour y accéder.
+      - titre: Service Accessibilité
+        image: images/marguerite-youville-espace.webp
+        texte: Mobilier et équipement adaptés disponibles
+        bouton:
+          texte: Consultez la page Accessibilité
+          lien: /service-accessibilite/
+      - titre: Espace pour petits visiteurs
+        image: images/trousse-petits.webp
+        texte: À la Bibliothèque de droit. Coin de jeux et jouets adaptés pour les enfants de 4 à 12 ans.
+
+  - type: cartes-revelation
+    fond: bleu100
+    id: bien-etre
+    titre: On repense nos espaces
+    libelle: Nouveaux espaces
+    texte: Entre les cours et l’étude, il y a aussi des moments à vivre en bibliothèque! Nous avons pensé toute une série d’espaces pour se reposer, explorer la création ou même se tenir en forme!
+    cartes:
+      - titre: Technologies créatives
+        image: images/impression-3d.webp
+        texte: Impression 3D, découpe vinyle, broderie, électronique, réalité virtuelle
+        bouton:
+          texte: Renseignez-vous sur nos technologies créatives
+          lien: https://studio.bib.umontreal.ca/creatives/
+      - titre: Studios balado
+        image: images/studio-audio.webp
+        bouton:
+          texte: Renseignez-vous sur nos studios
+          lien: https://studio.bib.umontreal.ca/espaces/studiosbalado
+      - titre: Studios vidéo
+        image: images/studio-video.webp
+        bouton:
+          texte: Renseignez-vous sur nos studios
+          lien: https://studio.bib.umontreal.ca/espaces/studiovideo/
+      - titre: Atelier de zines
+        image: ../enseignement/images/BLSH-zines.webp
+        bouton:
+          texte: Renseignez-vous sur l’atelier de zines
+          lien: https://studio.bib.umontreal.ca/espaces/zines
+      - titre: Collection bien-être et détente
+        image: images/collection-bien-etre.webp
+        texte: Bandes dessinées disponibles dans plusieurs bibliothèques. Renseignez-vous au comptoir.
+        bouton:
+          texte: Consultez la collection bien-être en ligne
+          lien: https://umontreal.on.worldcat.org/search?queryString=kw:collection%20bien-%C3%AAtre
+      - titre: Espace de détente
+        image: images/relaxation.webp
+        texte: |
+          Poufs, luminothérapie, jeux de société et équipement de yoga
+
+          Offre très diversifiée, renseignez-vous au comptoir.
+      - titre: Cocon de micro-sieste
+        image: images/cocon.webp
+        bouton:
+          texte: Réservez votre cocon en ligne
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Équipement et mobilier ergonomique
+        image: images/station-ergo.webp
+        texte: |
+          Tables ajustables, pédaliers, etc.
+
+          Offre très diversifiée, renseignez-vous au comptoir.
+
+  - type: image-texte
+    titre: Des trésors à explorer
+    libelle: Livres rares
+    texte: La Bibliothèque des livres rares et collections spéciales donne accès à près de 175 000 documents anciens, rares ou précieux, dont de remarquables ensembles Canadiana et Americana et un riche patrimoine documentaire en français. Son équipe vous accompagne dans leur exploration, leur consultation sur place et leur utilisation pour vos projets.
+    image: blrcs/images/vitrine-reliures.webp
+    positionImage: gauche
+    boutons:
+      - texte: Explorer la Bibliothèque des livres rares et collections spéciales
+        lien: /espaces/blrcs/
+
+  - type: image-texte
+    fond: bleu100
+    titre: |
+      Des bibliothèques ouvertes au monde.
+      Tout le monde.
+    libelle: Accessibilité
+    texte: La Bibliothèque des lettres et sciences humaines et la Bibliothèque Hubert-Reeves offrent chacune une salle mettant à votre disposition des équipements et des logiciels spécialisés afin d’adapter l’expérience en bibliothèque à vos besoins et de vous accompagner dans votre réussite.
+    image: images/ouvertes-au-monde.webp
+    alt: Les bibliothèques de l’UdeM, ouvertes au monde. Tout le monde.
+    boutons:
+      - texte: Service Accessibilité
+        lien: /service-accessibilite/
+      - texte: Consultez nos engagements en matière d’équité, de diversité, d’inclusion et d’accessibilité
+        lien: /engagements/equite-diversite-inclusion/
+        contour: true

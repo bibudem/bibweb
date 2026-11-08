@@ -1,0 +1,31 @@
+---
+/*
+ * Bloc « formations » (Études) : titre, texte, puis les prochaines
+ * formations au gabarit de la colonne Formations de l'accueil (vignette,
+ * date et heure, titre, pastille), en deux colonnes côte à côte dès 900 px
+ * (`nombre`, 8 par défaut : 4 par colonne), et le bouton `lienTout` centré
+ * dessous. Données chargées dans le navigateur (ListeFormationsAccueil).
+ */
+import ListeFormationsAccueil from '@/components/contenu/dynamiques/ListeFormationsAccueil.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'formations'> }
+
+const { bloc } = Astro.props
+---
+
+<Titre texte={bloc.titre} id={bloc.id} />
+{bloc.texte && <TexteMarkdown texte={bloc.texte} brut />}
+<ListeFormationsAccueil
+  title="Prochaines formations"
+  limit={bloc.nombre}
+  colonnes={2}
+  titreMasque
+  plusCentre
+  moreText={bloc.lienTout?.texte}
+  moreLink={bloc.lienTout?.lien}
+  nouvelOnglet={bloc.lienTout?.nouvelOnglet}
+  style={{ marginTop: 'var(--espace-bloc)' }}
+/>

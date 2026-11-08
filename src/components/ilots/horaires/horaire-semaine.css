@@ -1,0 +1,142 @@
+/*
+ * Horaire de la semaine : navigation et tableau (HoraireSemaine.tsx).
+ * Importée par CarteHoraires.tsx, après fiche-lieu.css.
+ */
+
+/* ---- Horaire de la semaine ---- */
+.ch-semaine-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-1);
+  margin-bottom: 0.75rem;
+}
+
+.ch-bouton-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--couleur-accent);
+  cursor: pointer;
+}
+
+.ch-bouton-icone:hover {
+  background-color: var(--couleur-teinte);
+}
+
+.ch-bouton-icone:disabled {
+  color: var(--couleur-texte-secondaire);
+  cursor: not-allowed;
+}
+
+.ch-semaine-titre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  text-align: center;
+}
+
+.ch-semaine-titre p {
+  margin: 0;
+  font-size: var(--texte-petit);
+  font-weight: var(--graisse-forte);
+}
+
+.ch-semaine-titre p:focus {
+  outline: none;
+}
+
+.ch-semaine-titre p span {
+  display: block;
+  color: var(--couleur-texte-secondaire);
+  font-weight: var(--graisse-moyenne);
+}
+
+.ch-revenir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 24px;
+  padding: 0.125rem 0.625rem;
+  border: 0;
+  border-radius: var(--rayon-plein);
+  background-color: var(--couleur-teinte);
+  color: var(--couleur-accent);
+  font: inherit;
+  font-size: var(--texte-tres-petit);
+  font-weight: var(--graisse-forte);
+  cursor: pointer;
+}
+
+.ch-revenir:hover {
+  background-color: var(--couleur-teinte-forte);
+}
+
+.ch-defilement {
+  overflow-x: auto;
+  border-radius: var(--rayon-tres-petit);
+}
+
+.ch-tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--texte-tres-petit);
+}
+
+@media (width >= 600px) {
+  .ch-tableau {
+    font-size: var(--texte-petit);
+  }
+}
+
+.ch-tableau th,
+.ch-tableau td {
+  padding: 6px;
+  border-bottom: 1px solid var(--couleur-bordure);
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Les plages horaires ne se coupent pas ; le tableau défile dans sa zone */
+.ch-tableau td {
+  white-space: nowrap;
+}
+
+.ch-tableau thead th {
+  background-color: var(--couleur-teinte);
+  font-weight: var(--graisse-forte);
+}
+
+.ch-tableau tbody th {
+  font-weight: var(--graisse-moyenne);
+}
+
+.ch-tableau tbody th::first-letter {
+  text-transform: uppercase;
+}
+
+/* Le jour courant est aussi dit en texte (« aujourd'hui ») et par aria-current */
+.ch-tableau .ch-aujourdhui {
+  background-color: var(--couleur-teinte-forte);
+}
+
+.ch-tableau .ch-aujourdhui th,
+.ch-tableau .ch-aujourdhui td {
+  font-weight: var(--graisse-forte);
+}
+
+/* Couleurs forcées : les boutons sans bordure (fond coloré seulement) se
+   lisaient comme du texte simple ; un contour système les rend repérables */
+@media (forced-colors: active) {
+  .ch-bouton-icone,
+  .ch-revenir {
+    border: 1px solid ButtonText;
+  }
+}

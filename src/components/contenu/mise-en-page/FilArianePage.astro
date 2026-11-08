@@ -1,0 +1,26 @@
+---
+/*
+ * Fil d'Ariane de la page courante, à placer dans le contenu d'une page MDX
+ * de niveau 1 qui porte sa propre bannière (<BannierePage>, comme
+ * /nouvelles/) : GabaritPage ne l'ajoute que sous la bannière des sous-pages.
+ * Même mise en page que celui des vitrines de sous-section (GabaritVitrine).
+ */
+import FilAriane from '@/components/coquille/FilAriane.astro'
+import { sansBase } from '@/lib/chemin'
+
+const url = sansBase(Astro.url.pathname)
+---
+
+<div class="conteneur fil-vitrine">
+  <FilAriane url={url} />
+</div>
+
+<style>
+  .fil-vitrine {
+    padding-block-start: var(--espace-4);
+  }
+
+  .fil-vitrine :global(.fil-ariane) {
+    margin-block-end: 0;
+  }
+</style>

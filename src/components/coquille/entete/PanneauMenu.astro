@@ -1,0 +1,521 @@
+---
+/*
+ * Menu du site : un rideau qui descend sous l'en-tête, révélé par les deux
+ * boutons Menu (barre compacte et barre de bureau) selon le motif
+ * « disclosure navigation » de l'APG. Une seule <nav> pour les deux barres :
+ * les boutons pointent tous deux vers elle.
+ *
+ * Contenu (les items de SideNavContent.jsx, réagencés par usage) :
+ * 1. Recherche Sofia, l'action principale du site (tout en haut, partout),
+ *    ou dans les sites des bibliothèques, avec suggestions (RechercheMenu),
+ *    avec à côté la suite du parcours : Mon dossier, Obtenir un document ;
+ * 2. Explorer : Accueil et les pages principales, en grand (sous 1200 px
+ *    seulement ; la barre de bureau les montre déjà) ;
+ * 3. Accès rapide : les tâches courantes et À propos (LIENS_MENU), en six
+ *    tuiles bleues ;
+ * 4. Collections, Boîte à outils, Studio·bib : repliables sous 1200 px
+ *    (<details name>, un seul ouvert à la fois) ; au-delà, un catalogue
+ *    avec aperçu (onglets de l'APG : les services en rangée en haut, près
+ *    du bouton Menu, l'aperçu du service choisi dessous) ;
+ * 5. Sous 1200 px, « Je donne » (absent de la barre compacte) termine le
+ *    menu, dans le défilement, puis un pied collé au bas de la feuille ne
+ *    porte que la poignée de fermeture.
+ *
+ * Mode « recherche » (data-mode, posé par menu.ts quand la loupe ouvre le
+ * rideau) : la feuille ne montre que le groupe 1, puis, centré dessous,
+ * « Afficher le menu », puis la poignée (sous 1200 px). Le bouton repasse
+ * en mode complet et le reste du menu apparaît (même entrée en décalage
+ * que les groupes). Le focus va alors au premier lien apparu. La loupe,
+ * menu entier ouvert, le replie.
+ *
+ * La poignée est un bouton « Fermer le menu » ; au doigt, on peut aussi la
+ * glisser vers le haut : la feuille suit le doigt et se referme passé le
+ * quart de sa hauteur ou sur un geste vif, sinon elle revient en place.
+ *
+ * Organisation : chaque groupe est un composant de menu/ (GroupeSofia,
+ * GroupeExplorer, Catalogue, AccesRapide, CartesPliables), avec son gabarit
+ * et ses styles ; ce composant garde le rideau, la grille et le placement
+ * des groupes, « Afficher le menu », « Je donne » et la poignée. Il passe
+ * `class="groupe"` à chaque groupe : sa portée de style atteint ainsi leur
+ * racine (grille, entrée en décalage, mode recherche). Tout le
+ * comportement (ouverture, modes, poignée, focus, Échap) est dans menu.ts ;
+ * les onglets du catalogue, dans Catalogue.
+ *
+ * Bureau : l'accès rapide est la dernière colonne, à droite, sous le bouton
+ * Menu (loi de Fitts : les tâches fréquentes au plus près du pointeur). Pour
+ * que l'ordre du focus suive l'ordre visuel (WCAG 2.4.3) sans `order`, le
+ * catalogue (bureau) est rendu avant l'accès rapide, et les cartes
+ * repliables (mobile, tablette) après lui.
+ *
+ * Catalogue : onglets de l'APG (voir Catalogue.astro). Les onglets sont en
+ * haut plutôt qu'à gauche : le pointeur, qui vient du bouton Menu en haut à
+ * droite, n'a pas à traverser l'écran. Les deux rendus (catalogue et cartes
+ * repliables) sont basculés en CSS (display: none retire l'autre de l'arbre
+ * d'accessibilité). Les titres de groupe ne sont pas des <h2> : placés
+ * avant le h1, ils casseraient la hiérarchie de la page ; ils nomment leur
+ * liste par aria-labelledby.
+ *
+ * Couleurs : thème clair de la marque (surface, bleu foncé, bleu principal,
+ * bleu 100), le liseré de chaque carte reprend sa couleur (navigation.ts).
+ *
+ * Mouvement : la feuille descend de derrière l'en-tête (translateY de -100 %
+ * à 0, l'enveloppe rogne), puis les groupes apparaissent en léger décalage.
+ * Fermeture plus brève, par le même chemin, sans décalage.
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import GroupeSofia from './menu/GroupeSofia.astro'
+import GroupeExplorer from './menu/GroupeExplorer.astro'
+import Catalogue from './menu/Catalogue.astro'
+import AccesRapide from './menu/AccesRapide.astro'
+import CartesPliables from './menu/CartesPliables.astro'
+import IconeSprite from '@/components/icones/IconeSprite.astro'
+
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+---
+
+<nav class="rideau" id={id} aria-label="Menu" hidden data-panneau-menu>
+  <div class="feuille">
+    <div class="grille">
+      <GroupeSofia id={id} class="groupe" style="--i: 0" />
+
+      {/* Mode recherche seulement (voir plus haut) */}
+      <div class="deplier">
+        <button type="button" class="deplier-bouton" data-deplier-menu>
+          Afficher le menu
+          <IconeSprite icone={CaretDownIcon} size={22} weight="bold" aria-hidden="true" className="deplier-fleche" />
+        </button>
+      </div>
+
+      <GroupeExplorer id={id} class="groupe" style="--i: 1" />
+
+      {/* Bureau : le catalogue avant l'accès rapide, les cartes repliables
+          (mobile, tablette) après lui (ordre du focus, voir plus haut) */}
+      <Catalogue id={id} class="groupe" style="--i: 1" />
+
+      <AccesRapide id={id} class="groupe" />
+
+      <CartesPliables id={id} class="groupe" style="--i: 3" />
+
+      <div class="donner">
+        <a class="je-donne" href="/nous-soutenir/">
+          Je donne
+          <IconeSprite icone={ArrowRightIcon} size={22} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="poignee" aria-label="Fermer le menu" data-poignee-menu>
+        <span class="poignee-trait" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .rideau {
+    /* Bas de l'en-tête dans la fenêtre, posé par menu.ts à l'ouverture */
+    --haut-menu: var(--hauteur-entete);
+
+    position: absolute;
+    z-index: var(--z-dessus-2);
+    top: 100%;
+    right: 0;
+    left: 0;
+    /* L'enveloppe rogne la feuille : elle sort de derrière l'en-tête */
+    overflow: hidden;
+    transition: display var(--duree-moyenne-1) allow-discrete;
+  }
+
+  .rideau[hidden] {
+    display: none;
+    pointer-events: none;
+    transition-duration: var(--duree-courte-4);
+  }
+
+  .feuille {
+    height: calc(100dvh - var(--haut-menu));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid var(--couleur-bordure);
+    background-color: var(--couleur-surface);
+    color: var(--couleur-texte);
+    box-shadow: var(--ombre-2);
+    transition: transform var(--duree-moyenne-1) var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    .rideau:not([hidden]) .feuille {
+      transform: translateY(-100%);
+    }
+  }
+
+  .rideau[hidden] .feuille {
+    transform: translateY(-100%);
+    transition-duration: var(--duree-courte-4);
+    transition-timing-function: var(--courbe-standard);
+  }
+
+  /* Les groupes suivent la feuille, en léger décalage (50 ms, 5 au plus) */
+  .groupe {
+    transition:
+      opacity var(--duree-moyenne-1) var(--courbe-emphase-deceleree),
+      translate var(--duree-moyenne-1) var(--courbe-emphase-deceleree);
+    transition-delay: calc(min(var(--i), 5) * var(--duree-courte-1) + var(--duree-courte-2));
+  }
+
+  @starting-style {
+    .rideau:not([hidden]) .groupe {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+  }
+
+  .rideau[hidden] .groupe {
+    opacity: 0;
+    transition-delay: 0s;
+    transition-duration: var(--duree-courte-3);
+  }
+
+  /* ---- Motifs communs aux groupes du menu (menu/*.astro) ----
+     Écrits une fois ici, sous :where (Astro n'y ajoute pas son attribut de
+     portée) : spécificité d'une balise ou d'une classe seule, au-dessous
+     de toute règle d'un groupe, qui l'emporte donc toujours. Le lien au
+     survol l'emporte sur a:hover de global.css (même spécificité, venu
+     après). */
+  :where(.rideau) :global(ul) {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  :where(.rideau) :global(a),
+  :where(.rideau) :global(a:hover) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Surtitre des groupes Explorer et Accès rapide */
+  :where(.rideau) :global(.surtitre) {
+    margin: 0 0 var(--espace-1);
+    color: var(--couleur-accent);
+    font-size: var(--texte-tres-petit);
+    font-weight: var(--graisse-forte);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  /* Vignette et fonction d'un service : catalogue (dès 1200 px) et cartes
+     repliables (dessous) ; la fonction dit ce que fait le service, sous
+     son nom (voir CARTES) */
+  :where(.rideau) :global(.vignette) {
+    flex-shrink: 0;
+    border-radius: 50%;
+  }
+
+  :where(.rideau) :global(.fonction) {
+    display: block;
+    color: color-mix(in srgb, currentColor 78%, transparent);
+    font-size: var(--texte-tres-petit);
+    font-weight: var(--graisse-normale);
+    line-height: 1.3;
+  }
+
+  .rideau :global(svg) {
+    flex-shrink: 0;
+  }
+
+  .grille {
+    display: grid;
+    gap: var(--espace-4);
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: var(--espace-3) 16px var(--espace-4);
+  }
+
+  /* ---- Placement des groupes (leur contenu : menu/*.astro) ---- */
+  /* Élément de grille : sans min-width, la barre de recherche (liste
+     déroulante comprise) l'élargirait au-delà de l'écran à 320 px */
+  .sofia {
+    min-width: 0;
+  }
+
+  /* Écart entre les tuiles de l'accès rapide, au rythme de la grille */
+  .acces {
+    --i: 1;
+    --ecart-tuiles: var(--espace-1);
+  }
+
+  .cartes-pliables {
+    display: grid;
+    gap: var(--espace-1);
+  }
+
+  /* ---- Catalogue avec aperçu (≥ 1200 px) ---- */
+  .catalogue {
+    display: none;
+  }
+
+  /* ---- Je donne : dernier élément du menu, pas collé ---- */
+  .donner {
+    display: grid;
+    grid-column: 1 / -1;
+  }
+
+  .je-donne {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 3.5rem;
+    padding-inline: 1.25rem;
+    border-radius: var(--rayon-plein);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-sur-fonce);
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-forte);
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .je-donne :global(svg) {
+    color: var(--rouge-orange);
+  }
+
+  .je-donne:hover {
+    background-color: var(--bleu-fonce-survol);
+    color: var(--couleur-sur-fonce);
+  }
+
+  .je-donne:focus-visible {
+    outline-offset: 3px;
+  }
+
+  /* ---- Mode recherche : la recherche seule, puis « Afficher le menu » ---- */
+  .deplier {
+    display: none;
+  }
+
+  /* La poignée du bas reste (sous 1200 px) : on ferme la recherche comme
+     le menu, d'un tapotement ou d'un glissé vers le haut */
+  .rideau[data-mode='recherche'] .grille > :not(.sofia, .deplier) {
+    display: none;
+  }
+
+  /* La feuille prend la hauteur de la recherche ; le passage d'un mode à
+     l'autre est animé par menu.ts (hauteur, groupes) */
+  .rideau[data-mode='recherche'] .feuille {
+    height: auto;
+  }
+
+  /* Les suggestions, posées par-dessus le contenu, dépassent de la feuille
+     courte : ni le rideau ni la feuille ne rognent en mode recherche (la
+     liste flotte sur le voile, la page n'est pas blanchie). La feuille
+     sort toujours de derrière l'en-tête, qui la couvre en glissant. */
+  .rideau[data-mode='recherche'],
+  .rideau[data-mode='recherche'] .feuille {
+    overflow: visible;
+  }
+
+  .rideau[data-mode='recherche'] .deplier {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: center;
+    /* Descendu vers le bord du bas, sans changer la hauteur de la feuille */
+    margin-top: calc(20px - var(--espace-2));
+    margin-bottom: -20px;
+  }
+
+  .deplier-bouton {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    min-height: var(--taille-cible);
+    padding: 0.375rem 1.25rem;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--couleur-accent);
+    font: inherit;
+    font-size: var(--texte-reduit);
+    font-weight: var(--graisse-forte);
+    cursor: pointer;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* La flèche invite à descendre : elle avance d'un cran au survol */
+  .deplier-bouton :global(.deplier-fleche) {
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .deplier-bouton:hover {
+      background-color: var(--couleur-teinte);
+    }
+
+    .deplier-bouton:hover :global(.deplier-fleche) {
+      transform: translateY(3px);
+    }
+  }
+
+  .deplier-bouton:focus-visible :global(.deplier-fleche) {
+    transform: translateY(3px);
+  }
+
+  /* ---- Pied collé au bas de la feuille (< 1200 px) : la poignée ---- */
+  .pied {
+    position: sticky;
+    bottom: 0;
+    display: grid;
+    gap: 0.25rem;
+    padding: 0 16px;
+    /* Hors de la barre des gestes et du bord arrondi des téléphones */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid var(--couleur-bordure);
+    background-color: var(--couleur-surface);
+  }
+
+  .poignee {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--taille-cible);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    /* Le glissé appartient à la poignée, pas au défilement de la feuille */
+    touch-action: none;
+  }
+
+  .poignee-trait {
+    width: 2.5rem;
+    height: 0.3125rem;
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-texte-secondaire);
+    transition: scale var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .poignee:active .poignee-trait {
+    scale: 1.2 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .poignee:hover .poignee-trait {
+      scale: 1.2 1;
+    }
+  }
+
+  @media (width >= 600px) {
+    .grille {
+      padding-inline: 24px;
+    }
+
+    .pied {
+      padding-inline: 24px;
+    }
+
+    .je-donne {
+      justify-self: center;
+      gap: var(--espace-4);
+      min-width: 20rem;
+    }
+  }
+
+  @media (width >= 900px) {
+    .grille {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: var(--espace-5) var(--espace-4);
+      padding: var(--espace-5) 40px var(--espace-6);
+    }
+
+    .explorer,
+    .acces {
+      grid-column: span 3;
+    }
+
+    .cartes-pliables {
+      grid-column: 1 / -1;
+    }
+
+    .sofia {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: var(--espace-1) var(--espace-4);
+    }
+
+    .sofia > :global(.recherche) {
+      flex: 1 1 24rem;
+    }
+  }
+
+  /* Bureau : la barre porte déjà les pages et « Je donne » ; la feuille ne
+     prend que la hauteur de son contenu, sous le voile */
+  @media (width >= 1200px) {
+    .feuille {
+      height: auto;
+      max-height: calc(100dvh - var(--haut-menu));
+    }
+
+    .grille {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: start;
+      gap: var(--espace-4);
+      padding: var(--espace-5) 64px;
+    }
+
+    .explorer,
+    .cartes-pliables,
+    .donner,
+    .pied {
+      display: none;
+    }
+
+    /* La recherche Sofia sur toute la largeur, puis les services (3
+       colonnes : onglets, aperçu) et l'accès rapide (1 colonne, à côté de
+       l'aperçu). L'ordre du HTML (Sofia, services, accès rapide) suit
+       l'ordre visuel. */
+    .sofia {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+
+    /* Services en rangée, puis l'aperçu dessous */
+    .catalogue {
+      display: grid;
+      grid-column: 1 / span 3;
+      grid-row: 2 / span 2;
+      grid-template-columns: minmax(0, 1fr);
+      /* Rangées de la grille (onglets, aperçu) : l'accès rapide s'aligne
+         sur l'aperçu */
+      grid-template-rows: subgrid;
+    }
+
+    /* Accès rapide : six tuiles (2 × 3) à droite de l'aperçu,
+       hauts alignés (même rangée de grille). Le surtitre n'est plus
+       affiché (les tuiles parlent d'elles-mêmes) mais nomme toujours la
+       liste pour les lecteurs d'écran. */
+    .acces {
+      --i: 2;
+      --ecart-tuiles: var(--espace-2);
+
+      display: grid;
+      grid-column: 4;
+      grid-row: 3;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .je-donne {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

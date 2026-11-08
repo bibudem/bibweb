@@ -1,0 +1,35 @@
+# Page vitrine /obtenir/ : voir docs/REDACTION.md, section « Vitrines »
+title: Obtenir
+crumbLabel: Obtenir
+
+banniere:
+  titre: Obtenir un document
+  image: obtenir-mezzanine
+  taille: petite
+  cadrage: 45%
+
+sections:
+  - type: liste-liens
+    presentation: cartes
+    texte: Sur les tablettes ou en ligne, notre collection a été créée pour soutenir la recherche et l’apprentissage. Découvrez ici toutes les manières d’y accéder, que vous soyez ou non membre de la communauté UdeM.
+    liens:
+      - titre: Prêt, renouvellement, retour
+        description: "Combien de documents, pour combien de temps et avec quelle carte : nos modalités de prêt."
+        lien: /obtenir/pret-renouvellement-retour/
+        icone: books
+      - titre: Demande de numérisation
+        description: Recevez gratuitement la copie numérique d’un article ou d’un chapitre de livre imprimé.
+        lien: /obtenir/numerisation/
+        icone: scan
+      - titre: Prêt entre bibliothèques
+        description: Faites venir un document d’une autre bibliothèque, ou la copie d’un article ou d’un chapitre.
+        lien: /obtenir/peb/
+        icone: arrows-left-right
+      - titre: Reproduction des thèses et mémoires
+        description: Demandez une copie d’une thèse ou d’un mémoire de l’UdeM déposé avant 2008.
+        lien: /obtenir/reproduction-theses-memoires/
+        icone: graduation-cap
+      - titre: Frais et avis de retard
+        description: Les avis de retour, et les frais qui s’appliquent quand un document est rendu en retard.
+        lien: /obtenir/frais-avis/
+        icone: receipt

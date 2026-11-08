@@ -1,0 +1,69 @@
+---
+title: Prêt entre bibliothèques
+crumbLabel: Prêt entre bibliothèques
+secondaryNav:
+  order: 3
+superHero:
+  imageName: obtenir-mezzanine
+  title: Obtenir un document
+---
+
+## Prêt entre bibliothèques
+
+Le service de prêt entre bibliothèques (PEB) s’adresse aux membres de la communauté UdeM dans le **cadre de leurs activités d’enseignement, de recherche et d’étude**. Il permet d’obtenir :
+
+* des documents en prêt que les Bibliothèques de l’Université de Montréal ou que celles du Partenariat des bibliothèques universitaires du Québec ne possèdent pas, ou qui sont empruntés
+* une numérisation d’article de revue ou de chapitre de livre indisponible dans les collections des bibliothèques de l’Université de Montréal
+
+Il est à noter qu’en raison des licences ou embargos des fournisseurs, les livres numériques entiers ne peuvent être demandés par PEB. Il n’est pas non plus possible d’obtenir une copie d’un livre entier ou d’un extrait ne répondant pas à l’usage équitable de la Loi sur le droit d’auteur. De plus, les autres institutions peuvent avoir des politiques distinctes d’accès à la documentation et refuser les demandes que le service de PEB leur envoie.
+
+### Procédure
+
+1. Faire une recherche dans l'[outil de recherche Sofia](https://umontreal.on.worldcat.org/discovery).
+2. Si le document n’est pas disponible à l’UdeM, activer la facette **Bibliothèques à travers le monde**.
+3. Cliquer sur le document pour accéder au détail.
+4. Cliquer sur **Obtenir via Prêt entre bibliothèques**.
+5. L’état d’une demande de PEB peut être consulté dans le dossier Sofia.
+
+Si vous souhaitez obtenir une numérisation d’un article ou chapitre de livre d’une bibliothèque universitaire du Québec ou si vous ne trouvez pas le document souhaité dans Sofia :
+
+* remplissez l’un des formulaires disponibles sous les onglets Article, Livre et Autre dans le [dossier Sofia](https://umontreal.account.worldcat.org/account).
+
+[Accéder à Sofia](https://umontreal.on.worldcat.org/advancedsearch)
+
+### Délais de livraison
+
+La période d’attente varie selon la complexité de la demande, la rareté du document, la provenance et les politiques de l’institution prêteuse, ainsi que les services postaux et de messagerie.
+
+**Emprunt** d’un document physique :
+
+* Canada ou États-Unis; 5 à 10 jours ouvrables;
+* Europe ou autre continent : les délais peuvent être plus longs.
+
+**Copie numérisée** :
+
+* Article, acte de conférence, chapitre de livre :  24 h à 7 jours ouvrables
+
+### Durée de l’emprunt
+
+La durée du prêt est de **30 jours**. Le renouvellement est parfois possible, tout dépend des conditions des bibliothèques prêteuses. Si tel est le cas, le renouvellement se fera automatiquement dans votre dossier Sofia.
+
+### Frais
+
+Des frais peuvent être exigés par la bibliothèque prêteuse pour la reproduction de certains documents (thèses, documents anciens, etc.). Le service du PEB de l’UdeM communiquera alors avec vous avant de poursuivre les démarches.
+
+Les [frais de retard](/obtenir/frais-avis/) sont de 0,50 $/document/jour de retard, jusqu’à un maximum de 20 $/document.
+
+### Retour des documents
+
+Les documents doivent être retournés au comptoir du prêt d’une des bibliothèques du réseau de l’UdeM.
+
+En dehors des heures d’ouverture, les documents peuvent être déposés dans l’une des [chutes à livres](/obtenir/pret-renouvellement-retour/#retourner-ses-documents) du réseau des bibliothèques de l’UdeM. Il n’est pas possible de remettre ces documents ailleurs qu’aux bibliothèques de l’UdeM. Pour éviter les erreurs, assurez-vous que l'**étiquette est toujours en place sur le volume**.
+
+### Copies de chapitres ou articles numérisés
+
+Un courriel contenant les indications d’accès aux chapitres et articles numérisés demandés en PEB est envoyé à votre adresse institutionnelle (@umontreal.ca).
+
+Pour respecter les conditions de la Loi sur le droit d’auteur, le document sera disponible pour une période limitée seulement. Il faut donc sauvegarder une copie pour usage ultérieur. Il n’est pas possible de transférer ou de diffuser les copies obtenues par PEB à titre personnel.
+
+Des questions sur le PEB? [Contactez-nous](mailto:peb@bib.umontreal.ca)

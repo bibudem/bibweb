@@ -1,0 +1,75 @@
+---
+/*
+ * Génère les pages de texte (.md, .mdx) et les nouvelles, aux mêmes URL que
+ * coquille-web. Les vitrines (.yaml) ont leur propre route,
+ * [...vitrine].astro : séparées, chaque route ne charge que le CSS de ses
+ * gabarits (les blocs de vitrine d'un côté, les directives Markdown de
+ * l'autre), au lieu de tout le CSS du site sur chaque page.
+ * toutesLesPages() fait échouer le build si une URL a deux sources.
+ */
+import { render } from 'astro:content'
+import GabaritPage from '@/layouts/GabaritPage.astro'
+import GabaritNouvelle from '@/layouts/GabaritNouvelle.astro'
+import RenduDirectives from '@/components/partage/RenduDirectives.astro'
+import { toutesLesPages, toutesLesNouvelles, estVitrine, type Page, type Nouvelle } from '@/lib/contenu'
+import { descriptionAuto } from '@/lib/extrait'
+
+export async function getStaticPaths() {
+  const pages = (await toutesLesPages()).filter((page) => !estVitrine(page)).map((page) => ({
+    params: { chemin: page.id === 'index' ? undefined : page.id },
+    props: { type: 'page' as const, entree: page },
+  }))
+  const nouvelles = (await toutesLesNouvelles()).map((nouvelle) => ({
+    params: { chemin: `nouvelles/${nouvelle.id}` },
+    props: { type: 'nouvelle' as const, entree: nouvelle },
+  }))
+  return [...pages, ...nouvelles]
+}
+
+type Props = { type: 'page'; entree: Page } | { type: 'nouvelle'; entree: Nouvelle }
+
+const props = Astro.props as Props
+const texte = props.type === 'page' && !estVitrine(props.entree) ? props.entree : undefined
+const entreeRendue = props.type === 'nouvelle' ? props.entree : texte
+const rendu = entreeRendue ? await render(entreeRendue) : null
+const Content = rendu?.Content ?? null
+// Une page ou une nouvelle .md passe par RenduDirectives, qui rend ses
+// directives avec les composants du MDX ; un .mdx reçoit ces composants directement
+const markdown = entreeRendue?.filePath?.endsWith('.md') ?? false
+// Sans `description`, celle des moteurs et du partage est le début du texte de la page
+const description = texte ? (texte.data.description ?? descriptionAuto(texte.body, texte.data.title, markdown)) : undefined
+---
+
+{
+  Content && props.type === 'nouvelle' ? (
+    <GabaritNouvelle nouvelle={props.entree}>
+      {markdown ? (
+        <RenduDirectives>
+          <Content />
+        </RenduDirectives>
+      ) : (
+        <Content />
+      )}
+    </GabaritNouvelle>
+  ) : (
+    Content && (
+      <GabaritPage
+        titre={texte?.data.title}
+        description={description}
+        noindex={texte?.data.noindex}
+        niveau={texte?.data.lvl}
+        superHero={texte?.data.superHero}
+        lang={texte?.data.lang}
+        titres={rendu?.headings}
+      >
+        {markdown ? (
+          <RenduDirectives>
+            <Content />
+          </RenduDirectives>
+        ) : (
+          <Content />
+        )}
+      </GabaritPage>
+    )
+  )
+}

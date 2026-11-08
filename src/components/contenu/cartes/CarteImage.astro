@@ -1,0 +1,178 @@
+---
+/*
+ * Carte-lien avec photo (d'après coquille-web).
+ *
+ * 330 × 500 px : photo de 220 px en cover, titre de style h4 limité à trois
+ * lignes, texte d'appel et pastille fléchée en bas. Corrigés :
+ * - un seul lien, sur le titre, dont le ::after couvre la carte ; nom
+ *   accessible = titre ; moreText devient sa description et n'est pas relu ;
+ * - la photo est décorative (alt="") : son alt valait le titre, lu deux fois ;
+ * - les flèches étaient inversées (interne ↗, externe →) et choisies après
+ *   l'hydratation ;
+ * - le titre était un h4 en dur : niveauTitre (3 par défaut) fixe la balise,
+ *   l'apparence reste celle du h4.
+ * Texte et flèche bleu principal sur le fond : 6,8:1.
+ */
+import type { ImageMetadata } from 'astro'
+import { Image as ImageAstro } from 'astro:assets'
+import PastilleFleche from '@/components/partage/PastilleFleche.astro'
+import { fusionnerStyles, type Style } from '@/lib/styles'
+import { lienCarte } from '@/lib/liens'
+import { idUnique } from '@/lib/ids'
+
+interface Props {
+  title: string
+  Image: ImageMetadata | string
+  href: string
+  moreText?: string
+  /** Texte de remplacement de la photo ; décorative par défaut */
+  alt?: string
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  target?: string
+  rel?: string
+  id?: string
+  class?: string
+  style?: Style
+}
+
+const { title, Image, href, moreText = 'En savoir plus', alt = '', niveauTitre = 3, target, rel, class: classe, style, ...reste } = Astro.props
+
+if (title === undefined) throw new Error('CarteImage : la propriété `title` est obligatoire.')
+if (!Image) throw new Error('CarteImage : la propriété `Image` est obligatoire.')
+if (typeof href !== 'string') throw new Error('CarteImage : la propriété `href` doit être une chaîne.')
+
+const { interne, rel: relFinal, annonce } = lienCarte(href, target, rel)
+const idPlus = moreText ? idUnique('carte-plus') : undefined
+const Titre = `h${niveauTitre}`
+---
+
+<div class:list={['carte', 'carte-lien', 'anneau-carte', 'surface-claire', classe]} style={fusionnerStyles(style)} {...reste}>
+  {
+    typeof Image === 'string' ? (
+      <img class="photo" src={Image} alt={alt} loading="lazy" decoding="async" />
+    ) : (
+      <ImageAstro class="photo" src={Image} alt={alt} widths={[330, 660]} sizes="330px" formats={['avif', 'webp']} loading="lazy" />
+    )
+  }
+  <div class="contenu">
+    <Titre class="titre">
+      <a class="lien-etire" href={href} target={target} rel={relFinal} aria-describedby={idPlus}
+        >{title}{annonce && <span class="visuellement-masque">{annonce}</span>}</a
+      >
+    </Titre>
+    <div class="pied">
+      {
+        moreText && (
+          <div class="plus" id={idPlus} aria-hidden="true">
+            {moreText}
+          </div>
+        )
+      }
+      <PastilleFleche externe={!interne} />
+    </div>
+  </div>
+</div>
+
+<style>
+  .carte {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    width: 330px;
+    /* Jamais plus large que sa colonne (320 px, WCAG 1.4.10) */
+    max-width: 100%;
+    /* Hauteur minimale (voir CarteIcone) : la carte grandit avec le texte
+       agrandi au lieu de le rogner */
+    min-height: 500px;
+    overflow: hidden;
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-fond);
+  }
+
+  /* Focus sur toute la carte (anneau double de .anneau-carte) : l'anneau
+     déborde, la carte ne le rogne pas */
+  .carte:has(.lien-etire:focus-visible) {
+    overflow: visible;
+  }
+
+  .photo {
+    display: block;
+    flex-shrink: 0;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+  }
+
+  .contenu {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+    /* Marge réduite (et non --espace-carte) : la photo prend 220 px sur 500 et
+       le titre a jusqu'à trois lignes */
+    padding: var(--espace-element);
+  }
+
+  /* Apparence du h4 du thème, quelle que soit la balise. Plus de limite à
+     trois lignes : le titre entier reste lisible avec le texte agrandi */
+  .titre {
+    margin: 0.5em 0 var(--espace-1);
+    font-family: var(--police-serif);
+    /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
+       l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
+    font-variant-numeric: lining-nums proportional-nums;
+    font-size: var(--texte-grand);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
+    overflow-wrap: break-word;
+  }
+
+  @media (width >= 900px) {
+    .titre {
+      font-size: 1.875rem;
+    }
+  }
+
+  .pied {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    color: var(--couleur-lien);
+  }
+
+  .plus {
+    flex-grow: 1;
+    font-size: var(--texte-courant);
+  }
+
+  /* Pastille : disque de la couleur des liens à 10 %, comme la source */
+  .pied {
+    --pastille-fond: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  /* Survol : léger voile, comme le CardActionArea de MUI (opacité 0,04) */
+  .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-dessus-1);
+    border-radius: inherit;
+    background-color: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duree-moyenne-1) var(--courbe-standard);
+  }
+
+  .carte:hover::before {
+    opacity: 0.04;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

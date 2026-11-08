@@ -1,0 +1,36 @@
+---
+type: interne
+title: Travaux bruyants à la Bibliothèque des lettres et sciences humaines à partir du 21 février 2026.
+titreAffiche: Travaux bruyants à la Bibliothèque des lettres et sciences humaines à partir du 21 février 2026
+slug: travaux-bibliotheque-LSH
+date: '2026-02-21'
+newsImage:
+  src: ./images/lsh-35.webp
+source: Bibliothèques
+---
+Des travaux bruyants mais nécessaires seront menés à la Bibliothèque des lettres et sciences humaines durant les prochains mois.
+
+## Impacts
+- Étage fermé : Le 7e étage sera inaccessible à partir du 2 février. 
+- Autres étages : la bibliothèque demeure accessible du rez-de-chaussée au 6e étage.
+- Bruit dérangeant : Le bruit des travaux sera entendu à tous les étages.
+- Accès aux réservations, au prêt et à la réserve de cours : accessibles pendant les travaux
+
+## Accès aux collections de la bibliothèque durant les travaux
+1. Aller à l’adresse [bib.umontreal.ca/sofia](https://bib.umontreal.ca/sofia).
+2. Rechercher le titre voulu.
+3. Cliquer sur le bouton **Obtenir**.
+4. Attendre le courriel de confirmation de la disponibilité de votre document avant de vous présenter à la bibliothèque demandée.
+
+## Où étudier dans le calme?
+Si vous avez besoin d’étudier ou de travailler en silence, nous vous recommandons de vous diriger vers l’une des [autres bibliothèques du réseau](/horaires/).
+Les bibliothèques les plus proches sont celles de [droit](/horaires/#droit), d'[aménagement](/horaires/#amenagement) et de [mathématiques et informatique](/horaires/#mathematiques-et-informatique).
+
+## Où contacter les membres de l’équipe de la bibliothèque travaillant à l’étage fermé?
+- Si vous connaissez le nom de la personne que vous souhaitez joindre, consultez ses coordonnées dans notre [répertoire du personnel](/nous-joindre/notre-equipe/#Biblioth%C3%A8que%20des%20lettres%20et%20sciences%20humaines).
+- Vous pouvez aussi joindre un membre de notre équipe par clavardage ou vous adresser au comptoir d’accueil.
+
+Nous vous informerons de tout changement dès que possible sur cette page.
+Pour plus d’information, consultez l’avis de la [Direction des immeubles](https://di.umontreal.ca/les-avis-de-la-di/un-avis/news/detail/News/debut-des-travaux-de-remplacement-de-luminaires-a-la-bibliotheque-blsh-pavillon-samuel-bronfman/).
+
+
