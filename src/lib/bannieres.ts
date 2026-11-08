@@ -31,6 +31,7 @@ export function imageBanniere(nom: string): ImageMetadata {
  * centre, par défaut.
  */
 const CADRAGE_SECTION: Record<string, string> = {
+  amenagement: '58%',
   engagements: '25%',
   enseignement: '15%',
   espaces: '40%',
