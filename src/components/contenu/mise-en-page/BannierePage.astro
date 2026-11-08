@@ -119,6 +119,17 @@ const titreLong = titreReduit || (typeof title === 'string' && title.length > TI
     margin-bottom: min(0px, calc(5rem - var(--retrait)));
   }
 
+  /* Dès 600 px, suivie d'une bande sans fond (vitrine), la bannière ne la
+     chevauche plus. Le retrait (6rem, puis 8rem dès 900 px) la faisait
+     remonter sous la bande : 31 px entre la photo et le premier bloc sur
+     tablette en portrait, 10 px à 1024 px (iPad mini en paysage), contre une
+     marge pleine sous la bannière de l'accueil. */
+  @media (width >= 600px) {
+    .super-hero-2:has(+ :global(.section:not(.marge-haut))) {
+      margin-bottom: 0;
+    }
+  }
+
   /* Suivie du fil d'Ariane d'une vitrine sous une section (GabaritVitrine) :
      pas de chevauchement, il serait caché sous la photo */
   .super-hero-2:has(+ :global(.fil-vitrine)) {

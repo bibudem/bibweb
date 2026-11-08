@@ -173,4 +173,10 @@ function bande(bloc: Bloc) {
   .fil-vitrine :global(.fil-ariane) {
     margin-block-end: 0;
   }
+
+  /* Première bande sans fond, juste sous la bannière (accueil ou section) :
+     marge haute un peu réduite, la bannière fait déjà une coupure nette */
+  :global(:is(.super-hero, .super-hero-2) + .section:not(.marge-haut)) {
+    padding-block-start: calc(var(--espace-bande) * 0.6);
+  }
 </style>
