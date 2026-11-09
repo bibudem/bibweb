@@ -15,10 +15,10 @@ sections:
     titre: Besoin d’aide? On est là!
     libelle: Besoin d’aide
     texte: Que ce soit votre première ou votre dernière session à l’Université, nous sommes toujours là pour vous accompagner. [Passez nous voir au comptoir](/horaires/), [utilisez le clavardage](/nous-joindre/clavarder/) ou [contactez un membre de notre équipe](/nous-joindre/notre-equipe/) pour obtenir de l’aide personnalisée.
-    image: ../images/aide-bibliothecaire.webp
+    image: ../images/super-heroes/enseignement.webp
     positionImage: droite
-    cadrage: 5%
-    cadrageHorizontal: 100%
+    cadrage: 35%
+    cadrageHorizontal: 60%
     bouton:
       texte: Nous joindre
       lien: /nous-joindre/
