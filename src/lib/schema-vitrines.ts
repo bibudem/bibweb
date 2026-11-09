@@ -154,8 +154,8 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       positionImage: z.enum(['gauche', 'droite']).default('droite'),
       /** `encart` : carte rose pâle ramassée, texte et bouton bleu foncé, image fondue au bord (BlocImageTexte) */
       disposition: z.enum(['colonnes', 'encart']).default('colonnes'),
-      /** Encart : couleur de la carte, rose pâle (espaces), vert foncé (études : « Besoin d’aide? ») ou bleu UdeM (recherche : « Premier arrêt »), texte blanc sur les deux derniers */
-      teinteEncart: z.enum(['rose', 'vertFonce', 'bleu']).default('rose'),
+      /** Encart : couleur de la carte, rose pâle (espaces), vert foncé (études : « Besoin d’aide? »), bleu UdeM (recherche : « Premier arrêt ») ou bleu foncé (enseignement : « Inscrivez-nous »), texte blanc sauf sur le rose */
+      teinteEncart: z.enum(['rose', 'vertFonce', 'bleu', 'bleuFonce']).default('rose'),
       /** Encart : hauteur de la photo gardée quand elle est recadrée (bandeau sur tablette) : 0 % le haut, 50 % le centre */
       cadrage: cadrage.optional(),
       /** Encart : position gardée quand la photo est coupée sur les côtés (téléphone) : 0 % la gauche, 50 % le centre */
@@ -168,7 +168,7 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       imageReduite: z.boolean().default(true),
       /** Colonnes : `petite` réduit l'image aux deux tiers de sa colonne (études : « Besoin d’aide? ») */
       tailleImage: z.enum(['normale', 'petite']).default('normale'),
-      /** Colonnes : icônes légendées sous le texte, deux par rangée dès 600 px (études : Service Accessibilité) */
+      /** Icônes légendées sous le texte, deux par rangée dès 600 px (études : Service Accessibilité ; encart : enseignement « Inscrivez-nous ») */
       icones: z.array(z.object({ icone, texte: texteCourt }).strict()).min(1).optional(),
       /** Couleur des icônes (par défaut : bleu principal, blanc sur un fond foncé) */
       couleurIcones: couleur.optional(),
@@ -176,7 +176,6 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       boutons: boutons.optional(),
     })
     .strict()
-    .refine((bloc) => !bloc.icones || bloc.disposition === 'colonnes', { message: 'Les `icones` ne vont qu’avec la disposition `colonnes`' })
 
   /** Cartes-sections côte à côte : photo, titre, texte et bouton sur leur fond (BlocCartesSections) */
   const cartesSections = z

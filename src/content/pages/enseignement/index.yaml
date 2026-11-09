@@ -8,10 +8,36 @@ banniere:
   titreReduit: true
   sousTitre:
     - "Pour le personnel enseignant : réserve de cours, droit d’auteur, formations en classe, salles, technologies et ressources éducatives libres."
-  image: enseignement
-  cadrage: 10%
+  image: amenagement
+  cadrage: 55%
 
 sections:
+  - type: image-texte
+    disposition: encart
+    teinteEncart: bleuFonce
+    titre: Inscrivez-nous à votre cours
+    libelle: Inscrire votre cours
+    texte: Pour intégrer facilement les notions de recherche d’information et d’évaluation de la crédibilité et de la pertinence des sources dans vos cours, faites appel à notre équipe spécialisée!
+    image: ../images/bibliothecaire-simon.webp
+    positionImage: droite
+    cadrage: 20%
+    cadrageHorizontal: 40%
+    icones:
+      - icone: chalkboard-teacher
+        texte: Création de formations sur mesure pour votre cours
+      - icone: mountains
+        texte: Collaboration avec votre bibliothécaire dans StudiUM
+      - icone: toolbox
+        texte: Création de guides de sources et outils pertinents
+      - icone: medal
+        texte: Identification de ressources pertinentes pour vos cours
+    boutons:
+      - texte: Voir des sujets de formation
+        lien: /enseignement/formations-cours/
+        secondaire: true
+      - texte: Trouvez votre bibliothécaire disciplinaire
+        lien: /nous-joindre/notre-equipe/
+
   - type: liste-liens
     titre: 5,75 M de titres à portée de main
     libelle: Collections
@@ -56,29 +82,7 @@ sections:
         icone: path
         lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377614
 
-  - type: texte-icones
-    titre: Inscrivez-nous à votre cours
-    libelle: Inscrire votre cours
-    texte: Pour intégrer facilement les notions de recherche d’information et d’évaluation de la crédibilité et de la pertinence des sources dans vos cours, faites appel à notre équipe spécialisée!
-    boutons:
-      - texte: Voir des sujets de formation
-        lien: /enseignement/formations-cours/
-        secondaire: true
-      - texte: Trouvez votre bibliothécaire disciplinaire
-        lien: /nous-joindre/notre-equipe/
-    couleurIcones: bleuPrincipal
-    icones:
-      - icone: chalkboard-teacher
-        texte: Création de formations sur mesure pour votre cours
-      - icone: mountains
-        texte: Collaboration avec votre bibliothécaire dans StudiUM
-      - icone: toolbox
-        texte: Création de guides de sources et outils pertinents
-      - icone: medal
-        texte: Identification de ressources pertinentes pour vos cours
-
   - type: image-texte
-    fond: bleu100
     titre: Ajoutez une touche techno
     libelle: Technologies
     texte: |

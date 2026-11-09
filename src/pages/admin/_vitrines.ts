@@ -180,7 +180,7 @@ const blocs: Champ[] = [
     facultatif(texte('Texte de remplacement', 'alt', 'Seulement si l’image porte un message (texte, logo de campagne). Sinon, laissez vide : l’image est décorative.')),
     facultatif(choix('Position de l’image', 'positionImage', ['gauche', 'droite'], 'Par défaut : droite.')),
     facultatif(choix('Disposition', 'disposition', ['colonnes', 'encart'], 'Par défaut : colonnes. Encart : carte rose pâle ramassée, texte et bouton bleu foncé.')),
-    facultatif(choix('Couleur de l’encart', 'teinteEncart', ['rose', 'vertFonce', 'bleu'], 'Encart : rose pâle par défaut ; vert foncé ou bleu UdeM, texte blanc.')),
+    facultatif(choix('Couleur de l’encart', 'teinteEncart', ['rose', 'vertFonce', 'bleu', 'bleuFonce'], 'Encart : rose pâle par défaut ; vert foncé, bleu UdeM ou bleu foncé, texte blanc.')),
     facultatif({ label: 'Cadrage de l’image', name: 'cadrage', widget: 'string', pattern: MOTIF_CADRAGE, hint: 'Encart : hauteur de la photo gardée quand elle est recadrée (0% le haut, 50% le centre).' }),
     facultatif({ label: 'Cadrage horizontal de l’image', name: 'cadrageHorizontal', widget: 'string', pattern: MOTIF_CADRAGE, hint: 'Encart, téléphone : position gardée quand la photo est coupée sur les côtés (0% la gauche, 50% le centre).' }),
     caseACocher('Recadrer l’image', 'recadrerImage', 'Colonnes : l’image remplit sa colonne à la hauteur du texte.'),
