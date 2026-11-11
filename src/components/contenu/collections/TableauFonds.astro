@@ -115,8 +115,11 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'fonds et collections' : 'fonds o
 </div>
 
 <script>
+  import { aChaquePage } from '@/lib/pages'
+
   const annonce = (n: number) => (n === 0 ? 'Aucun fonds ne correspond à ces critères.' : `${n} ${n > 1 ? 'fonds et collections' : 'fonds ou collection'}`)
 
+  aChaquePage(() => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-tableau-fonds]')) {
     const filtres = [...racine.querySelectorAll<HTMLSelectElement>('[data-filtre]')]
     const statut = racine.querySelector<HTMLElement>('[data-statut]')!
@@ -158,6 +161,7 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'fonds et collections' : 'fonds o
     for (const f of filtres) f.addEventListener('change', filtrer)
     for (const b of boutonsTri) b.addEventListener('click', () => trier(b.dataset.tri!))
   }
+  })
 </script>
 
 <style>

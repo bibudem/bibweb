@@ -783,7 +783,9 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
     navigation: auto;
   }
 
-  .entete {
+  /* L'en-tête du site seulement : d'autres composants ont une classe
+     .entete, et un nom en double annule la transition */
+  [data-entete] {
     view-transition-name: entete;
   }
 
@@ -806,12 +808,16 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
     animation: page-entree-droite var(--duree-moyenne-4) var(--courbe-emphase-deceleree) both;
   }
 
-  /* Retour : l'ancienne page part vers la droite, par-dessus la nouvelle */
+  /* Retour : l'ancienne page part vers la droite, par-dessus la nouvelle.
+     Type « retour » au chargement d'une page (Base.astro) ; en navigation
+     côté client (ClientRouter), Astro pose data-astro-transition="back" */
+  :root[data-astro-transition='back']::view-transition-old(root),
   :root:active-view-transition-type(retour)::view-transition-old(root) {
     z-index: var(--z-dessus-1);
     animation-name: page-sortie-droite;
   }
 
+  :root[data-astro-transition='back']::view-transition-new(root),
   :root:active-view-transition-type(retour)::view-transition-new(root) {
     animation-name: page-entree-gauche;
   }

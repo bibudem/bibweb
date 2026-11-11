@@ -33,8 +33,11 @@ const { class: classe, style } = Astro.props
 <script>
   import iframeResize from '@iframe-resizer/parent'
 
+  import { aChaquePage } from '@/lib/pages'
+
   const FORMULAIRE_URL = 'https://api.bib.umontreal.ca/usagers/formulaire/'
 
+  aChaquePage(() => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-formulaire-consentement]')) {
     // Adresse de retour fixe, comme dans la source : l'API la compare à sa liste
     const adresseRetour = `${location.origin}/formulaire-consentement-inscription`
@@ -70,6 +73,7 @@ const { class: classe, style } = Astro.props
       iframe,
     )
   }
+  })
 </script>
 
 <style>

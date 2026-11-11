@@ -70,8 +70,11 @@ const idPiste = idUnique('cartes-sections')
 <script>
   // Carrousel mobile : barre de progression, flèches et annonce communes (src/lib/carrousel.ts)
   import { brancherCarrousel } from '@/lib/carrousel'
+  import { aChaquePage } from '@/lib/pages'
 
-  for (const racine of document.querySelectorAll<HTMLElement>('[data-cartes-carrousel]')) brancherCarrousel(racine)
+  aChaquePage((signal) => {
+    for (const racine of document.querySelectorAll<HTMLElement>('[data-cartes-carrousel]')) brancherCarrousel(racine, signal)
+  })
 </script>
 
 <style>

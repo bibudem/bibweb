@@ -63,8 +63,9 @@ const Titre = `h${niveauTitre}`
 
 <script>
   import { activerRevelation } from './revelation'
+  import { aChaquePage } from '@/lib/pages'
 
-  activerRevelation()
+  aChaquePage(() => activerRevelation())
 </script>
 
 <style>

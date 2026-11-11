@@ -24,7 +24,8 @@
  */
 const reduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-export function brancherCarrousel(racine: HTMLElement) {
+/** `signal` (lib/pages.ts) débranche l'observateur quand la page est quittée */
+export function brancherCarrousel(racine: HTMLElement, signal?: AbortSignal) {
   const piste = racine.querySelector<HTMLElement>('[data-piste]')
   if (!piste) return
   const diapositives = [...piste.children] as HTMLElement[]
@@ -104,7 +105,12 @@ export function brancherCarrousel(racine: HTMLElement) {
   precedent?.addEventListener('click', () => precedent.getAttribute('aria-disabled') !== 'true' && aller(-1))
   suivant?.addEventListener('click', () => suivant.getAttribute('aria-disabled') !== 'true' && aller(1))
   piste.addEventListener('scroll', maj, { passive: true })
-  new ResizeObserver(maj).observe(piste)
+  const taille = new ResizeObserver(maj)
+  taille.observe(piste)
+  signal?.addEventListener('abort', () => {
+    taille.disconnect()
+    window.clearTimeout(minuterie)
+  })
   racine.toggleAttribute('data-pret', true)
   maj()
 }

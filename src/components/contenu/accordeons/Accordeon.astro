@@ -46,6 +46,7 @@ const ouvert = defaultExpanded === true || defaultExpanded === '' || defaultExpa
 
 <script>
   import { idDeLAncre } from '@/lib/ancre-url'
+  import { aChaquePage } from '@/lib/pages'
 
   // Ouvre les volets qui contiennent la cible de l'ancre, puis la ramène en
   // vue : ouvrir un volet après le saut décale la page.
@@ -71,7 +72,9 @@ const ouvert = defaultExpanded === true || defaultExpanded === '' || defaultExpa
       })
   }
 
-  ouvrirSelonAncre()
+  // À chaque page (lien vers une ancre d'une autre page) ; les écouteurs
+  // ci-dessous, sur window et le document, valent pour toutes les pages
+  aChaquePage(() => ouvrirSelonAncre())
   window.addEventListener('hashchange', ouvrirSelonAncre)
 
   // Un seul volet ouvert par groupe : ouvrir un volet ferme celui qui était

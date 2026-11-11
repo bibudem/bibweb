@@ -48,9 +48,13 @@ const { liens } = Astro.props
   </nav>
 
 <script>
-  const sommaire = document.querySelector<HTMLElement>('[data-sommaire]')
-  const details = sommaire?.querySelector('details')
-  if (sommaire && details) {
+  import { aChaquePage } from '@/lib/pages'
+
+  aChaquePage((signal) => {
+    const sommaire = document.querySelector<HTMLElement>('[data-sommaire]')
+    const details = sommaire?.querySelector('details')
+    if (!sommaire || !details) return
+
     const fermer = (rendreFocus = false) => {
       if (!details.open) return
       details.open = false
@@ -68,12 +72,12 @@ const { liens } = Astro.props
     })
     document.addEventListener('click', (e) => {
       if (!sommaire.contains(e.target as Node)) fermer()
-    })
+    }, { signal })
     // Le focus quitte le panneau au clavier (Tab hors du dernier lien)
     sommaire.addEventListener('focusout', (e) => {
       if (e.relatedTarget && !sommaire.contains(e.relatedTarget as Node)) fermer()
     })
-  }
+  })
 </script>
 
 <style>

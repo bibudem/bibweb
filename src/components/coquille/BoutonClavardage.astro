@@ -43,7 +43,8 @@ const VERSION = 'flottant-5'
 const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&v=${VERSION}`
 ---
 
-<script is:inline async src={SCRIPT}></script>
+{/* Adresse du script de LibChat, lue une fois par le script ci-dessous */}
+<template data-clavardage-script={SCRIPT}></template>
 
 <script>
   /*
@@ -62,6 +63,55 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
    * dans les paramètres du widget) : elle ouvrirait le panneau en même temps
    * et y déplacerait le focus.
    */
+  /*
+   * Navigation côté client (ClientRouter) : à chaque changement de page,
+   * Astro remplace le <body>. Pour que la conversation continue, LibChat est
+   * chargé une seule fois pour toute la visite (ce module ne s'exécute qu'une
+   * fois), et son bloc sort du <body> dès son apparition : il devient un
+   * enfant de <html>, après le <body>, qu'Astro ne touche jamais. L'iframe de
+   * la conversation n'est donc ni déplacée ni rechargée, dans tous les
+   * navigateurs (un déplacement la rechargerait, sauf avec moveBefore).
+   * Le bloc est en position fixe : sa place à l'écran ne change pas.
+   */
+  const adresse = document.querySelector<HTMLTemplateElement>('[data-clavardage-script]')?.dataset.clavardageScript
+  if (adresse) {
+    // Feuilles déjà là (dont celle de ce composant, intégrée au <head> en
+    // développement) : celle de LibChat est forcément une nouvelle
+    const dejaLa = new Set(document.querySelectorAll('style'))
+    const s = document.createElement('script')
+    s.src = adresse
+    s.async = true
+    document.head.append(s)
+    // LibChat ajoute aussi sa feuille de style à la fin du <head>, qu'Astro
+    // remplace à chaque page : elle sort elle aussi, juste avant le bloc
+    // (un <style> s'applique où qu'il soit dans le document)
+    let feuille: HTMLStyleElement | undefined
+    const sortir = () => {
+      feuille ??= [...document.head.querySelectorAll('style')].find((st) => !dejaLa.has(st) && st.textContent?.includes('.s-lch-widget-float'))
+      const bloc = document.getElementById('s-lch-widget-9467')
+      if (!bloc || !feuille) return false
+      if (bloc.parentElement !== document.documentElement) document.documentElement.append(feuille, bloc)
+      return true
+    }
+    if (!sortir()) {
+      const obs = new MutationObserver(() => sortir() && obs.disconnect())
+      obs.observe(document.documentElement, { childList: true, subtree: true })
+    }
+    // Échap ferme le panneau. LibChat pose son propre écouteur sur le <body>
+    // de la page où le panneau s'ouvre, perdu au changement de page ; celui-ci,
+    // sur le document (en capture, donc avant le sien), vaut pour toutes. Sur
+    // la première page, la fermeture retire le sien avant qu'il ne joue.
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        const bloc = document.getElementById('s-lch-widget-9467')
+        if (e.key !== 'Escape' || !bloc?.classList.contains('open')) return
+        bloc.querySelector<HTMLButtonElement>('.s-lch-widget-float-btn')?.click()
+      },
+      true,
+    )
+  }
+
   const DELAI = 30_000
   const CLE = 'bib-invitation-clavardage'
   const TEXTE = 'Une question? Un technicien ou une technicienne en documentation est là pour vous aider.'
@@ -94,7 +144,8 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
           resoudre(bouton)
         }
       })
-      observateur.observe(document.body, { childList: true, subtree: true })
+      // Le document entier : le bloc est hors du <body> une fois sorti
+      observateur.observe(document.documentElement, { childList: true, subtree: true })
     })
 
   // Bannière de consentement (Consentement.astro), en bas à droite tant que
@@ -108,6 +159,9 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
     placer()
     new ResizeObserver(placer).observe(carteConsentement)
     new MutationObserver(placer).observe(carteConsentement, { attributes: true, attributeFilter: ['hidden'] })
+    // Navigation côté client : Astro remplace les attributs de <html> (dont
+    // style) ; la bannière, elle, est gardée (transition:persist)
+    document.addEventListener('astro:after-swap', placer)
   }
 
   /*
@@ -253,7 +307,15 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
     right: calc(40px + 0.75rem + (var(--_libelle-largeur) - var(--_rond)) / 2);
     bottom: calc(1.5rem + var(--_libelle-hauteur) + var(--decalage-consentement, 0px));
     padding: 0;
+    /* Hors du <body> (voir le script) : la typographie du body, qu'il
+       n'hérite plus */
+    color: var(--couleur-texte);
     font-family: var(--police-sans);
+    font-size: var(--texte-courant);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Ouvert : LibChat étire le bloc sur toute la hauteur de l'écran (top: 1px,
@@ -492,7 +554,7 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
     }
 
     /* Pendant que le doigt déplace la barre, le rond la suit sans retard */
-    body:has([data-liens-rapides-mobile][data-suit]) #s-lch-widget-9467.s-lch-widget-float {
+    :root:has([data-liens-rapides-mobile][data-suit]) #s-lch-widget-9467.s-lch-widget-float {
       transition-duration: 0s;
     }
 

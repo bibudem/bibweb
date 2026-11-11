@@ -123,8 +123,9 @@ const legende = forme === 'barres' && groupes.length > 1 && groupes.every((g) =>
 
 <script>
   import { animerChiffres } from './chiffres'
+  import { aChaquePage } from '@/lib/pages'
 
-  animerChiffres()
+  aChaquePage((signal) => animerChiffres(signal))
 </script>
 
 <style>

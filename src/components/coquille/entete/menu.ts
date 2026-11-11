@@ -2,7 +2,8 @@
  * Comportement du menu du site, côté navigateur : un seul module pour le
  * DOM qu'Entete.astro (boutons Menu et loupe, voile) et PanneauMenu.astro
  * (rideau, feuille, « Afficher le menu », poignée) rendent ensemble.
- * Importé une fois, par le script d'Entete.astro.
+ * Importé une fois, par le script d'Entete.astro, qui le rebranche à
+ * chaque page.
  *
  * - Les deux boutons Menu (barre compacte et barre de bureau) et les deux
  *   loupes commandent le même rideau (#menu-principal), selon le motif
@@ -22,9 +23,10 @@ type Mode = 'recherche' | 'complet'
 /**
  * Branche le menu de l'en-tête. `surChangement` est rappelée à chaque
  * ouverture et fermeture (apparence de la barre de bureau, qui dépend de
- * data-menu-ouvert).
+ * data-menu-ouvert). `signal` débranche l'écouteur posé sur le document au
+ * changement de page (lib/pages.ts).
  */
-export function brancherMenu(entete: HTMLElement, surChangement: () => void) {
+export function brancherMenu(entete: HTMLElement, surChangement: () => void, signal: AbortSignal) {
   const boutons = [...entete.querySelectorAll<HTMLButtonElement>('[data-bouton-menu]')]
   const loupes = [...entete.querySelectorAll<HTMLButtonElement>('[data-bouton-recherche]')]
   const panneau = document.getElementById('menu-principal')
@@ -189,7 +191,7 @@ export function brancherMenu(entete: HTMLElement, surChangement: () => void) {
     // Une boîte de dialogue ouverte par-dessus (recherche) gère sa propre Échap
     if (document.querySelector('dialog[open]')) return
     fermer({ rendreFocus: true })
-  })
+  }, { signal })
 
   // Le panneau se referme quand le focus quitte le menu (tabulation après
   // le dernier lien) : sinon il resterait ouvert par-dessus la page.

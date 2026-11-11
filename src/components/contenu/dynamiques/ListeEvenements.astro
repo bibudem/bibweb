@@ -75,6 +75,7 @@ const urlPlus = urlValide(moreLink, MORE_LINK)
 
 <script>
   import { brancherReessayer, chargerAvecDelai, cloner, montrerEtat, remplir } from './chargement'
+  import { aChaquePage } from '@/lib/pages'
 
   const formatDate = new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
 
@@ -109,6 +110,7 @@ const urlPlus = urlValide(moreLink, MORE_LINK)
     return resultat
   }
 
+  aChaquePage(() => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-evenements]')) {
     const liste = racine.querySelector<HTMLElement>('[data-liste]')!
     const gabarit = racine.querySelector<HTMLTemplateElement>('template[data-gabarit]')!
@@ -137,6 +139,7 @@ const urlPlus = urlValide(moreLink, MORE_LINK)
     brancherReessayer(racine, charger)
     charger()
   }
+  })
 </script>
 
 <style>

@@ -17,6 +17,8 @@
  *   de zone qui contient un groupe est parcouru jusqu'à ce groupe.
  */
 
+import { aChaquePage } from './pages'
+
 const ZONE = '[data-revelation="zone"]'
 const GROUPE = '[data-revelation="groupe"]'
 /** Décalage maximal (en pas de --duree-courte-1) : au-delà, on n'attend plus */
@@ -47,15 +49,19 @@ function unites(): HTMLElement[] {
   return liste
 }
 
-function demarrer() {
+/** Changement de page côté client (ClientRouter) : vrai après le premier */
+let pageSuivante = false
+
+function demarrer(signal: AbortSignal) {
   const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
   const impression = window.matchMedia('print')
   if (reduit.matches || impression.matches || !('IntersectionObserver' in window)) return
   // Rechargement ou retour : le navigateur restaure la position de
   // défilement après ce script ; ce qu'on y retrouve serait animé alors
-  // qu'on l'a déjà lu. On n'anime que les nouvelles visites.
+  // qu'on l'a déjà lu. On n'anime que les nouvelles visites (au premier
+  // chargement ; une page atteinte par un lien est une nouvelle visite).
   const navigation = performance.getEntriesByType?.('navigation')[0] as PerformanceNavigationTiming | undefined
-  if (navigation && navigation.type !== 'navigate') return
+  if (!pageSuivante && navigation && navigation.type !== 'navigate') return
 
   const hauteur = window.innerHeight
   // Lien profond (#ancre) : tout ce qui précède la cible et l'écran qui la
@@ -153,6 +159,11 @@ function demarrer() {
   window.addEventListener('hashchange', surHash)
   window.addEventListener('beforeprint', toutMontrer)
   reduit.addEventListener('change', toutMontrer)
+  // Page quittée avant la fin : tout est débranché
+  signal.addEventListener('abort', () => {
+    enAttente.clear()
+    finirSiVide()
+  })
 
   // Tout est révélé : on se déconnecte
   function finirSiVide() {
@@ -189,9 +200,12 @@ function sauterALAncre() {
 
 sauterALAncre()
 
-try {
-  demarrer()
-} catch {
-  // Un échec laisse la page telle quelle : tout est déjà visible.
-  document.querySelectorAll('.a-reveler').forEach((el) => el.classList.remove('a-reveler', 'revele'))
-}
+aChaquePage((signal) => {
+  try {
+    demarrer(signal)
+  } catch {
+    // Un échec laisse la page telle quelle : tout est déjà visible.
+    document.querySelectorAll('.a-reveler').forEach((el) => el.classList.remove('a-reveler', 'revele'))
+  }
+  pageSuivante = true
+})

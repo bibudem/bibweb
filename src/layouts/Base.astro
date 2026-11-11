@@ -22,6 +22,7 @@ import LiensRapides from '@/components/coquille/LiensRapides.astro'
 import ServicesInstitutionnels from '@/components/coquille/ServicesInstitutionnels.astro'
 import RetourHaut from '@/components/coquille/RetourHaut.astro'
 import BoutonClavardage from '@/components/coquille/BoutonClavardage.astro'
+import { ClientRouter } from 'astro:transitions'
 import { LANGUE_SITE, estEnFrancais } from '@/lib/contenu'
 import { SITE_TITRE, SITE_DESCRIPTION, NOM_ORGANISATION } from '@/lib/site'
 
@@ -139,6 +140,10 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
         }
       })
     </script>
+    {/* Navigation côté client : la page ne se recharge pas d'un lien à
+        l'autre, et la conversation du clavardage (BoutonClavardage) continue.
+        Les scripts du site se rebranchent à chaque page (src/lib/pages.ts). */}
+    <ClientRouter fallback="swap" />
     <slot name="head" />
   </head>
   <body>
@@ -186,7 +191,9 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
     <script>
       import { focaliserTemporairement } from '@/lib/focus'
 
-      document.querySelector('.lien-evitement')?.addEventListener('click', () => {
+      // Délégation sur le document : vaut pour le lien de chaque page
+      document.addEventListener('click', (e) => {
+        if (!(e.target as Element | null)?.closest?.('.lien-evitement')) return
         const principal = document.getElementById('contenu-principal')
         if (principal) focaliserTemporairement(principal, { preventScroll: true })
       })
@@ -199,6 +206,21 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
       import { copierLienAncre } from '@/lib/ancres-copie'
 
       copierLienAncre()
+    </script>
+    {/* Liens vers un fichier (PDF, document, flux…) ou l'interface de
+        rédaction : navigation ordinaire. Sinon le routeur télécharge le
+        fichier entier avant de passer la main au navigateur. En capture, pour
+        poser l'attribut avant que le routeur lise le clic. */}
+    <script>
+      document.addEventListener(
+        'click',
+        (e) => {
+          const lien = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null
+          if (!lien || lien.origin !== location.origin) return
+          if (/\.(?!html?$)[a-z0-9]{2,5}$/i.test(lien.pathname) || /\/admin\//.test(lien.pathname)) lien.setAttribute('data-astro-reload', '')
+        },
+        true,
+      )
     </script>
   </body>
 </html>

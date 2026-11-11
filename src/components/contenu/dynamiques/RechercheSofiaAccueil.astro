@@ -33,7 +33,7 @@ const { class: classe, style } = Astro.props
 const LIENS = [
   { libelle: 'Recherche avancée', href: 'https://umontreal.on.worldcat.org/advancedsearch' },
   { libelle: 'Bases de données A-Z', href: 'https://boite-outils.bib.umontreal.ca/az.php' },
-  { libelle: 'Réserves de cours', href: 'https://umontreal.on.worldcat.org/courseReserves/courses' },
+  { libelle: 'Ressources par discipline', href: 'https://boite-outils.bib.umontreal.ca/disciplines' },
 ]
 ---
 
@@ -81,8 +81,10 @@ const LIENS = [
 
 <script>
   import { brancherRechercheSofia } from '@/lib/sofia'
+  import { aChaquePage } from '@/lib/pages'
 
-  brancherRechercheSofia()
+  // Une seule fois par formulaire (data-branche), même appelée deux fois
+  aChaquePage(() => brancherRechercheSofia())
 </script>
 
 <style>

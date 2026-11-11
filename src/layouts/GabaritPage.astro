@@ -140,11 +140,15 @@ const sommaireDroite = niveau > 1 && !sommaire ? sommaireDeLaPage : null
   // en cours est marqué (aria-current="true"), dans la colonne comme dans le
   // volet repliable. Un titre est « en cours » une fois monté dans les 40 %
   // supérieurs de l'écran ; en haut de page, aucun.
-  const liens = [...document.querySelectorAll<HTMLAnchorElement>('nav.est-sommaire a[href^="#"]')]
-  const titres = [...new Set(liens.map((a) => decodeURIComponent(a.hash.slice(1))))]
-    .map((id) => document.getElementById(id))
-    .filter((e): e is HTMLElement => !!e)
-  if (titres.length) {
+  import { aChaquePage } from '@/lib/pages'
+
+  aChaquePage((signal) => {
+    const liens = [...document.querySelectorAll<HTMLAnchorElement>('nav.est-sommaire a[href^="#"]')]
+    const titres = [...new Set(liens.map((a) => decodeURIComponent(a.hash.slice(1))))]
+      .map((id) => document.getElementById(id))
+      .filter((e): e is HTMLElement => !!e)
+    if (!titres.length) return
+
     let attente = false
     const maj = () => {
       attente = false
@@ -177,10 +181,10 @@ const sommaireDroite = niveau > 1 && !sommaire ? sommaireDeLaPage : null
         requestAnimationFrame(maj)
       }
     }
-    addEventListener('scroll', planifier, { passive: true })
-    addEventListener('resize', planifier)
+    addEventListener('scroll', planifier, { passive: true, signal })
+    addEventListener('resize', planifier, { signal })
     maj()
-  }
+  })
 </script>
 
 <style>

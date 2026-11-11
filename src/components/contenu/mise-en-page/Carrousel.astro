@@ -124,8 +124,11 @@ const aDescription = description !== undefined || htmlDescription !== ''
 
 <script>
   import { brancherCarrousel } from '@/lib/carrousel'
+  import { aChaquePage } from '@/lib/pages'
 
-  for (const racine of document.querySelectorAll<HTMLElement>('[data-carrousel]')) brancherCarrousel(racine)
+  aChaquePage((signal) => {
+    for (const racine of document.querySelectorAll<HTMLElement>('[data-carrousel]')) brancherCarrousel(racine, signal)
+  })
 </script>
 
 <style>

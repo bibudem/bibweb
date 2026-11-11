@@ -77,8 +77,9 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
 
 <script>
   import { activerRevelation } from './revelation'
+  import { aChaquePage } from '@/lib/pages'
 
-  activerRevelation()
+  aChaquePage(() => activerRevelation())
 </script>
 
 <style>
