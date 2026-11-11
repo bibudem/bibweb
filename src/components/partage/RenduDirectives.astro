@@ -197,7 +197,7 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
         )
       case 'liens':
         return (
-          <ListeLiens>
+          <ListeLiens grille={a.forme === 'grille'}>
             {directives(enfants).map((lien) => (
               <ElementListeLiens title={lien.attributs.titre} description={lien.attributs.description} href={lien.attributs.lien} niveauTitre={a.niveau} />
             ))}

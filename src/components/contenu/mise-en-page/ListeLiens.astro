@@ -3,23 +3,35 @@
  * Liste riche (d'après coquille-web) : liste sans puces, décalée de
  * `offset` colonnes de chaque côté (0.5 par défaut). Ses éléments sont des
  * ElementListeLiens.
+ *
+ * `grille` (:::liens{forme=grille}) : sans retrait (offset 0, au ras du
+ * titre de la page), les cartes côte à côte, autant de
+ * colonnes que la largeur en permet (14rem au moins chacune : trois dans
+ * la colonne de contenu d'une page de niveau 2), puis empilées
+ * sur écran étroit. Texte en haut, pastille dans le coin en bas à droite,
+ * à toutes les largeurs ; les cartes d'une rangée prennent la hauteur de la
+ * plus haute. Une carte seule garde la pastille à droite, centrée.
  */
 import ColonneDecalee from '@/components/primitives/ColonneDecalee.astro'
 import { classes, fusionnerStyles, type Style } from '@/lib/styles'
 
 interface Props {
   offset?: number
+  /** Cartes côte à côte plutôt qu'empilées */
+  grille?: boolean
   /** Passé dans le contenu (etudes) mais ignoré, comme dans la source */
   bg?: string
   class?: string
   style?: Style
 }
 
-const { offset = 0.5, class: classe, style, ...reste } = Astro.props
+const { grille = false, class: classe, style, ...props } = Astro.props
+// En grille, les cartes s'alignent sur le titre de la page (pas de retrait)
+const { offset = grille ? 0 : 0.5, ...reste } = props
 ---
 
 <ColonneDecalee offset={offset} class={classes('bib-comp-rich-list', classe)} style={fusionnerStyles(style)} {...reste}>
-  <ul class="liste-riche" data-revelation="groupe">
+  <ul class:list={['liste-riche', { grille }]} data-revelation="groupe">
     <slot />
   </ul>
 </ColonneDecalee>
@@ -30,5 +42,53 @@ const { offset = 0.5, class: classe, style, ...reste } = Astro.props
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: 0.75rem;
+    margin-block: var(--espace-element);
+  }
+
+  /* La présentation d'ElementListeLiens suit la largeur de l'écran, pas
+     celle de la carte : en grille, chaque carte garde la présentation
+     étroite (texte sur toute la largeur, titre à la taille étroite). Classe doublée :
+     ces règles l’emportent sur celles, de même poids, de la carte. */
+  .grille.grille > :global(.element-riche.element-riche) {
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+  }
+
+  /* Texte en haut sur toute la largeur, pastille sous le texte dans le coin
+     en bas à droite : alignées d'une carte à l'autre quelle que soit la
+     longueur du texte */
+  .grille.grille :global(.pastille),
+  .grille.grille :global(.bouton) {
+    align-self: flex-end;
+    margin-top: auto;
+    margin-bottom: 0.25rem;
+  }
+
+  .grille.grille :global(.texte > *) {
+    max-width: none;
+  }
+
+  .grille.grille :global(.titre) {
+    font-size: var(--texte-grand);
+  }
+
+  /* Carte seule : elle prend toute la largeur ; la pastille passe à droite
+     du texte, centrée, plutôt que de laisser un grand vide au-dessus d'elle */
+  .grille.grille > :global(.element-riche.element-riche:only-child) {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .grille.grille > :global(.element-riche:only-child) :global(.pastille),
+  .grille.grille > :global(.element-riche:only-child) :global(.bouton) {
+    align-self: center;
+    margin-block: 0;
   }
 </style>

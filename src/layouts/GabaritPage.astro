@@ -48,6 +48,8 @@ interface Props {
   superHero?: { imageName: string; title?: string; cadrage?: string }
   /** Langue du contenu ; à défaut, celle du frontmatter de la page */
   lang?: string
+  /** Pas de sommaire « Sur cette page » (frontmatter `sansSommaire`, passé par la route) */
+  sansSommaire?: boolean
   /** Titres du contenu (render() d'astro:content), pour le sommaire d'une page autonome */
   titres?: MarkdownHeading[]
 }
@@ -56,7 +58,7 @@ interface Props {
 const SECTIONS_MIN_SOMMAIRE = 3
 
 const url = sansBase(Astro.url.pathname)
-const { titre, description, noindex, superHero, titres = [] } = Astro.props
+const { titre, description, noindex, superHero, sansSommaire = false, titres = [] } = Astro.props
 const pageSource = await pageParUrl(url)
 // Langue transmise par la route ; à défaut (pages appelées autrement), celle de la collection
 const lang = Astro.props.lang ?? pageSource?.data.lang
@@ -78,9 +80,10 @@ const groupe = autonome ? await navigationDeGroupe(url) : null
 const plusHaut = Math.min(...titres.map((t) => t.depth))
 const sections = titres.filter((t) => t.depth === plusHaut + 1)
 // Sommaire « Sur cette page » : à gauche pour une page autonome sans groupe,
-// à droite pour une page de niveau 2 et plus ; le même, suivi au défilement
+// à droite pour une page de niveau 2 et plus ; le même, suivi au défilement.
+// `sansSommaire: true` (frontmatter) le retire de la page.
 const sommaireDeLaPage: RacineNavigation | null =
-  sections.length >= SECTIONS_MIN_SOMMAIRE
+  !sansSommaire && sections.length >= SECTIONS_MIN_SOMMAIRE
     ? { titre: TITRE_SOMMAIRE, sommaire: true, enfants: sections.map((t, i) => ({ titre: texteSansAncre(t.text), url: `#${t.slug}`, ordre: i, enfants: [] })) }
     : null
 const sommaire = autonome && !groupe ? sommaireDeLaPage : null

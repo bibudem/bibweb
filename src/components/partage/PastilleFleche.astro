@@ -44,6 +44,10 @@ const Fleche = externe ? ArrowUpRightIcon : ArrowRightIcon
     border-radius: var(--rayon-plein);
     background-color: var(--pastille-fond, transparent);
     color: var(--pastille-encre, currentColor);
+    /* Repère visuel seulement : le clic traverse jusqu'au lien de la carte.
+       Agrandie au survol (scale, will-change), la pastille passe dans son
+       propre calque, au-dessus du ::after du lien étiré, et captait le clic. */
+    pointer-events: none;
     transition:
       background-color var(--duree-courte-4) var(--courbe-standard),
       border-color var(--duree-courte-4) var(--courbe-standard),
