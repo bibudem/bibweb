@@ -25,6 +25,8 @@ export const ICONES_MAISON = {
   'lien-externe': 'IconeFlecheDiagonaleCercle',
   // « Plus » dans une pastille : déployer un volet d'accordéon
   accordeon: 'IconeAccordeon',
+  // Fleur du pilier « Savoirs autochtones » du site scienceouverte (engagements)
+  'savoirs-autochtones': 'IconeSavoirsAutochtones',
 }
 
 const DOSSIER_PHOSPHOR = join(process.cwd(), 'node_modules/@phosphor-icons/react/dist/ssr')

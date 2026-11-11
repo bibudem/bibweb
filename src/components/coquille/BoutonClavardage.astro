@@ -1,0 +1,660 @@
+---
+/*
+ * Clavardage flottant (widget LibChat « flottant », id 9467), sur toutes les
+ * pages, en bas à droite de l'écran.
+ *
+ * LibChat construit tout lui-même, à la fin du <body> : un bloc
+ * #s-lch-widget-9467 (.s-lch-widget-float) avec un bouton icône
+ * (.s-lch-widget-float-btn, nom accessible dans aria-label : « Clavarder avec
+ * nous », « Hors ligne », puis « Minimiser le chat » une fois ouvert).
+ * - ≥ 700 px (règle de LibChat) : le clic ouvre la conversation dans un
+ *   panneau intégré (iframe .s-lch-widget-float-load) au-dessus du bouton ;
+ *   Échap le referme. Après 30 s, LibChat ouvre ce panneau de lui-même
+ *   (invitation) : son contenu est dans l'iframe, réglé dans LibAnswers.
+ * - < 700 px : le clic ouvre la conversation dans un nouvel onglet, sans
+ *   invitation automatique.
+ *
+ * Ce que ce composant règle (tout ce qui est hors de l'iframe) : le bouton
+ * (rond aux couleurs du site, libellé visible), la place du
+ * bloc, et le cadre du panneau. Le contenu du panneau (couleurs, textes,
+ * invitation) se règle dans l'administration de LibAnswers.
+ *
+ * Poids des sélecteurs : LibChat insère sa feuille de style à la fin du
+ * <head> (.s-lch-widget-float…). Les règles ci-dessous passent par l'id du
+ * bloc (#s-lch-widget-9467), ce qui les fait gagner et les limite à ce
+ * widget (l'ancien widget de LiensRapides utilise les mêmes classes).
+ *
+ * Placement (relevé de la hauteur de la bannière de consentement tant
+ * qu'elle est affichée, --decalage-consentement) :
+ * - ≥ 900 px : l'icône « Clavarder » des liens rapides dans un rond bleu
+ *   principal, son libellé dessous
+ *   (« Ouvrir le clavardage »…), à gauche de l'onglet « Retour en haut »
+ *   (colonne de 40 px du bord droit).
+ * - < 900 px : le rond seul au-dessus de la barre des liens rapides ; il
+ *   sort de l'écran avec elle au défilement vers le bas
+ *   (--retrait-liens-rapides, de 0 à 1) ; « Retour en haut » est au-dessus.
+ *
+ * `v` dans l'adresse du script : LibAnswers le garde une heure en cache.
+ * Changer sa valeur après une modification du widget dans LibAnswers la
+ * fait prendre tout de suite.
+ */
+const HASH = '5bf2a2d1005334dfc19c0251445da11752707fc7cf749dde3926c32db9dc5b6a'
+const VERSION = 'flottant-5'
+const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&v=${VERSION}`
+---
+
+<script is:inline async src={SCRIPT}></script>
+
+<script>
+  /*
+   * Invitation au clavardage : après DELAI ms, et seulement si le service
+   * est en ligne (sinon elle attend qu'il ouvre), une bulle s'ouvre à gauche
+   * du rond (« Une question? … ») et le rond pulse trois fois (moins de 5 s,
+   * WCAG 2.2.2). Elle attend aussi que le visiteur ait répondu à la bannière
+   * de consentement. Rien ne prend le focus : la bulle est une région
+   * role=status (annonce polie, sans interrompre). Son texte n'est pas
+   * cliquable (le rond ouvre le clavardage) ; la croix la ferme. Fermée ou
+   * utilisée, elle ne revient pas de la session (sessionStorage). Elle
+   * disparaît aussi quand le panneau s'ouvre. Mouvement réduit : sans
+   * pulsation ni déplacement.
+   *
+   * L'invitation automatique de LibAnswers doit rester désactivée (délai 0
+   * dans les paramètres du widget) : elle ouvrirait le panneau en même temps
+   * et y déplacerait le focus.
+   */
+  const DELAI = 30_000
+  const CLE = 'bib-invitation-clavardage'
+  const TEXTE = 'Une question? Un technicien ou une technicienne en documentation est là pour vous aider.'
+
+  const dejaVue = () => {
+    try {
+      return sessionStorage.getItem(CLE) === 'fermee'
+    } catch {
+      return false
+    }
+  }
+  const memoriser = () => {
+    try {
+      sessionStorage.setItem(CLE, 'fermee')
+    } catch {
+      /* stockage indisponible : la bulle pourra revenir, sans plus */
+    }
+  }
+
+  // Le bloc de LibChat arrive après le chargement de son script
+  const attendreBouton = () =>
+    new Promise<HTMLButtonElement>((resoudre) => {
+      const trouver = () => document.querySelector<HTMLButtonElement>('#s-lch-widget-9467 .s-lch-widget-float-btn')
+      const deja = trouver()
+      if (deja) return resoudre(deja)
+      const observateur = new MutationObserver(() => {
+        const bouton = trouver()
+        if (bouton) {
+          observateur.disconnect()
+          resoudre(bouton)
+        }
+      })
+      observateur.observe(document.body, { childList: true, subtree: true })
+    })
+
+  // Bannière de consentement (Consentement.astro), en bas à droite tant que
+  // le visiteur n'a pas choisi : sa hauteur, posée sur la racine
+  // (--decalage-consentement), fait monter le rond (et « Retour en haut »)
+  // au-dessus d'elle ; 0 quand elle est masquée.
+  const carteConsentement = document.querySelector<HTMLElement>('[data-consentement-carte]')
+  const consentementVisible = () => !!carteConsentement && !carteConsentement.hidden
+  if (carteConsentement) {
+    const placer = () => document.documentElement.style.setProperty('--decalage-consentement', `${consentementVisible() ? carteConsentement.offsetHeight : 0}px`)
+    placer()
+    new ResizeObserver(placer).observe(carteConsentement)
+    new MutationObserver(placer).observe(carteConsentement, { attributes: true, attributeFilter: ['hidden'] })
+  }
+
+  /*
+   * Accessibilité du widget de LibChat (indépendant de l'invitation) :
+   * - la région et l'iframe s'appellent « Chat Widget » : nommées en
+   *   français, sinon un lecteur d'écran les lit avec la prononciation
+   *   française d'un texte anglais (WCAG 3.1.2) ;
+   * - la pastille « nouveau message » de LibChat est un point rouge sans
+   *   texte : quand elle paraît, le bouton reçoit une description
+   *   (« Nouveau message ») et une annonce polie est faite (WCAG 1.3.1,
+   *   4.1.3).
+   */
+  attendreBouton().then((bouton) => {
+    const bloc = bouton.closest<HTMLElement>('#s-lch-widget-9467')!
+    bloc.setAttribute('aria-label', 'Clavardage')
+
+    const nommerIframe = () => {
+      const iframe = bloc.querySelector('iframe')
+      if (iframe && iframe.title !== 'Clavardage') iframe.title = 'Clavardage'
+    }
+
+    const description = document.createElement('span')
+    description.id = 'clavardage-non-lu'
+    // Masqué de tous (hidden) : lu seulement comme description du bouton
+    // (aria-describedby lit aussi un élément masqué), jamais au parcours
+    description.hidden = true
+    description.textContent = 'Nouveau message'
+    const annonce = document.createElement('span')
+    annonce.className = 'visuellement-masque'
+    annonce.setAttribute('role', 'status')
+    bloc.append(description, annonce)
+
+    let nonLu = false
+    const suivrePastille = () => {
+      const pastille = bouton.querySelector<HTMLElement>('#s-lch-widget-float-indicator')
+      const visible = !!pastille && pastille.style.display !== 'none'
+      if (visible === nonLu) return
+      nonLu = visible
+      if (visible) {
+        bouton.setAttribute('aria-describedby', description.id)
+        annonce.textContent = 'Nouveau message dans le clavardage.'
+      } else {
+        bouton.removeAttribute('aria-describedby')
+        annonce.textContent = ''
+      }
+    }
+
+    new MutationObserver(() => {
+      nommerIframe()
+      suivrePastille()
+    }).observe(bloc, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] })
+  })
+
+  if (!dejaVue()) {
+    attendreBouton().then((bouton) => {
+      const bloc = bouton.closest<HTMLElement>('#s-lch-widget-9467')!
+      const enLigne = () => bouton.matches('.online, .bot')
+      let bulle: HTMLElement | null = null
+
+      const retirer = () => {
+        memoriser()
+        bouton.classList.remove('appel')
+        if (!bulle) return
+        const b = bulle
+        bulle = null
+        // Fermée au clavier (croix), la bulle emporterait le focus avec elle :
+        // il revient au rond plutôt qu'au début de la page (WCAG 2.4.3)
+        if (b.contains(document.activeElement)) bouton.focus()
+        b.classList.add('sortie')
+        b.addEventListener('animationend', () => b.remove(), { once: true })
+        // Mouvement réduit (aucune animation) : retrait direct
+        setTimeout(() => b.remove(), 400)
+      }
+
+      const montrer = () => {
+        if (bulle || dejaVue() || bloc.classList.contains('open')) return
+        bulle = document.createElement('div')
+        bulle.className = 'invitation-clavardage'
+        bulle.setAttribute('role', 'status')
+        // Texte seul (non cliquable) : le rond ouvre le clavardage
+        const texte = document.createElement('p')
+        texte.className = 'invitation-texte'
+        const fermer = document.createElement('button')
+        fermer.type = 'button'
+        fermer.className = 'invitation-fermer'
+        fermer.setAttribute('aria-label', 'Fermer l’invitation au clavardage')
+        fermer.addEventListener('click', retirer)
+        bulle.append(texte, fermer)
+        bloc.append(bulle)
+        // Texte ajouté une image plus tard : une région role=status annonce
+        // un changement de son contenu, pas son arrivée déjà remplie
+        requestAnimationFrame(() => (texte.textContent = TEXTE))
+        bouton.classList.add('appel')
+      }
+
+      // Panneau ouvert (bouton, « Clavarder » des liens rapides) : l'invitation
+      // n'a plus lieu d'être
+      new MutationObserver(() => {
+        if (bloc.classList.contains('open')) retirer()
+      }).observe(bloc, { attributes: true, attributeFilter: ['class'] })
+
+      // L'invitation ne s'ouvre pas sous la bannière de consentement : elle
+      // attend que le visiteur ait fait son choix
+      const montrerApresConsentement = () => {
+        if (!consentementVisible()) return montrer()
+        const attente = new MutationObserver(() => {
+          if (!consentementVisible()) {
+            attente.disconnect()
+            montrer()
+          }
+        })
+        attente.observe(carteConsentement!, { attributes: true, attributeFilter: ['hidden'] })
+      }
+
+      setTimeout(() => {
+        if (enLigne()) return montrerApresConsentement()
+        // Hors ligne au moment voulu : la bulle attend que le service ouvre
+        const attente = new MutationObserver(() => {
+          if (enLigne()) {
+            attente.disconnect()
+            montrerApresConsentement()
+          }
+        })
+        attente.observe(bouton, { attributes: true, attributeFilter: ['class'] })
+      }, DELAI)
+    })
+  }
+</script>
+
+<style is:global>
+  /* ---- Bloc ----
+     Placé d'après le rond, pas d'après le libellé : le rond (3,5 rem) ne
+     bouge pas quand LibChat change le texte. À droite, l'onglet « Retour en
+     haut » (40 px), un écart, puis la demi-largeur que le libellé (10 rem au
+     plus, centré) peut dépasser du rond ; en bas, la place d'un libellé de
+     deux lignes. */
+  #s-lch-widget-9467.s-lch-widget-float {
+    --_rond: 3.5rem;
+    --_libelle-largeur: 10rem;
+    --_libelle-hauteur: 2.5rem;
+
+    z-index: var(--z-entete);
+    right: calc(40px + 0.75rem + (var(--_libelle-largeur) - var(--_rond)) / 2);
+    bottom: calc(1.5rem + var(--_libelle-hauteur) + var(--decalage-consentement, 0px));
+    padding: 0;
+    font-family: var(--police-sans);
+  }
+
+  /* Ouvert : LibChat étire le bloc sur toute la hauteur de l'écran (top: 1px,
+     height: 100 %). Il reste ici ancré en bas, au-dessus du bouton, à la
+     hauteur du panneau ; devant l'en-tête collant et le tiroir. */
+  #s-lch-widget-9467.s-lch-widget-float.open {
+    z-index: var(--z-modale);
+    top: auto;
+    /* La largeur est celle du panneau (règle ci-dessous), pas celle du bloc */
+    width: auto;
+    height: auto;
+  }
+
+  /* Panneau : 32 rem au plus (environ 512 px), réduit sur un écran peu haut
+     pour rester sous l'en-tête (hauteur de l'en-tête, du bouton et des
+     écarts déduite). Même hauteur pendant la conversation (.expanded, que
+     LibChat laissait grandir jusqu'en haut). */
+  #s-lch-widget-9467 .s-lch-widget-float-load,
+  #s-lch-widget-9467 .s-lch-widget-float-load.expanded {
+    flex: none;
+    /* Largeur propre au panneau (et non 100 % du bloc) : à la fermeture,
+       LibChat ramène le bloc à la largeur du bouton ; le panneau garde la
+       sienne le temps de sa sortie au lieu de se tasser */
+    width: min(375px, calc(100vw - 40px - 1.5rem));
+    height: min(32rem, calc(100dvh - var(--hauteur-entete, 5rem) - 3rem - 1.5rem - 0.75rem - 1rem));
+    min-height: 0;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-2);
+  }
+
+  /* Ouverture et fermeture : le panneau naît du rond (origine en bas à
+     droite), en fondu avec une légère montée et un léger agrandissement ;
+     il repart par le même chemin, plus vite. LibChat bascule display
+     (none ↔ block) : display passe en transition discrète, et
+     @starting-style donne l'état de départ à l'ouverture. Fermé (pendant
+     sa sortie), il ne capte plus le pointeur. */
+  #s-lch-widget-9467 .s-lch-widget-float-load {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.96);
+    transform-origin: right bottom;
+    pointer-events: none;
+    transition:
+      opacity var(--duree-courte-3) var(--courbe-standard-deceleree),
+      transform var(--duree-courte-3) var(--courbe-standard-deceleree),
+      display var(--duree-courte-3) allow-discrete;
+  }
+
+  #s-lch-widget-9467.open .s-lch-widget-float-load {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition-duration: var(--duree-moyenne-1);
+    transition-timing-function: var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    #s-lch-widget-9467.open .s-lch-widget-float-load {
+      opacity: 0;
+      transform: translateY(0.75rem) scale(0.96);
+    }
+  }
+
+  #s-lch-widget-9467.open .s-lch-widget-float-btn {
+    margin-top: 0.75rem;
+  }
+
+  /* ---- Bouton : la bulle de LibChat dans un rond, libellé dessous ---- */
+  /* Le bouton est le rond (bleu principal, en ligne comme hors ligne : le
+     libellé dit l'état) ; le libellé (::after) pend dessous, hors du flux :
+     sa longueur ne déplace pas le rond */
+  #s-lch-widget-9467 .s-lch-widget-float-btn {
+    /* Icône « Chats » de Phosphor, la même que « Clavarder » des liens
+       rapides (LiensRapides) */
+    --_icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M216,80H184V48a16,16,0,0,0-16-16H40A16,16,0,0,0,24,48V176a8,8,0,0,0,13,6.22L72,154V184a16,16,0,0,0,16,16h93.59L219,230.22a8,8,0,0,0,5,1.78,8,8,0,0,0,8-8V96A16,16,0,0,0,216,80ZM66.55,137.78,40,159.25V48H168v88H71.58A8,8,0,0,0,66.55,137.78ZM216,207.25l-26.55-21.47a8,8,0,0,0-5-1.78H88V152h80a16,16,0,0,0,16-16V96h32Z'/%3E%3C/svg%3E");
+
+    display: grid;
+    place-items: center;
+    position: relative;
+    box-sizing: border-box;
+    width: var(--_rond);
+    height: var(--_rond);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: var(--bleu-principal);
+    box-shadow: var(--ombre-2);
+    color: var(--couleur-sur-fonce);
+    font-family: var(--police-sans);
+    font-size: var(--texte-tres-petit);
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    cursor: pointer;
+    /* Apparition : LibChat insère le bouton après le chargement de son
+       script ; il entre en fondu, à peine agrandi (à chaque page : effet
+       discret) plutôt que de surgir */
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      opacity var(--duree-courte-4) var(--courbe-emphase-deceleree),
+      scale var(--duree-courte-4) var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    #s-lch-widget-9467 .s-lch-widget-float-btn {
+      opacity: 0;
+      scale: 0.9;
+    }
+  }
+
+  /* La bulle de LibChat cède la place à l'icône des liens rapides ; le nom
+     accessible reste dans aria-label */
+  #s-lch-widget-9467 .s-lch-widget-float-btn > svg {
+    display: none;
+  }
+
+  #s-lch-widget-9467 .s-lch-widget-float-btn::before {
+    /* Flèche vers le bas de Phosphor (caret-down), une fois le panneau
+       ouvert : le bouton réduit le panneau, la conversation continue (une
+       croix laisserait croire qu'elle prend fin) */
+    --_icone-reduire: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E");
+
+    content: '';
+    width: 55%;
+    height: 55%;
+    background-color: currentColor;
+    mask: var(--_icone) center / contain no-repeat;
+    transition: scale var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  /* Changement d'état : la bulle cède la place à la flèche « réduire », qui
+     entre en descendant (le sens où le panneau se réduira) ; au retour, la
+     bulle reparaît en fondu agrandi. Deux animations nommées différemment :
+     chacune rejoue à chaque bascule. */
+  #s-lch-widget-9467 .s-lch-widget-float-btn[aria-expanded='true']::before {
+    width: 50%;
+    height: 50%;
+    mask-image: var(--_icone-reduire);
+    animation: clavardage-icone-reduire var(--duree-moyenne-1) var(--courbe-icone);
+  }
+
+  #s-lch-widget-9467 .s-lch-widget-float-btn[aria-expanded='false']::before {
+    animation: clavardage-icone-bulle var(--duree-moyenne-1) var(--courbe-icone);
+  }
+
+  @keyframes clavardage-icone-reduire {
+    from {
+      opacity: 0;
+      translate: 0 -30%;
+      scale: 0.8;
+    }
+  }
+
+  @keyframes clavardage-icone-bulle {
+    from {
+      opacity: 0;
+      scale: 0.6;
+    }
+  }
+
+  /* Libellé sous le rond : le nom accessible lui-même (aria-label, que
+     LibChat change selon l'état et que LibAnswers règle : « Ouvrir le
+     clavardage », « Hors ligne », « Fermer le clavardage »…). Texte visible
+     et nom lu restent identiques (WCAG 2.5.3) ; texte de remplacement vide :
+     il n'est pas lu deux fois. Étiquette sur fond plein : lisible sur une
+     photo comme sur une bande de couleur. */
+  #s-lch-widget-9467 .s-lch-widget-float-btn::after {
+    content: attr(aria-label) / '';
+    position: absolute;
+    top: calc(100% + 0.375rem);
+    left: 50%;
+    width: max-content;
+    max-width: var(--_libelle-largeur);
+    translate: -50% 0;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-1, 0 1px 3px rgb(11 17 58 / 20%));
+    color: var(--couleur-texte);
+    text-align: center;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #s-lch-widget-9467 .s-lch-widget-float-btn:hover {
+      background-color: var(--bleu-fonce);
+    }
+
+    #s-lch-widget-9467 .s-lch-widget-float-btn:hover::before {
+      scale: 1.1;
+    }
+  }
+
+  #s-lch-widget-9467 .s-lch-widget-float-btn:not(.online, .bot)::after {
+    color: var(--couleur-texte-secondaire);
+  }
+
+  /* Focus : anneau autour du rond, liseré blanc pour les fonds foncés */
+  #s-lch-widget-9467 .s-lch-widget-float-btn:focus-visible {
+    outline: 3px solid var(--bleu-fonce);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px var(--couleur-surface);
+  }
+
+  /* Pastille rouge des messages non lus : sur le rond, aux couleurs du site */
+  #s-lch-widget-9467 #s-lch-widget-float-indicator {
+    top: 0;
+    right: 0;
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 2px solid var(--couleur-surface);
+    background-color: var(--rouge-orange);
+  }
+
+  @media (forced-colors: active) {
+    #s-lch-widget-9467 .s-lch-widget-float-btn {
+      border: 2px solid ButtonText;
+    }
+
+    #s-lch-widget-9467 .s-lch-widget-float-btn::before {
+      background-color: ButtonText;
+    }
+  }
+
+  /* < 900 px : le rond seul (libellé masqué, gardé comme nom accessible),
+     au-dessus de la barre des liens rapides */
+  @media (width < 900px) {
+    #s-lch-widget-9467.s-lch-widget-float {
+      --_rond: 3rem;
+
+      right: 1rem;
+      left: auto;
+      bottom: calc(var(--hauteur-liens-rapides, 86px) + 1rem + var(--decalage-consentement, 0px));
+      width: auto;
+      transform: translateY(calc(var(--retrait-liens-rapides, 0) * (var(--hauteur-liens-rapides, 86px) + 1rem + 3rem + 1rem)));
+      transition: transform var(--duree-courte-4) var(--courbe-standard);
+    }
+
+    /* Pendant que le doigt déplace la barre, le rond la suit sans retard */
+    body:has([data-liens-rapides-mobile][data-suit]) #s-lch-widget-9467.s-lch-widget-float {
+      transition-duration: 0s;
+    }
+
+    #s-lch-widget-9467 .s-lch-widget-float-btn::after {
+      display: none;
+    }
+  }
+
+  /* ---- Invitation (bulle à gauche du rond, script ci-dessus) ---- */
+  #s-lch-widget-9467 .invitation-clavardage {
+    position: absolute;
+    right: calc(100% + 0.875rem);
+    bottom: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    width: max-content;
+    max-width: min(17rem, calc(100vw - var(--_rond) - 3rem));
+    padding: 0.75rem 0.5rem 0.75rem 1rem;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-carte);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-2);
+    color: var(--couleur-texte);
+    transform-origin: right bottom;
+    animation: invitation-entree 320ms var(--courbe-emphase-deceleree, cubic-bezier(0.05, 0.7, 0.1, 1)) both;
+  }
+
+  /* Pointe vers le rond */
+  #s-lch-widget-9467 .invitation-clavardage::after {
+    content: '';
+    position: absolute;
+    right: -0.4375rem;
+    bottom: calc(var(--_rond) / 2 - 0.4375rem);
+    width: 0.75rem;
+    height: 0.75rem;
+    border-top: 1px solid var(--couleur-bordure);
+    border-right: 1px solid var(--couleur-bordure);
+    background-color: var(--couleur-surface);
+    rotate: 45deg;
+  }
+
+  #s-lch-widget-9467 .invitation-clavardage.sortie {
+    animation: invitation-sortie var(--duree-courte-3) var(--courbe-standard-deceleree) both;
+  }
+
+  #s-lch-widget-9467 .invitation-texte {
+    margin: 0;
+    font-size: var(--texte-petit);
+    line-height: 1.4;
+  }
+
+  #s-lch-widget-9467 .invitation-fermer {
+    --_croix: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z'/%3E%3C/svg%3E");
+
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--couleur-texte-secondaire);
+    cursor: pointer;
+  }
+
+  #s-lch-widget-9467 .invitation-fermer::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    background-color: currentColor;
+    mask: var(--_croix) center / contain no-repeat;
+  }
+
+  #s-lch-widget-9467 .invitation-fermer:hover {
+    background-color: color-mix(in srgb, var(--couleur-texte) 8%, transparent);
+    color: var(--couleur-texte);
+  }
+
+  /* Le panneau ouvert remplace l'invitation */
+  #s-lch-widget-9467.open .invitation-clavardage {
+    display: none;
+  }
+
+  /* Pulsation du rond : trois anneaux qui s'élargissent (3,6 s en tout) */
+  #s-lch-widget-9467 .s-lch-widget-float-btn.appel {
+    animation: clavardage-appel 1.2s var(--courbe-standard-deceleree, ease-out) 3;
+  }
+
+  @keyframes clavardage-appel {
+    0% {
+      box-shadow: var(--ombre-2), 0 0 0 0 color-mix(in srgb, var(--bleu-principal) 55%, transparent);
+    }
+
+    100% {
+      box-shadow: var(--ombre-2), 0 0 0 1rem color-mix(in srgb, var(--bleu-principal) 0%, transparent);
+    }
+  }
+
+  @keyframes invitation-entree {
+    from {
+      opacity: 0;
+      translate: 0.75rem 0;
+      scale: 0.92;
+    }
+  }
+
+  @keyframes invitation-sortie {
+    to {
+      opacity: 0;
+      translate: 0.5rem 0;
+      scale: 0.96;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #s-lch-widget-9467 .s-lch-widget-float-btn.appel {
+      animation: none;
+    }
+
+    /* Panneau et bouton : fondu seul, sans déplacement ni agrandissement */
+    #s-lch-widget-9467 .s-lch-widget-float-load,
+    #s-lch-widget-9467.open .s-lch-widget-float-load {
+      transform: none;
+    }
+
+    @starting-style {
+      #s-lch-widget-9467.open .s-lch-widget-float-load {
+        transform: none;
+      }
+
+      #s-lch-widget-9467 .s-lch-widget-float-btn {
+        scale: 1;
+      }
+    }
+
+    /* Icône : changement immédiat */
+    #s-lch-widget-9467 .s-lch-widget-float-btn::before {
+      animation: none !important;
+    }
+
+    #s-lch-widget-9467 .invitation-clavardage {
+      animation-name: invitation-fondu;
+    }
+
+    #s-lch-widget-9467 .invitation-clavardage.sortie {
+      animation: none;
+      opacity: 0;
+    }
+
+    @keyframes invitation-fondu {
+      from {
+        opacity: 0;
+      }
+    }
+  }
+
+  @media print {
+    #s-lch-widget-9467 {
+      display: none;
+    }
+  }
+</style>

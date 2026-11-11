@@ -6,13 +6,17 @@ secondaryNav:
 superHero:
   imageName: espaces
   title: À propos
+sansSommaire: true
 ---
 ## Carrière
 
-:::cartes
-- :icone[users-three] [Notre organisation](/a-propos/notre-organisation/)
-- :icone[student] [Membre Premières Nations, Métis ou Inuit?](/a-propos/carriere/affichage-premiers-peuples/)
-- :icone[udem] [Faire carrière à l’UdeM](https://www.umontreal.ca/carrieres/)
+:::liens{forme=grille}
+- [Notre organisation](/a-propos/notre-organisation/)
+  Les équipes et la structure des Bibliothèques.
+- [Membre Premières Nations, Métis ou Inuit?](/a-propos/carriere/affichage-premiers-peuples/)
+  Un stage rémunéré de deux ans pour les étudiantes et étudiants de la maîtrise à l’EBSI.
+- [Faire carrière à l’UdeM](https://www.umontreal.ca/carrieres/)
+  Tous les postes offerts à l’Université de Montréal.
 :::
 
 ### Affichage en cours

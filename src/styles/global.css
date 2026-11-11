@@ -369,7 +369,15 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
    le focus clavier, pour ne pas encombrer la lecture. */
 .ancre-titre {
   display: inline-flex;
-  margin-inline-start: 0.35em;
+  align-items: center;
+  justify-content: center;
+  /* Cible de 24 px au moins (WCAG 2.5.8) : l'icône (0,6 em, 11 à 15 px)
+     reste petite, la zone autour s'agrandit ; les marges négatives gardent
+     le titre et son interligne tels quels. */
+  min-width: 24px;
+  min-height: 24px;
+  margin-block: -6px;
+  margin-inline-start: calc(0.35em - max(0px, (24px - 1em) / 2));
   vertical-align: middle;
   color: inherit;
   font-size: 0.6em;
@@ -380,6 +388,14 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
 .titre-ancre:hover .ancre-titre,
 .ancre-titre:focus-visible {
   opacity: 0.7;
+}
+
+/* Écran tactile : pas de survol pour la faire apparaître, elle reste
+   discrète mais visible plutôt qu'une cible invisible sous le doigt */
+@media (hover: none) {
+  .ancre-titre {
+    opacity: 0.45;
+  }
 }
 
 /* Adresse copiée (src/lib/ancres-copie.ts) : l'icône reste visible le temps

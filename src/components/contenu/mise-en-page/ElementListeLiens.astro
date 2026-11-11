@@ -50,7 +50,8 @@ if (!href) throw new Error(`ElementListeLiens « ${title} » : la propriété \`
 const { interne, rel, annonce } = lienCarte(href)
 const idAppel = linkText ? idUnique('appel') : undefined
 const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
-const Titre = `h${niveauTitre}`
+// Typé comme balise de titre : une chaîne quelconque n'accepte pas `class` (ts 2322)
+const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
 <li class:list={['element-riche', 'carte-lien', `couleur-${color}`, classe]} style={fusionnerStyles(style)} {...reste}>
@@ -164,6 +165,13 @@ const Titre = `h${niveauTitre}`
   .pastille {
     flex: none;
     margin-bottom: 0.75rem;
+  }
+
+  /* Repère visuel seulement (aria-hidden) : le clic traverse jusqu'au lien
+     étiré, que son calque (will-change, transform) recouvrait. La pastille
+     a déjà la même règle dans PastilleFleche, pour toutes les cartes. */
+  .bouton {
+    pointer-events: none;
   }
 
   /* Bouton secondaire (à contour), sur tous les fonds : contour et texte de

@@ -43,8 +43,17 @@ import { ChatsIcon } from '@phosphor-icons/react/dist/ssr/Chats'
 import IconeSofia from '@/components/icones/IconeSofia.astro'
 import { LIENS_RAPIDES as LIENS } from '@/data/navigation'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
+import { avecBase } from '@/lib/chemin'
 
 const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a83afdd3'
+// Ancien widget (fenêtre intégrée, 71ff…) désactivé : le clavardage passe
+// par le widget flottant (BoutonClavardage, 5bf2…), et « Clavarder » ouvre
+// sa conversation. Code gardé pour l'instant ; remettre à true pour le
+// réactiver (son invitation automatique revient alors aussi).
+const ANCIEN_WIDGET_ACTIF = false
+// Repli quand LibChat ne répond pas : la page Clavarder (horaire, autres
+// moyens de nous joindre, et son propre message d'indisponibilité)
+const PAGE_CLAVARDER = avecBase('/nous-joindre/clavarder/')
 ---
 
 <div class="liens-rapides-bureau theme-clair" data-liens-rapides>
@@ -94,12 +103,22 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
   </ul>
 </nav>
 
-<div id={`libchat_${LIBCHAT_HASH}`} class="libchat"></div>
+{ANCIEN_WIDGET_ACTIF && <div id={`libchat_${LIBCHAT_HASH}`} class="libchat"></div>}
 
-<script define:vars={{ LIBCHAT_HASH }} is:inline>
+<script define:vars={{ LIBCHAT_HASH, PAGE_CLAVARDER, ANCIEN_WIDGET_ACTIF }} is:inline>
   // Chargement de LibChat (comme le module de coquille-web) : son bouton flottant est
   // masqué, la fenêtre s'ouvre depuis « Clavarder ».
   ;(() => {
+    if (!ANCIEN_WIDGET_ACTIF) {
+      // « Clavarder » ouvre la conversation du widget flottant
+      // (BoutonClavardage, id 9467) ; s'il n'est pas prêt, la page Clavarder
+      window.openLibChatDirect = () => {
+        const flottant = document.querySelector('#s-lch-widget-9467 .s-lch-widget-float-btn')
+        if (flottant) flottant.click()
+        else window.location.assign(PAGE_CLAVARDER)
+      }
+      return
+    }
     if (document.getElementById('libchat-script')) return
     const style = document.createElement('style')
     style.textContent = '.s-lch-widget-float-btn{display:none!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important}'
@@ -113,8 +132,10 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
     document.body.appendChild(script)
 
     window.openLibChatDirect = () => {
+      // Plus d'alert() (boîte modale du navigateur, mal annoncée aux lecteurs
+      // d'écran) : la page Clavarder prend le relais
       if (!window.libChatLoaded) {
-        alert('Le service de clavardage est temporairement indisponible.')
+        window.location.assign(PAGE_CLAVARDER)
         return
       }
       const bouton = document.querySelector('.s-lch-widget-float-btn')
@@ -205,6 +226,10 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
       // pour les mouvements qu'elle finit seule
       barre.toggleAttribute('data-suit', suivre)
       document.documentElement.style.setProperty('--decalage-liens-rapides', `${valeur}px`)
+      // Part sortie, de 0 à 1 : « Retour en haut » s'en sert pour sortir
+      // entièrement de l'écran avec la barre (sans unité, multipliable en CSS)
+      const max = barre.offsetHeight + OMBRE
+      document.documentElement.style.setProperty('--retrait-liens-rapides', String(max ? Math.min(1, valeur / max) : 0))
     }
 
     // À l'arrêt, la barre ne reste pas à moitié sortie

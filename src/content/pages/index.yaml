@@ -43,26 +43,6 @@ banniere:
       nom: Julia Généreux Rendall
       fonction: Bibliothécaire Science politique / Démographie
       cadrage: 15%
-    - image: ./images/portraits-accueil/guillaume.webp
-      titre: Curiosité illimitée
-      nom: Guillaume Viart
-      fonction: Technicien à la médiatisation
-      cadrage: 18%
-      cadrageHorizontal: 64%
-    - image: ./images/portraits-accueil/chloe.webp
-      titre: Puissant moteur de recherche
-      nom: Chloé Sinotte
-      fonction: Bibliothécaire disciplinaire
-      cadrage: 22%
-      cadrageHorizontal: 68%
-      decalageMobile: 8%
-    - image: ./images/portraits-accueil/amy.webp
-      titre: Puissant moteur de recherche
-      nom: Amy Bergeron
-      fonction: Bibliothécaire offre pédagogique
-      cadrage: 21%
-      cadrageHorizontal: 68%
-      decalageMobile: 8%
     - image: ./images/portraits-accueil/jia-1.webp
       titre: Curiosité illimitée
       nom: Jia Ao Sun

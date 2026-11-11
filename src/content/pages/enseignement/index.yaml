@@ -18,10 +18,10 @@ sections:
     titre: Inscrivez-nous à votre cours
     libelle: Inscrire votre cours
     texte: Pour intégrer facilement les notions de recherche d’information et d’évaluation de la crédibilité et de la pertinence des sources dans vos cours, faites appel à notre équipe spécialisée!
-    image: ../images/bibliothecaire-simon.webp
+    image: ../images/enseignement-accueil.webp
     positionImage: droite
-    cadrage: 20%
-    cadrageHorizontal: 40%
+    cadrage: 45%
+    cadrageHorizontal: 55%
     icones:
       - icone: chalkboard-teacher
         texte: Création de formations sur mesure pour votre cours

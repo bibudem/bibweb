@@ -10,7 +10,7 @@ superHero:
 ---
 ## Affichage destiné aux étudiants et étudiantes issues des Premiers Peuples
 
-Un stage rémunéré offert pour une durée de 2 ans. [Offre d’emploi détaillée (PDF)](/a-propos/programme-etudiant-premiers-peuples-web.pdf).
+Un stage rémunéré offert pour une durée de 2 ans. [Offre d’emploi détaillée](/a-propos/programme-etudiant-premiers-peuples-web.pdf).
 
 Les bibliothèques et la Division des archives et de la gestion de l’information offrent aux étudiantes et étudiants issus des Premiers Peuples une première expérience d’emploi rémunéré durant les deux années d’études du programme de maîtrise en sciences de l’information de l’École de bibliothéconomie et sciences de l’information (EBSI).
 

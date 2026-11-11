@@ -104,6 +104,9 @@ const champsPage = [
     ],
   },
   { label: 'Exclure des moteurs de recherche', name: 'noindex', widget: 'boolean', required: false },
+  // Faux par défaut : une page sans la clé s'affiche case décochée et garde son
+  // sommaire, ce qui est bien son état (un défaut à vrai la montrait décochée)
+  { label: 'Retirer le sommaire « Sur cette page »', name: 'sansSommaire', widget: 'boolean', required: false, default: false, hint: 'Cocher pour ne pas afficher le sommaire, même si la page a plusieurs sections.' },
   { label: 'Langue', name: 'lang', widget: 'string', required: false, hint: 'Seulement si la page n’est pas en français (ex. en).' },
   corps,
 ]

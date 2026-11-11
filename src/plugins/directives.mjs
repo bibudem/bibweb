@@ -53,7 +53,7 @@ export const VOCABULAIRE = {
   'icone-texte': { genre: 'containerDirective', syntaxe: ':::icone-texte{icone=target fond=vertPale}', attributs: { icone: { obligatoire: true }, fond: { valeurs: FONDS_ICONE_TEXTE } } },
   'image-texte': { genre: 'containerDirective', syntaxe: ':::image-texte{position=droite taille=petite}', attributs: { position: { valeurs: ['gauche', 'droite'] }, taille: { valeurs: ['normale', 'petite'] } } },
   logos: { genre: 'containerDirective', syntaxe: ':::logos (liste de - ![Description](./images/logo.png) ou - [![Description](./images/logo.png)](https://lien/))', attributs: {} },
-  liens: { genre: 'containerDirective', syntaxe: ':::liens (liste de - [Titre](/lien/) et une description)', attributs: {} },
+  liens: { genre: 'containerDirective', syntaxe: ':::liens (liste de - [Titre](/lien/) et une description) ou :::liens{forme=grille} (cartes côte à côte)', attributs: { forme: { valeurs: ['liste', 'grille'] } } },
   modalites: { genre: 'containerDirective', syntaxe: ':::modalites', attributs: {} },
   section: { genre: 'containerDirective', syntaxe: ':::section{fond=bleu100}', attributs: { fond: { obligatoire: true }, id: {} } },
   tableau: { genre: 'containerDirective', syntaxe: ':::tableau{titre="Nom du tableau"}', attributs: { titre: { obligatoire: true } } },
@@ -213,7 +213,7 @@ function cartes(noeud, attributs, fichier) {
  * :::liens : une liste ; chaque élément commence par un lien (le titre),
  * suivi d'une description facultative, en texte simple, à la ligne suivante.
  */
-function liens(noeud, fichier) {
+function liens(noeud, attributs, fichier) {
   const exemple = 'Exemple :\n- [Titre du lien](https://exemple.ca/)\n  Description du lien.'
   const elements = listeSeule(noeud, fichier, `Le bloc :::liens contient seulement une liste à puces, un lien par élément. ${exemple}`)
   for (const element of elements) {
@@ -224,7 +224,7 @@ function liens(noeud, fichier) {
     element.children = []
     marquer(element, 'lien', { titre: texteDe(lien).trim(), lien: lien.url, description: description || undefined })
   }
-  marquer(noeud, 'liens')
+  marquer(noeud, 'liens', { forme: attributs.forme ?? 'liste' })
 }
 
 // :::image-texte : une image seule dans le premier paragraphe, puis le texte
@@ -465,7 +465,7 @@ export function remarkDirectivesBib() {
           const attributs = verifier(noeud, fichier)
           if (noeud.name === 'modalites') modalites(noeud, fichier)
           else if (noeud.name === 'cartes') cartes(noeud, attributs, fichier)
-          else if (noeud.name === 'liens') liens(noeud, fichier)
+          else if (noeud.name === 'liens') liens(noeud, attributs, fichier)
           else if (noeud.name === 'image-texte') imageTexte(noeud, attributs, fichier)
           else if (noeud.name === 'galerie') galerie(noeud, fichier)
           else if (noeud.name === 'logos') logos(noeud, fichier)

@@ -16,11 +16,13 @@ const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
     <h2 id="consentement-titre" class="titre-carte">L’UdeM reconnaît l’importance de respecter la vie privée</h2>
     <p class="texte-carte">
       Avec votre accord, ce site utilise des témoins (cookies) pour mesurer sa fréquentation.
-      <button type="button" class="lien-texte" data-consentement-details>En savoir plus</button>
     </p>
     <div class="actions">
       <button type="button" class="bouton" data-consentement-accepter>Accepter</button>
       <button type="button" class="bouton" data-consentement-refuser>Refuser</button>
+      <!-- Ouvre le panneau détaillé, comme « Paramètres des témoins » du pied
+           de page. À contour : Accepter et Refuser gardent le même poids. -->
+      <button type="button" class="bouton bouton-contour" data-consentement-parametres>Paramètres des témoins</button>
     </div>
   </section>
 
@@ -178,7 +180,7 @@ const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
 
   document.querySelector('[data-consentement-accepter]')!.addEventListener('click', () => enregistrer(true))
   document.querySelector('[data-consentement-refuser]')!.addEventListener('click', () => enregistrer(false))
-  document.querySelector('[data-consentement-details]')!.addEventListener('click', ouvrirPanneau)
+  document.querySelector('[data-consentement-parametres]')!.addEventListener('click', ouvrirPanneau)
   document.querySelector('[data-consentement-enregistrer]')!.addEventListener('click', () => enregistrer(caseStatistiques.checked))
   document.querySelector('[data-consentement-fermer]')!.addEventListener('click', () => panneau.close())
   window.addEventListener('bib:parametres-temoins', ouvrirPanneau)
@@ -250,6 +252,17 @@ const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
 
   .bouton:hover {
     background-color: var(--couleur-fond-fort-survol);
+  }
+
+  /* Paramètres : bouton secondaire, contour et texte de la couleur du texte */
+  .bouton-contour {
+    border-color: currentColor;
+    background-color: transparent;
+    color: var(--couleur-texte);
+  }
+
+  .bouton-contour:hover {
+    background-color: color-mix(in srgb, var(--couleur-texte) 8%, transparent);
   }
 
   @media (forced-colors: active) {

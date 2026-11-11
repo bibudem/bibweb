@@ -1,0 +1,28 @@
+Photos mises de côté (retirées du site le 2026-11-09, gardées pour plus tard).
+
+- aide-bibliothecaire.webp : ancienne photo de l'encart « Besoin d'aide? » (etudes/index.yaml)
+- bibliothecaire-simon.webp : ancienne photo de l'encart « Inscrivez-nous à votre cours » (enseignement/index.yaml)
+- guillaume.webp, chloe.webp, amy.webp : portraits de la bannière de l'accueil.
+  Pour les remettre, recopier ces entrées sous banniere.portraits dans pages/index.yaml
+  et ramener les fichiers dans images/portraits-accueil/ :
+
+    - image: ./images/portraits-accueil/guillaume.webp
+      titre: Curiosité illimitée
+      nom: Guillaume Viart
+      fonction: Technicien à la médiatisation
+      cadrage: 18%
+      cadrageHorizontal: 64%
+    - image: ./images/portraits-accueil/chloe.webp
+      titre: Puissant moteur de recherche
+      nom: Chloé Sinotte
+      fonction: Bibliothécaire disciplinaire
+      cadrage: 22%
+      cadrageHorizontal: 68%
+      decalageMobile: 8%
+    - image: ./images/portraits-accueil/amy.webp
+      titre: Puissant moteur de recherche
+      nom: Amy Bergeron
+      fonction: Bibliothécaire offre pédagogique
+      cadrage: 21%
+      cadrageHorizontal: 68%
+      decalageMobile: 8%

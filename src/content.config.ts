@@ -102,6 +102,9 @@ const pages = defineCollection({
     secondaryNav,
     superHero,
     noindex: z.boolean().optional(),
+    /** true : pas de sommaire « Sur cette page », même avec assez de sections.
+     *  Absent ou false : le sommaire suit la règle habituelle (3 sections et plus). */
+    sansSommaire: z.boolean().optional(),
     lvl: z.number().optional(),
     lang,
   }),
