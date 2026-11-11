@@ -101,8 +101,20 @@ export default defineConfig({
     // Leaflet est importé à la demande (CarteLeaflet, dans un effet). Preact
     // et ses points d'entrée compat sont ajoutés par @astrojs/preact ; les
     // icônes Phosphor des îlots sont trouvées en parcourant `entries`.
+    // Même chose pour le routeur de <ClientRouter /> (Base.astro) : découvert
+    // à la première page, il faisait réoptimiser Vite et casser l'îlot.
     optimizeDeps: {
-      include: ['leaflet', 'preact', 'preact/hooks', 'preact/compat', 'preact/jsx-runtime'],
+      include: [
+        'leaflet',
+        'preact',
+        'preact/hooks',
+        'preact/compat',
+        'preact/jsx-runtime',
+        'astro/virtual-modules/transitions-router.js',
+        'astro/virtual-modules/transitions-events.js',
+        'astro/virtual-modules/transitions-swap-functions.js',
+        'astro/virtual-modules/transitions-types.js',
+      ],
       entries: ['src/components/ilots/**/*.tsx'],
     },
     // Les icônes Phosphor importent `react` : regroupées par Vite au rendu
