@@ -21,6 +21,7 @@ import PiedDePage from '@/components/coquille/PiedDePage.astro'
 import LiensRapides from '@/components/coquille/LiensRapides.astro'
 import ServicesInstitutionnels from '@/components/coquille/ServicesInstitutionnels.astro'
 import RetourHaut from '@/components/coquille/RetourHaut.astro'
+import BoutonClavardage from '@/components/coquille/BoutonClavardage.astro'
 import { LANGUE_SITE, estEnFrancais } from '@/lib/contenu'
 import { SITE_TITRE, SITE_DESCRIPTION, NOM_ORGANISATION } from '@/lib/site'
 
@@ -169,6 +170,7 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
             <PiedDePage />
             <ServicesInstitutionnels position="bas" niveau={niveau} />
             <RetourHaut />
+            <BoutonClavardage />
           </Coquille>
         </>
       )
