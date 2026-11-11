@@ -10,3 +10,4 @@ export { default as IconeMenuBurger } from '@/components/icones/IconeMenuBurger.
 export { default as IconeFlecheCercle } from '@/components/icones/IconeFlecheCercle.astro'
 export { default as IconeFlecheDiagonaleCercle } from '@/components/icones/IconeFlecheDiagonaleCercle.astro'
 export { default as IconeAccordeon } from '@/components/icones/IconeAccordeon.astro'
+export { default as IconeSavoirsAutochtones } from '@/components/icones/IconeSavoirsAutochtones.astro'
