@@ -70,8 +70,9 @@ const lien = lieu ? `/horaires/#${lieu.id}` : '/horaires/'
 
 <script>
   import { remplirHorairesAujourdhui } from './aujourdhui-client'
+  import { aChaquePage } from '@/lib/pages'
 
-  remplirHorairesAujourdhui()
+  aChaquePage(() => remplirHorairesAujourdhui())
 </script>
 
 <style>

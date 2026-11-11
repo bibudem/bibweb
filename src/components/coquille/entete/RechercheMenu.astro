@@ -77,6 +77,7 @@ const { id } = Astro.props
   import { chargerIndex, suggerer } from '@/lib/recherche/moteur'
   import { avecBase } from '@/lib/chemin'
   import { PLACEHOLDER_SOFIA } from '@/lib/sofia'
+  import { aChaquePage, auDepart } from '@/lib/pages'
 
   // Source affichée devant la page ; les sections de l'index du site (Pages,
   // Nouvelles, Bibliothèques, Personnel) sont toutes « Site des bibliothèques »
@@ -86,6 +87,7 @@ const { id } = Astro.props
   const PLACEHOLDERS = { sofia: PLACEHOLDER_SOFIA, sites: 'Services, guides, soutien informatique…' }
   const DELAI_FRAPPE = 120
 
+  aChaquePage((signal) => {
   for (const formulaire of document.querySelectorAll<HTMLFormElement>('[data-recherche-menu]')) {
     const champ = formulaire.querySelector<HTMLInputElement>('input[type=search]')!
     const etiquette = formulaire.querySelector<HTMLLabelElement>('label')!
@@ -123,11 +125,16 @@ const { id } = Astro.props
       indicateur.style.width = `${segment.offsetWidth}px`
       indicateur.style.translate = `${segment.offsetLeft}px 0`
     }
-    new ResizeObserver(() => {
+    const taille = new ResizeObserver(() => {
       placerIndicateur()
       // Pas de glissement à la première mise en place
       requestAnimationFrame(() => segments.classList.add('pret'))
-    }).observe(segments)
+    })
+    taille.observe(segments)
+    auDepart(signal, () => {
+      taille.disconnect()
+      clearTimeout(minuterie)
+    })
 
     // `charger` : seulement quand la personne choisit une portée. Au
     // chargement de la page, rien n'est téléchargé (les deux index pèsent
@@ -307,6 +314,7 @@ const { id } = Astro.props
 
     majPortee(false)
   }
+  })
 </script>
 
 <style>

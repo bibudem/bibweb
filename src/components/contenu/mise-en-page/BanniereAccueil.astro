@@ -133,7 +133,7 @@ const aEnfants = Astro.slots.has('default')
   </div>
   {
     variantes && (
-      <script is:inline define:vars={{ portraits: variantes }}>
+      <script is:inline data-astro-rerun define:vars={{ portraits: variantes }}>
         // Tirage du portrait, avant le premier affichage (voir l'en-tête du composant)
         const hero = document.currentScript.closest('.super-hero')
         const CLE = 'portrait-accueil'

@@ -61,11 +61,19 @@ function compter(compteur: HTMLElement, duree: number, delai: number, courbe: st
   }
 }
 
-export function animerChiffres() {
+/** Changement de page côté client (ClientRouter) : vrai après le premier */
+let pageSuivante = false
+
+/** `signal` (lib/pages.ts) débranche tout quand la page est quittée */
+export function animerChiffres(signal?: AbortSignal) {
+  const suivante = pageSuivante
+  pageSuivante = true
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('print').matches) return
   if (!('IntersectionObserver' in window) || typeof KeyframeEffect === 'undefined') return
+  // Rechargement ou retour : pas d'animation au premier chargement ; une
+  // page atteinte par un lien (navigation côté client) est une nouvelle visite
   const navigation = performance.getEntriesByType?.('navigation')[0] as PerformanceNavigationTiming | undefined
-  if (navigation && navigation.type !== 'navigate') return
+  if (!suivante && navigation && navigation.type !== 'navigate') return
 
   const blocs = [...document.querySelectorAll<HTMLElement>('[data-chiffres]:not(.a-animer)')]
   if (!blocs.length) return
@@ -103,6 +111,10 @@ export function animerChiffres() {
   blocs.forEach((bloc) => observateur.observe(bloc))
 
   // À l'impression, les valeurs finales et les barres pleines
+  signal?.addEventListener('abort', () => {
+    observateur.disconnect()
+    arrets.forEach((arret) => arret())
+  })
   window.addEventListener('beforeprint', () => {
     observateur.disconnect()
     arrets.forEach((arret) => arret())
@@ -110,5 +122,5 @@ export function animerChiffres() {
       bloc.classList.remove('a-animer', 'anime')
       bloc.querySelectorAll<HTMLElement>('[data-compteur]').forEach((compteur) => afficher(compteur, false))
     }
-  })
+  }, { signal })
 }

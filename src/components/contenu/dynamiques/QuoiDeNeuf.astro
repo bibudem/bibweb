@@ -54,6 +54,9 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
 </div>
 
 <script>
+  import { aChaquePage, auDepart } from '@/lib/pages'
+
+  aChaquePage((signal) => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-quoi-de-neuf]')) {
     const barre = racine.querySelector<HTMLElement>('[data-onglets]')!
     const onglets = [...barre.querySelectorAll<HTMLButtonElement>('button[data-cible]')]
@@ -87,11 +90,12 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
       indicateur.style.height = `${entre(a.offsetHeight, b.offsetHeight)}px`
       indicateur.style.translate = `${entre(a.offsetLeft, b.offsetLeft)}px ${entre(a.offsetTop, b.offsetTop)}px`
     }
-    new ResizeObserver(() => {
+    const tailleBarre = new ResizeObserver(() => {
       placerIndicateur()
       // Pas de glissement à la première mise en place
       requestAnimationFrame(() => barre.classList.add('pret'))
-    }).observe(barre)
+    })
+    tailleBarre.observe(barre)
 
     // Hauteur du bloc : celle du panneau affiché (les listes se remplissent
     // après coup, d'où l'observation de chaque panneau)
@@ -101,6 +105,10 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
     }
     const observateur = new ResizeObserver(ajusterHauteur)
     for (const p of panneaux) if (p) observateur.observe(p)
+    auDepart(signal, () => {
+      tailleBarre.disconnect()
+      observateur.disconnect()
+    })
 
     function activer(index: number, focus = false, defiler = true) {
       actif = index
@@ -198,10 +206,11 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
     mq.addEventListener('change', () => {
       poserRoles()
       mettreEnPage()
-    })
+    }, { signal })
     poserRoles()
     mettreEnPage()
   }
+  })
 </script>
 
 <style>

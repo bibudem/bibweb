@@ -45,8 +45,10 @@ const cibleExterne = (href: string) => (estExterne(href) ? { target: '_blank', r
 
 <script>
   import { brancherRechercheSofia } from '@/lib/sofia'
+  import { aChaquePage } from '@/lib/pages'
 
-  brancherRechercheSofia()
+  // Une seule fois par formulaire (data-branche), même appelée deux fois
+  aChaquePage(() => brancherRechercheSofia())
 </script>
 
 <style>

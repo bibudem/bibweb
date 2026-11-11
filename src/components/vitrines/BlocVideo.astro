@@ -42,6 +42,9 @@ const lienYouTube = `https://www.youtube.com/watch?v=${bloc.youtube}`
 }
 
 <script>
+  import { aChaquePage } from '@/lib/pages'
+
+  aChaquePage(() => {
   for (const cadre of document.querySelectorAll<HTMLElement>('[data-video]')) {
     const lien = cadre.querySelector<HTMLAnchorElement>('.lecture')
     lien?.addEventListener('click', (evenement) => {
@@ -58,6 +61,7 @@ const lienYouTube = `https://www.youtube.com/watch?v=${bloc.youtube}`
       lecteur.focus()
     })
   }
+  })
 </script>
 
 <style>

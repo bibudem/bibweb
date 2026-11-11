@@ -270,8 +270,11 @@ const ids = { q: `${n}-q`, bib: `${n}-bib`, disc: `${n}-disc` }
 
 <script>
   import { initialiser } from './repertoire'
+  import { aChaquePage } from '@/lib/pages'
 
-  for (const racine of document.querySelectorAll<HTMLElement>('[data-repertoire]')) initialiser(racine)
+  aChaquePage((signal) => {
+    for (const racine of document.querySelectorAll<HTMLElement>('[data-repertoire]')) initialiser(racine, signal)
+  })
 </script>
 
 <style>

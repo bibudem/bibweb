@@ -37,15 +37,21 @@ const { class: classe, style, lang } = Astro.props
     form { display: flex; flex-direction: column; align-items: center; }
     .radio-group { justify-content: center; margin: 0; }
   `
+  import { aChaquePage } from '@/lib/pages'
+
+  aChaquePage(() =>
   customElements.whenDefined('bib-retroaction-usager').then(() => {
     for (const element of document.querySelectorAll<HTMLElement>('[data-retroaction]')) {
       const racine = element.shadowRoot
-      if (!racine) continue
+      // Une seule fois par élément
+      if (!racine || element.hasAttribute('data-style-ajoute')) continue
+      element.setAttribute('data-style-ajoute', '')
       const feuille = new CSSStyleSheet()
       feuille.replaceSync(AJOUT)
       racine.adoptedStyleSheets = [...racine.adoptedStyleSheets, feuille]
     }
-  })
+  }),
+  )
 </script>
 
 <style>

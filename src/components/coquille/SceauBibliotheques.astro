@@ -34,6 +34,8 @@ const { nom = 'Les bibliothèques, Université de Montréal – Accueil', class:
 </span>
 
 <script>
+  import { aChaquePage } from '@/lib/pages'
+
   // Le texte accélère en douceur au survol (souris) ou au focus clavier du lien parent, et ralentit
   // en douceur quand on le quitte : la vitesse tend vers sa cible (décroissance exponentielle),
   // sans à-coup. Aucun mouvement si l'appareil est réglé pour limiter les animations.
@@ -41,6 +43,7 @@ const { nom = 'Les bibliothèques, Université de Montréal – Accueil', class:
   const ACCELERATION = 0.5 // secondes : constante de temps de la montée en vitesse
   const RALENTISSEMENT = 0.8 // secondes : constante de temps de l'arrêt (plus long = plus doux)
 
+  aChaquePage(() => {
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     for (const sceau of document.querySelectorAll<HTMLElement>('.sceau')) {
       const anneau = sceau.querySelector<HTMLElement>('.anneau')
@@ -82,6 +85,7 @@ const { nom = 'Les bibliothèques, Université de Montréal – Accueil', class:
       lien.addEventListener('focusout', () => viser(0))
     }
   }
+  })
 </script>
 
 <style>

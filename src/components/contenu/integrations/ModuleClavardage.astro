@@ -33,9 +33,16 @@ const { hash = '9ee6ed73a6fb1854335aacfa8a7497ef4acaff4303c125783909dacc7b3200b9
 </div>
 
 <script>
+  import { aChaquePage } from '@/lib/pages'
+
+  // Navigation côté client : en revenant sur une page qui l'intègre, le
+  // conteneur est neuf et vide ; le script de LibChat, qui le remplit à son
+  // exécution, est alors réinséré (un script retiré puis remis se réexécute)
+  aChaquePage(() => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-libchat]')) {
     const hash = racine.dataset.libchat
-    if (!hash || document.getElementById(`libchat-script-${hash}`)) continue
+    if (!hash) continue
+    document.getElementById(`libchat-script-${hash}`)?.remove()
     const script = document.createElement('script')
     script.id = `libchat-script-${hash}`
     script.src = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${encodeURIComponent(hash)}`
@@ -47,6 +54,7 @@ const { hash = '9ee6ed73a6fb1854335aacfa8a7497ef4acaff4303c125783909dacc7b3200b9
     }
     document.body.append(script)
   }
+  })
 </script>
 
 <style>

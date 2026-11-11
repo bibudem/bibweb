@@ -39,8 +39,12 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
 </button>
 
 <script>
-  const bouton = document.querySelector<HTMLButtonElement>('[data-retour-haut]')
-  if (bouton) {
+  import { aChaquePage, auDepart } from '@/lib/pages'
+
+  aChaquePage((signal) => {
+    const bouton = document.querySelector<HTMLButtonElement>('[data-retour-haut]')
+    if (!bouton) return
+
     let enAttente = false
     // Sous 900 px, il flotte sur le contenu : il se retire aussi après REPOS
     // ms sans défilement (arrêté sur un passage, on lit) ; dès 900 px, il
@@ -57,7 +61,7 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
       const garde = bouton.matches(':focus-visible, :hover, :active')
       bouton.toggleAttribute('data-visible', loin && (large.matches || garde || !auRepos))
     }
-    large.addEventListener('change', mettreAJour)
+    large.addEventListener('change', mettreAJour, { signal })
     window.addEventListener(
       'scroll',
       () => {
@@ -71,16 +75,17 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
         enAttente = true
         requestAnimationFrame(mettreAJour)
       },
-      { passive: true },
+      { passive: true, signal },
     )
+    auDepart(signal, () => clearTimeout(minuterieRepos))
     // Quitter le bouton sans l'avoir utilisé : la minuterie a pu passer
     bouton.addEventListener('blur', mettreAJour)
-    window.addEventListener('resize', mettreAJour, { passive: true })
+    window.addEventListener('resize', mettreAJour, { passive: true, signal })
 
     // Échap ferme l'infobulle ; elle revient au prochain survol ou focus
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && bouton.matches(':hover, :focus-visible')) bouton.setAttribute('data-infobulle-fermee', '')
-    })
+    }, { signal })
     for (const evenement of ['pointerleave', 'blur']) {
       bouton.addEventListener(evenement, () => bouton.removeAttribute('data-infobulle-fermee'))
     }
@@ -102,7 +107,7 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
         { once: true },
       )
     })
-  }
+  })
 </script>
 
 <style>

@@ -77,13 +77,18 @@ const SOURCES = [
   import { chargerIndex, suggerer, type Suggestion } from '@/lib/recherche/moteur'
   import { urlSofia } from '@/lib/sofia'
   import { PORTEES } from '@/lib/recherche/portees'
+  import { aChaquePage } from '@/lib/pages'
 
   const SOURCES: Record<string, string> = Object.fromEntries(PORTEES.filter((p) => p.cle === 'outils' || p.cle === 'studio').map((p) => [p.cle, p.libelle]))
   const SOURCE_SITE = 'Site des bibliothèques'
   const PAR_PAGE = 20
 
-  const page = document.querySelector<HTMLElement>('[data-page-resultats]')
-  if (page) {
+  // À chaque visite : une nouvelle recherche depuis la page de résultats
+  // (formulaire, navigation côté client) en refait une
+  aChaquePage(() => {
+    const page = document.querySelector<HTMLElement>('[data-page-resultats]')
+    if (!page) return
+
     const $ = <T extends Element>(s: string) => page.querySelector<T>(s)!
     const champ = $<HTMLInputElement>('#resultats-requete')
     const outils = $<HTMLElement>('[data-outils]')
@@ -163,7 +168,7 @@ const SOURCES = [
       // Le focus va au premier résultat ajouté, pas en haut de la liste
       liste.children[premierNouveau]?.querySelector('a')?.focus()
     })
-  }
+  })
 </script>
 
 <style>

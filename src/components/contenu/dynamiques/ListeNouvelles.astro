@@ -120,8 +120,11 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
 </div>
 
 <script>
+  import { aChaquePage } from '@/lib/pages'
+
   const VALEURS = ['tout', 'nouvelles', 'revue-de-presse']
 
+  aChaquePage(() => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-nouvelles]')) {
     const boutons = [...racine.querySelectorAll<HTMLButtonElement>('[data-filtre]')]
     const boutonsSujet = [...racine.querySelectorAll<HTMLButtonElement>('[data-sujet]')]
@@ -178,6 +181,7 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
     if (sujetDemande && boutonsSujet.some((b) => b.dataset.sujet === sujetDemande)) sujet = sujetDemande
     if (valeur !== 'tout' || sujet) appliquer(false)
   }
+  })
 </script>
 
 <style>

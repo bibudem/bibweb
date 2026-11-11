@@ -14,7 +14,8 @@ import { idDeLAncre } from '@/lib/ancre-url'
 // annonce par pause plutôt qu'une par lettre.
 const DELAI_ANNONCE = 600
 
-export function initialiser(racine: HTMLElement) {
+/** `signal` (lib/pages.ts) débranche l'écouteur de window quand la page est quittée */
+export function initialiser(racine: HTMLElement, signal?: AbortSignal) {
   const formulaire = racine.querySelector<HTMLFormElement>('[data-filtres]')!
   const recherche = racine.querySelector<HTMLInputElement>('[data-recherche]')!
   const filtres = [...racine.querySelectorAll<HTMLSelectElement>('[data-filtre]')]
@@ -164,5 +165,6 @@ export function initialiser(racine: HTMLElement) {
     if (!lireAncre()) return
     page = 1
     rendre()
-  })
+  }, { signal })
+  signal?.addEventListener('abort', () => window.clearTimeout(minuterie))
 }

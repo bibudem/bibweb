@@ -90,8 +90,11 @@ const { id, class: classe, style, ...reste } = Astro.props
 
 <script>
   // Onglets de l'APG, et survol avec délai
+  import { aChaquePage } from '@/lib/pages'
+
   const DELAI_SURVOL = 120 // ms : le temps de traverser un service sans s'y arrêter
 
+  aChaquePage(() => {
   for (const catalogue of document.querySelectorAll<HTMLElement>('[data-catalogue]')) {
     const services = [...catalogue.querySelectorAll<HTMLButtonElement>('[data-service]')]
     let minuterie: number | undefined
@@ -133,6 +136,7 @@ const { id, class: classe, style, ...reste } = Astro.props
       afficher(suivant, true)
     })
   }
+  })
 </script>
 
 <style>

@@ -76,11 +76,14 @@ const bibliotheques = lieux
 <script>
   import { analyserHoraires, ajouterJours, maintenantMontreal, statutDe, urlHoraires, type Horaires } from '@/data/horaires/horaires'
   import type { Lieu } from '@/data/horaires/lieux'
+  import { aChaquePage, auDepart } from '@/lib/pages'
 
   const MEMOIRE = 'bandeauHoraires:bibliotheque'
-  const bandeau = document.querySelector<HTMLElement>('[data-bandeau-horaires]')
 
-  if (bandeau) {
+  aChaquePage((signal) => {
+    const bandeau = document.querySelector<HTMLElement>('[data-bandeau-horaires]')
+    if (!bandeau) return
+
     // Au défilement, le bandeau s'estompe au lieu de glisser sous l'en-tête
     // collant : son opacité suit la part passée sous l'en-tête, et il est
     // effacé quand il en est aux trois quarts couvert (FONDU). Lié au défilement, le
@@ -105,8 +108,8 @@ const bibliotheques = lieux
       requestAnimationFrame(majVisibilite)
     }
     majVisibilite()
-    window.addEventListener('scroll', planifier, { passive: true })
-    window.addEventListener('resize', planifier, { passive: true })
+    window.addEventListener('scroll', planifier, { passive: true, signal })
+    window.addEventListener('resize', planifier, { passive: true, signal })
     bandeau.addEventListener('focusout', planifier)
 
     const choix = bandeau.querySelector<HTMLSelectElement>('[data-choix]')!
@@ -160,8 +163,9 @@ const bibliotheques = lieux
     }
 
     charger(maintenantMontreal().date)
-    setInterval(afficher, 60 * 1000)
-  }
+    const minute = setInterval(afficher, 60 * 1000)
+    auDepart(signal, () => clearInterval(minute))
+  })
 </script>
 
 <style>

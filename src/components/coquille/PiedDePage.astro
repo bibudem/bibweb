@@ -127,11 +127,13 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
 </footer>
 
 <script>
+  import { aChaquePage } from '@/lib/pages'
+
   // Volets repliables sous 900 px (voir l'en-tête du composant)
   const etroit = window.matchMedia('(width < 900px)')
-  const chevron = document.querySelector<HTMLTemplateElement>('[data-chevron-pied]')
 
   function preparerVolets() {
+    const chevron = document.querySelector<HTMLTemplateElement>('[data-chevron-pied]')
     for (const colonne of document.querySelectorAll<HTMLElement>('[data-pliable-pied]')) {
       const titre = colonne.querySelector('.sous-titre')!
       const liste = colonne.querySelector<HTMLElement>('.liste')!
@@ -161,12 +163,15 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
       }
     }
   }
-  preparerVolets()
+  // Le changement de largeur vaut pour toutes les pages : branché une fois
   etroit.addEventListener('change', preparerVolets)
 
-  document.querySelector('[data-parametres-temoins]')?.addEventListener('click', (e) => {
-    e.preventDefault()
-    window.dispatchEvent(new Event('bib:parametres-temoins'))
+  aChaquePage(() => {
+    preparerVolets()
+    document.querySelector('[data-parametres-temoins]')?.addEventListener('click', (e) => {
+      e.preventDefault()
+      window.dispatchEvent(new Event('bib:parametres-temoins'))
+    })
   })
 </script>
 

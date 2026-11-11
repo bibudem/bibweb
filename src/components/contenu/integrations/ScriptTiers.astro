@@ -5,9 +5,10 @@
  *
  * La source réinjectait le script à chaque montage React pour contourner la
  * déduplication de gatsby-script lors des navigations clientes. Le site
- * Astro recharge la page à chaque navigation : une balise <script> placée
- * juste après le conteneur suffit, et le navigateur l'exécute à chaque
- * visite. is:inline la laisse telle quelle (Astro ne la regroupe pas).
+ * Une balise <script> placée juste après le conteneur suffit. is:inline la
+ * laisse telle quelle (Astro ne la regroupe pas) ; data-astro-rerun la fait
+ * réexécuter à chaque visite de la page en navigation côté client
+ * (ClientRouter), qui sinon ne rejoue jamais un script déjà exécuté.
  *
  * Hauteur réservée : le formulaire arrive une à deux secondes après la page
  * et poussait le pied de page hors de l'écran (CLS 0,18 à 0,38). `hauteur`
@@ -51,9 +52,11 @@ const surErreur =
   <p class="erreur" role="status" data-erreur></p>
   <noscript><p>Ce formulaire a besoin de JavaScript pour s'afficher.</p></noscript>
 </div>
-<script is:inline async src={src} onerror={surErreur}></script>
+<script is:inline data-astro-rerun async src={src} onerror={surErreur}></script>
 
 <script>
+  import { aChaquePage, auDepart } from '@/lib/pages'
+
   const DELAI_FEUILLE = 3000
   const DELAI_MAX = 8000
 
@@ -65,6 +68,7 @@ const surErreur =
       setTimeout(fin, DELAI_FEUILLE)
     })
 
+  aChaquePage((signal) => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-script-tiers]')) {
     const cible = racine.querySelector<HTMLElement>('.cible')
     if (!cible) continue
@@ -89,8 +93,11 @@ const surErreur =
         if (verifier()) observateur.disconnect()
       })
       observateur.observe(cible, { childList: true })
+      auDepart(signal, () => observateur.disconnect())
     }
+    auDepart(signal, () => clearTimeout(filet))
   }
+  })
 </script>
 
 <style>
