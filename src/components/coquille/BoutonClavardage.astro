@@ -43,7 +43,11 @@ const VERSION = 'flottant-5'
 const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&v=${VERSION}`
 ---
 
-<script is:inline async src={SCRIPT}></script>
+{/* PREUVE DE CONCEPT (ClientRouter) : conteneur gardé d'une page à
+    l'autre ; le bloc de LibChat y est déplacé dès son apparition, avant que
+    l'iframe de la conversation n'existe (elle naît au premier clic). Le
+    script de LibChat est chargé une seule fois, par le script ci-dessous. */}
+<div id="clavardage-persistant" data-script={SCRIPT} transition:persist="clavardage"></div>
 
 <script>
   /*
@@ -62,6 +66,28 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
    * dans les paramètres du widget) : elle ouvrirait le panneau en même temps
    * et y déplacerait le focus.
    */
+  // PREUVE DE CONCEPT : LibChat chargé une fois pour toute la visite (ce
+  // module ne s'exécute qu'une fois avec ClientRouter), son bloc déplacé
+  // dans le conteneur gardé entre les pages
+  const conteneurPersistant = document.getElementById('clavardage-persistant')
+  if (conteneurPersistant && !document.querySelector('script[data-libchat]')) {
+    const s = document.createElement('script')
+    s.src = conteneurPersistant.dataset.script!
+    s.async = true
+    s.dataset.libchat = ''
+    document.body.append(s)
+    const deplacer = () => {
+      const bloc = document.getElementById('s-lch-widget-9467')
+      if (!bloc) return false
+      document.getElementById('clavardage-persistant')!.append(bloc)
+      return true
+    }
+    if (!deplacer()) {
+      const obs = new MutationObserver(() => deplacer() && obs.disconnect())
+      obs.observe(document.body, { childList: true })
+    }
+  }
+
   const DELAI = 30_000
   const CLE = 'bib-invitation-clavardage'
   const TEXTE = 'Une question? Un technicien ou une technicienne en documentation est là pour vous aider.'

@@ -22,6 +22,7 @@ import LiensRapides from '@/components/coquille/LiensRapides.astro'
 import ServicesInstitutionnels from '@/components/coquille/ServicesInstitutionnels.astro'
 import RetourHaut from '@/components/coquille/RetourHaut.astro'
 import BoutonClavardage from '@/components/coquille/BoutonClavardage.astro'
+import { ClientRouter } from 'astro:transitions'
 import { LANGUE_SITE, estEnFrancais } from '@/lib/contenu'
 import { SITE_TITRE, SITE_DESCRIPTION, NOM_ORGANISATION } from '@/lib/site'
 
@@ -139,6 +140,9 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
         }
       })
     </script>
+    {/* PREUVE DE CONCEPT : navigation côté client, pour que le clavardage
+        (BoutonClavardage) survive au changement de page */}
+    <ClientRouter fallback="swap" />
     <slot name="head" />
   </head>
   <body>
