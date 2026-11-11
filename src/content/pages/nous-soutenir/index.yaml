@@ -84,5 +84,5 @@ sections:
     titre: Don de livres
     texte: Les Bibliothèques accueillent avec intérêt les propositions de don de collections spéciales ou d’ouvrages ayant une valeur unique pour enrichir nos collections. Pour assurer une intégration harmonieuse aux ressources existantes, nous vous invitons à consulter notre politique de don avant de soumettre votre offre.
     boutons:
-      - texte: Politique de dons 2025 (PDF)
+      - texte: Politique de dons 2025
         lien: /nous-soutenir/politique-dons-2025-adoptee.pdf

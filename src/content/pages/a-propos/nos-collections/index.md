@@ -11,7 +11,7 @@ superHero:
 
 Les bibliothèques développent et maintiennent d’importantes collections, afin de répondre aux besoins de l’enseignement et de la recherche de la communauté UdeM.
 
-À ce jour, plus de 5,5 millions de titres sont accessibles à notre communauté : livres, périodiques, thèses, rapports de recherche, ouvrages de référence, répertoires, index, images, etc., tant imprimés qu’audiovisuels, sur microforme ou sur support électronique sont disponibles.
+À ce jour, plus de 5,75 millions de titres sont accessibles à notre communauté : livres, périodiques, thèses, rapports de recherche, ouvrages de référence, répertoires, index, images, etc., tant imprimés qu’audiovisuels, sur microforme ou sur support électronique sont disponibles.
 
 ### La collection en chiffres
 
@@ -37,7 +37,7 @@ Les bibliothèques développent et maintiennent d’importantes collections, afi
 
 ### Évaluation des collections de périodiques
 
-Dans le cadre d’une analyse approfondie réalisée en 2022, nous avons identifié 7 054 titres de périodiques essentiels pour répondre aux besoins en enseignement et en recherche de notre communauté. Cette consultation, impliquant 1 137 participants, s’appuyait sur des critères tels que les téléchargements, les citations et les suggestions de titres. Ces résultats guident nos décisions d’acquisition tout en respectant un équilibre entre disciplines et contraintes budgétaires. [Consultation sur les périodiques, 2022 (PDF)](/a-propos/Rapport_2e-consultation_2022_vf_2023-03-3_publié1.pdf)
+Dans le cadre d’une analyse approfondie réalisée en 2022, nous avons identifié 7 054 titres de périodiques essentiels pour répondre aux besoins en enseignement et en recherche de notre communauté. Cette consultation, impliquant 1 137 participants, s’appuyait sur des critères tels que les téléchargements, les citations et les suggestions de titres. Ces résultats guident nos décisions d’acquisition tout en respectant un équilibre entre disciplines et contraintes budgétaires. [Consultation sur les périodiques, 2022](/a-propos/Rapport_2e-consultation_2022_vf_2023-03-3_publié1.pdf)
 
 ### Avis sur l’utilisation des ressources électroniques
 
@@ -63,4 +63,4 @@ Pour connaître les conditions d’utilisation pour un titre en particulier, [co
 
 ### Lignes directrices d’acquisition
 
-Les bibliothèques ont une politique pour privilégier le format numérique dans le processus d’acquisition de la documentation. [Lignes directrices : privilégier le numérique (PDF)](/a-propos/politiques-reglement/lignes-directrices-privilegier-format-numerique.pdf)
+Les bibliothèques ont une politique pour privilégier le format numérique dans le processus d’acquisition de la documentation. [Lignes directrices : privilégier le numérique](/a-propos/politiques-reglement/lignes-directrices-privilegier-format-numerique.pdf)

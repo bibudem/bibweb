@@ -13,6 +13,6 @@ source: Bibliothèques
 ---
 
 
-La Bibliothèque des livres rares et collections spéciales est heureuse d’annoncer que le lauréat pour l’édition 2024-2025 de la bourse Geneviève-Bazin est M. Ambroise Bernier, étudiant au doctorat au Département de littératures de langue française, pour son projet de recherche portant sur le stoïcisme dans l’œuvre de Blaise Pascal.
+La Bibliothèque des livres rares et collections spéciales est heureuse d’annoncer que le lauréat pour l’édition 2024-2025 de la bourse Geneviève-Bazin est M. Ambroise Bernier, étudiant au doctorat au Département des littératures de langue française, pour son projet de recherche portant sur le stoïcisme dans l’œuvre de Blaise Pascal.
 
 Toutes nos félicitations au lauréat!
