@@ -19,8 +19,8 @@
  *
  * `async` : les modules s'exécutent dans l'ordre du document ; sans lui, les
  * scripts du site placés après (menu, sommaire « Sur cette page »,
- * accordéons…) attendaient ces fichiers externes, parfois lents ou bloqués
- * (loader.js de corvee, refusé par CORS en local). Async, ils s'exécutent dès
+ * accordéons…) attendaient ces fichiers externes, parfois lents ou bloqués.
+ * Async, ils s'exécutent dès
  * leur arrivée, sans retenir les autres. Rien ne dépend de leur ordre : les
  * composants se définissent eux-mêmes (Retroaction attend whenDefined).
  */
@@ -60,7 +60,6 @@ const CDN = CDN_BIBUDEM
 {
   position === 'bas' && (
     <>
-      <script is:inline type="module" async src="https://corvee.bib.umontreal.ca/loader.js"></script>
       <Consentement />
     </>
   )
@@ -81,9 +80,11 @@ const CDN = CDN_BIBUDEM
 
   /* Calque de composition propre, comme l'en-tête juste en dessous : évite
      un repositionnement au défilement observé sur Safari iOS entre ces deux
-     éléments à z-index élevé. */
+     éléments à z-index élevé. Marges des gouttières, alignées sur le logo :
+     à 0, le texte touchait le bord et la zone cliquable du bouton Fermer
+     débordait de 10 px (défilement horizontal). */
   .avis-pleine-largeur {
-    --bib-avis-spacing-inline: 0;
+    --bib-avis-spacing-inline: var(--gouttiere);
     transform: translateZ(0);
   }
 
