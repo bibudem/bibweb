@@ -11,7 +11,9 @@
 const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
 ---
 
-<div lang="fr-CA" class="consentement">
+<!-- Navigation côté client (ClientRouter) : la bannière et son panneau sont
+     gardés d'une page à l'autre ; son script ne tourne qu'une fois par visite -->
+<div lang="fr-CA" class="consentement" transition:persist="consentement">
   <section class="carte" aria-labelledby="consentement-titre" hidden data-consentement-carte>
     <h2 id="consentement-titre" class="titre-carte">L’UdeM reconnaît l’importance de respecter la vie privée</h2>
     <p class="texte-carte">
@@ -131,6 +133,22 @@ const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
   }
 
   let googleCharge = false
+  let derniereAdresse = ''
+
+  function envoyerPageVue() {
+    derniereAdresse = location.href
+    gtag('event', 'page_view', {
+      page_path: location.pathname,
+      page_location: location.href,
+      page_title: document.title,
+    })
+  }
+
+  // Navigation côté client (ClientRouter) : la page ne se recharge plus,
+  // chaque nouvelle page est donc signalée ici (une seule fois par adresse)
+  document.addEventListener('astro:page-load', () => {
+    if (googleCharge && location.href !== derniereAdresse) envoyerPageVue()
+  })
 
   function appliquerStatistiques(accepte: boolean) {
     if (accepte) {
@@ -139,11 +157,7 @@ const URL_VIE_PRIVEE = 'https://vie-privee.umontreal.ca/accueil/'
         googleCharge = true
         fenetre.dataLayer!.push({ 'gtm.start': Date.now(), event: 'gtm.js' })
         ajouterScript(`https://www.googletagmanager.com/gtm.js?id=${CONTENEUR_GTM}`)
-        gtag('event', 'page_view', {
-          page_path: location.pathname,
-          page_location: location.href,
-          page_title: document.title,
-        })
+        envoyerPageVue()
       }
       if (!fenetre.clarity) {
         const clarity: Fenetre['clarity'] = function () {

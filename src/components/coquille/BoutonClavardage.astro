@@ -134,6 +134,9 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
     placer()
     new ResizeObserver(placer).observe(carteConsentement)
     new MutationObserver(placer).observe(carteConsentement, { attributes: true, attributeFilter: ['hidden'] })
+    // Navigation côté client : Astro remplace les attributs de <html> (dont
+    // style) ; la bannière, elle, est gardée (transition:persist)
+    document.addEventListener('astro:after-swap', placer)
   }
 
   /*
