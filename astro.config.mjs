@@ -15,6 +15,7 @@ import remarkDirective from 'remark-directive'
 import { remarkDirectivesBib, rehypeDirectivesBib } from './src/plugins/directives.mjs'
 import baseSousDossier from './src/plugins/base-sous-dossier.mjs'
 import llms from './src/plugins/llms.mjs'
+import indexPublic from './src/plugins/index-public.mjs'
 
 const SITE = 'https://bib.umontreal.ca'
 
@@ -83,6 +84,8 @@ export default defineConfig({
     preact({ compat: true }),
     sitemap({ filter: (page) => !HORS_SITEMAP.has(new URL(page).pathname) }),
     baseSousDossier(),
+    // Dev : /ddia/, /engagements/science-ouverte/… servent leur index.html
+    indexPublic(),
     // llms.txt et versions Markdown des pages ; après baseSousDossier (liens déjà préfixés)
     llms(),
   ],
