@@ -66,8 +66,20 @@ const titreLong = titreReduit || (typeof title === 'string' && title.length > TI
     alt={alt}
     loading="eager"
     fetchpriority="high"
-    class="super-hero-image fond-photo-image"
+    class="super-hero-image fond-photo-image photo-fondu"
   />
+  {/* Fondu à l'arrivée de la photo (global.css, .photo-fondu) */}
+  <script is:inline data-astro-rerun>
+    {
+      const img = document.currentScript.parentElement.querySelector('img.super-hero-image')
+      if (img && !img.complete) {
+        img.setAttribute('data-fondu', '')
+        const fin = () => img.removeAttribute('data-fondu')
+        img.addEventListener('load', fin, { once: true })
+        img.addEventListener('error', fin, { once: true })
+      }
+    }
+  </script>
   <div class="texte">
     <div class="colonne">
       <Typographie component="h1" variant={size === 'small' ? 'titreSuperHeroSmall' : 'titreSuperHero'} class="titre">{title}</Typographie>
@@ -106,6 +118,8 @@ const titreLong = titreReduit || (typeof title === 'string' && title.length > TI
     min-height: calc(var(--hauteur) - 5rem);
     margin-bottom: calc(5rem - var(--retrait));
     overflow: hidden;
+    /* Sous la photo pendant son chargement (fondu) */
+    background-color: var(--bleu-fonce);
     color: var(--couleur-sur-fonce);
     --couleur-lien: var(--couleur-sur-fonce);
     --couleur-lien-survol: var(--couleur-sur-fonce);
