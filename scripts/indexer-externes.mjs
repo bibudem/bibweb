@@ -5,7 +5,7 @@
 // main, et le build les verse dans /search-index-externe.json. Les fichiers produits (src/data/recherche/) sont
 // versionnés : le build ne dépend pas du réseau.
 //
-// Usage : npm run indexer:externes. Relancé chaque semaine par le workflow
+// Usage : npm run indexer:externes. Relancé chaque soir par le workflow
 // .github/workflows/relever-externes.yml. La date du relevé est écrite dans
 // chaque fichier ; un fichier dont les pages n'ont pas changé n'est pas
 // réécrit (sa date reste celle du dernier changement), pour ne pas faire de
@@ -21,6 +21,8 @@ const DOSSIER = 'src/data/recherche'
 // peu pour ne pas charger le serveur de Springshare
 const SIMULTANEES = 4
 const LONGUEUR_EXTRAIT = 200
+// Baisse du nombre de pages au-delà de laquelle le relevé est refusé
+const BAISSE_MAX = 0.2
 
 const aujourdhui = new Date().toISOString().slice(0, 10)
 
@@ -105,6 +107,13 @@ for (const [nom, relever] of [
   if (!entrees.length) throw new Error(`${nom} : aucune page relevée, fichier laissé tel quel`)
   const fichier = `${DOSSIER}/${nom}.json`
   const avant = existsSync(fichier) ? JSON.parse(readFileSync(fichier, 'utf8')).entrees : null
+  // Garde-fou du relevé quotidien, publié sans supervision : un site en
+  // panne partielle ou dont la structure a changé ne doit pas remplacer un
+  // bon relevé par un relevé à moitié vide. FORCER_RELEVE=1 passe outre
+  // (baisse voulue, après vérification).
+  if (avant && entrees.length < avant.length * (1 - BAISSE_MAX) && process.env.FORCER_RELEVE !== '1') {
+    throw new Error(`${nom} : ${entrees.length} pages au lieu de ${avant.length} (baisse de plus de ${BAISSE_MAX * 100} %), fichier laissé tel quel. Vérifier le site, puis relancer avec FORCER_RELEVE=1 si la baisse est voulue.`)
+  }
   if (JSON.stringify(avant) === JSON.stringify(entrees)) {
     console.log(`${fichier} : ${entrees.length} pages, inchangé`)
     continue
