@@ -48,10 +48,10 @@ jobs:
       url: https://bib.umontreal.ca
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Installer Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -63,7 +63,7 @@ jobs:
         run: npm test
 
       - name: Récupérer les images optimisées
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: node_modules/.astro/assets
           key: images-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.avif', 'src/**/*.gif', 'astro.config.mjs') }}
