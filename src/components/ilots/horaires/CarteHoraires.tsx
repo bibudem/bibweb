@@ -9,7 +9,6 @@ import FicheLieu, { type ImageLieu } from './FicheLieu'
 import { periodeSemaine, semaineRelative } from './HoraireSemaine'
 import RechercheLieu from './RechercheLieu'
 import useHoraires from './useHoraires'
-import useOccupation from './useOccupation'
 import { autresServicesDuJour, correspond, dansFiltre, formaterDistance, haversine, maintenantMontreal, normaliser, statutDe, type Maintenant, type Statut } from '@/data/horaires/horaires'
 import type { Lieu } from '@/data/horaires/lieux'
 import '@/components/contenu/dynamiques/etat-erreur.css'
@@ -143,11 +142,6 @@ export default function CarteHoraires({ lieux, images }: Props) {
     },
     [maintenant, horaires, erreur, dates]
   )
-
-  // Achalandage : seulement pour les lieux ouverts (les compteurs d'un lieu
-  // fermé ne disent rien d'utile)
-  const idsOuverts = useMemo(() => physiques.filter((l) => estOuvert(statutDu(l))).map((l) => l.id), [physiques, statutDu])
-  const occupation = useOccupation(idsOuverts)
 
   // « Ouvert maintenant » n'est utilisable qu'une fois les statuts connus.
   const statutsPrets = Boolean(maintenant && horaires)
@@ -370,7 +364,6 @@ export default function CarteHoraires({ lieux, images }: Props) {
                   niveauTitre={3}
                   compact
                   statut={statutDu(lieu)}
-                  taux={occupation[lieu.id]}
                   distance={distances[lieu.id]}
                   plateforme={plateforme}
                   voirFiche={allerAFiche}
@@ -394,7 +387,6 @@ export default function CarteHoraires({ lieux, images }: Props) {
               lieu={lieu}
               image={lieu.codeBib ? images[lieu.codeBib] : undefined}
               statut={statutDu(lieu)}
-              taux={occupation[lieu.id]}
               extra={extraDe(lieu)}
               distance={distances[lieu.id]}
               surlignee={surlignee === lieu.id}

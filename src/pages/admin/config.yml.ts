@@ -19,6 +19,14 @@ import { NOMS_BANNIERES } from '@/lib/bannieres'
  *   visuel réécrirait les directives (:::tableau, ::bouton…) à l'enregistrement.
  * - Les vitrines (.yaml) ont leurs champs dans _vitrines.ts. Les pages .mdx ne
  *   sont pas encore modifiables.
+ * - Pages : une collection par section (dossier qui a une vitrine
+ *   index.yaml), plus « Pages générales » (racine). Les pages du premier
+ *   niveau de la section s'y modifient et s'y créent (collection de type
+ *   dossier) : une nouvelle page /<section>/<titre>/ entre d'elle-même dans
+ *   le menu de la section. Les sous-pages (dossiers imbriqués, que Decap
+ *   gère mal) sont dans « Sous-pages : … », modifiables seulement. Pas de
+ *   suppression depuis Decap : une page retirée peut casser des liens et
+ *   la navigation (le build échoue alors) ; elle se fait dans le dépôt.
  * - Decap réécrit l'en-tête (frontmatter) à l'enregistrement : ordre des champs
  *   de ce fichier, dates sans guillemets, listes à la ligne. Le corps n'est
  *   pas touché.
@@ -153,20 +161,47 @@ export const GET: APIRoute = async () => {
   const pages = await toutesLesPages()
   const titres = new Map(pages.filter((page) => !page.id.includes('/')).map((page) => [page.id, page.data.title ?? page.id]))
 
-  // Pages .md hors démonstrations, regroupées par section (premier segment)
-  const parSection = new Map<string, PageTexte[]>()
+  // Sections : dossiers de premier niveau qui ont une vitrine (index.yaml),
+  // puis la racine (« general »)
+  const sections = pages
+    .filter((page) => estVitrine(page) && page.id !== 'index' && !page.id.includes('/'))
+    .map((page) => page.id)
+    .sort((a, b) => a.localeCompare(b, 'fr'))
+
+  // Premier niveau d'une section : modifiable et créable (dossier). Un titre
+  // est exigé : il donne le nom du fichier, donc l'adresse de la page.
+  const champsPageCreable = champsPage.map((champ) => (champ.name === 'title' ? { ...champ, required: true, hint: 'Titre de l’onglet et des listes. À la création, il donne aussi l’adresse de la page.' } : champ))
+  const collectionsPages = [...sections, 'general'].map((section) => ({
+    name: `pages-${section}`,
+    label: section === 'general' ? 'Pages générales' : `Pages : ${libelleSection(section, titres)}`,
+    label_singular: 'Page',
+    folder: section === 'general' ? 'src/content/pages' : `src/content/pages/${section}`,
+    extension: 'md',
+    format: 'frontmatter',
+    create: true,
+    delete: false,
+    slug: '{{slug}}',
+    summary: '{{title}}',
+    sortable_fields: ['title'],
+    ...imagesACote,
+    fields: champsPageCreable,
+  }))
+
+  // Sous-pages (dossiers imbriqués) .md hors démonstrations, par section :
+  // modifiables seulement
+  const sousPages = new Map<string, PageTexte[]>()
   for (const page of pages) {
     if (estVitrine(page) || !page.filePath?.endsWith('.md') || page.id.startsWith('dev/')) continue
-    const section = page.id.includes('/') ? page.id.split('/')[0] : 'general'
-    parSection.set(section, [...(parSection.get(section) ?? []), page])
+    const dossier = page.filePath.replace(/^(\.\/)?src\/content\/pages\//, '').split('/').slice(0, -1)
+    if (dossier.length < 2) continue
+    sousPages.set(dossier[0], [...(sousPages.get(dossier[0]) ?? []), page])
   }
-
-  const collectionsPages = [...parSection.entries()]
-    .sort(([a], [b]) => (a === 'general' ? 1 : b === 'general' ? -1 : a.localeCompare(b, 'fr')))
+  const collectionsSousPages = [...sousPages.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, 'fr'))
     .map(([section, liste]) => ({
-      name: `pages-${section}`,
-      label: section === 'general' ? 'Pages générales' : `Pages : ${libelleSection(section, titres)}`,
-      label_singular: 'Page',
+      name: `sous-pages-${section}`,
+      label: `Sous-pages : ${libelleSection(section, titres)}`,
+      label_singular: 'Sous-page',
       files: liste.map((page) => ({
         name: page.id.replaceAll('/', '--'),
         label: page.data.crumbLabel ?? page.data.title ?? page.id,
@@ -295,6 +330,7 @@ export const GET: APIRoute = async () => {
       collectionVitrines,
       collectionPersonnel,
       ...collectionsPages,
+      ...collectionsSousPages,
     ],
   }
 

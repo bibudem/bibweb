@@ -11,7 +11,6 @@ import HoraireSemaine from './HoraireSemaine'
 import { avecBase } from '@/lib/chemin'
 import { formaterDistance, lienItineraire, lienTel, type Horaires, type Statut } from '@/data/horaires/horaires'
 import type { Lieu } from '@/data/horaires/lieux'
-import { niveauAchalandage } from '@/data/horaires/occupation'
 
 export type ImageLieu = { src: string; srcset: string }
 
@@ -25,27 +24,6 @@ function StatutLieu({ statut, extra }: { statut: Statut | null; extra?: string[]
       <span class={`ch-pastille-statut ch-etat-${statut.etat}`} aria-hidden="true" />
       <span class="ch-statut-texte">{statut.texte}</span>
       {extra && extra.length > 0 && <span class="ch-statut-extra">{extra.join(' · ')}</span>}
-    </p>
-  )
-}
-
-// Achalandage d'un lieu ouvert (compteurs de personnes, useOccupation) : le
-// texte porte le sens, la jauge de trois barres le double pour l'œil. Pas de
-// région d'annonce : la valeur change chaque minute, l'annoncer dans chaque
-// fiche serait du bruit ; elle se lit avec la fiche.
-function Achalandage({ taux }: { taux: number }) {
-  const { niveau, texte } = niveauAchalandage(taux)
-  return (
-    <p class={`ch-achalandage ch-niveau-${niveau}`}>
-      <span class="ch-jauge" aria-hidden="true">
-        {[1, 2, 3].map((n) => (
-          <span key={n} class={n <= niveau ? 'ch-barre-pleine' : undefined} />
-        ))}
-      </span>
-      <span class="ch-achalandage-texte">
-        <span class="ch-achalandage-etiquette">En ce moment : </span>
-        <strong>{texte}</strong>
-      </span>
     </p>
   )
 }
@@ -165,8 +143,6 @@ export interface PropsFiche {
   niveauTitre?: number
   compact?: boolean
   statut: Statut | null
-  /** Taux d'occupation en %, s'il est connu (lieu ouvert avec compteur) */
-  taux?: number
   extra?: string[] | null
   distance?: number
   horaires?: Horaires | null
@@ -186,7 +162,7 @@ export interface PropsFiche {
 // donne la version courte de « Les plus proches de vous » : le pavillon au
 // lieu de l'adresse, « Itinéraire » et « Voir la fiche », sans note ni volets.
 export default function FicheLieu(props: PropsFiche) {
-  const { lieu, image, prefixeId = '', niveauTitre = 2, compact = false, statut, taux, extra, distance, horaires, dates, aujourdhui, erreur = null } = props
+  const { lieu, image, prefixeId = '', niveauTitre = 2, compact = false, statut, extra, distance, horaires, dates, aujourdhui, erreur = null } = props
   const { decalage = 0, changerDecalage, semaineChargee, plateforme, surlignee, voirSurCarte, voirFiche } = props
   const uid = `${prefixeId}${lieu.id}`
   const Titre = `h${niveauTitre}` as 'h2'
@@ -214,7 +190,6 @@ export default function FicheLieu(props: PropsFiche) {
           )}
 
           <StatutLieu statut={statut} extra={compact ? null : extra} />
-          {taux != null && (statut?.etat === 'open' || statut?.etat === 'closing-soon') && <Achalandage taux={taux} />}
 
           {!compact && lieu.note && (
             <p class="ch-note">
