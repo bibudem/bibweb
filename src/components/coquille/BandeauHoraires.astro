@@ -1,7 +1,8 @@
 ---
 /*
- * Bandeau « Horaires du jour », sous l'en-tête, sur toutes les pages :
- * une bibliothèque à choisir dans une liste, son statut (« Ouvert jusqu'à
+ * Bandeau « Horaires du jour » (titre lu par les lecteurs d'écran, pas
+ * écrit), sous l'en-tête, sur toutes les pages : une horloge, une
+ * bibliothèque à choisir dans une liste, son statut (« Ouvert jusqu'à
  * 22 h », « Fermé, ouvre demain à 8 h »), puis un lien vers tous les
  * horaires.
  *
@@ -184,11 +185,14 @@ const bibliotheques = lieux
     visibility: hidden;
   }
 
+  /* --_ecart : le même entre l'horloge et la liste, et entre la liste et le
+     statut (sur une rangée) ; le point d'état reste collé à son texte */
   .rangee {
+    --_ecart: 0.75rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.375rem var(--espace-3);
+    gap: 0.375rem var(--_ecart);
     max-width: var(--largeur-max);
     margin-inline: auto;
     padding: var(--espace-1) 16px;
@@ -203,7 +207,7 @@ const bibliotheques = lieux
     flex: 1 1 100%;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--espace-1);
+    gap: var(--_ecart);
     min-width: 0;
   }
 
@@ -211,9 +215,16 @@ const bibliotheques = lieux
     flex-shrink: 0;
   }
 
+  /* « Horaires du jour » n'est pas écrit (l'horloge et le statut suffisent
+     à l'œil) : il reste le nom de la liste et du bandeau pour les lecteurs
+     d'écran */
   .titre {
-    flex-shrink: 0;
-    font-weight: var(--graisse-forte);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* Liste : capsule à contour clair sur le bandeau, chevron du site à la
@@ -297,7 +308,13 @@ const bibliotheques = lieux
     background-color: var(--rouge-orange);
   }
 
+  /* Bout de la flèche aligné sur le bout des traits du bouton Menu de
+     l'en-tête (Entete.astro) : retrait du burger dans son bouton (16 px sous
+     1200 px, 8 px au-delà) + bout du trait dans le burger (4,5 px), moins le
+     vide de la flèche dans son icône (2 px) */
   .tous {
+    --_retrait-menu: 16px;
+    margin-inline-end: calc(var(--_retrait-menu) + 4.5px - 2px);
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
@@ -333,8 +350,14 @@ const bibliotheques = lieux
       flex: 0 1 auto;
     }
 
+    /* Rangée de 45 px (2.5rem, retrait des bannières plus bas) */
+    .rangee {
+      min-height: 2.5rem;
+      padding-block: 0;
+    }
+
     .liste {
-      min-height: 2.25rem;
+      min-height: 1.75rem;
     }
 
     .selecteur {
@@ -343,6 +366,7 @@ const bibliotheques = lieux
     }
 
     .tous {
+      min-height: 1.75rem;
       margin-left: auto;
     }
   }
@@ -352,14 +376,14 @@ const bibliotheques = lieux
       padding-inline: 1.25rem;
     }
 
+    .tous {
+      --_retrait-menu: 8px;
+    }
+
     /* Bannière photo sous l'en-tête transparent : le bandeau se pose sur le
        haut de la photo, à sa place normale, sans pousser la page. Les
-       bannières ajoutent sa hauteur (3rem) à leur retrait sous l'en-tête :
-       leur titre reste visible. */
-    .rangee {
-      min-height: 3rem;
-      padding-block: 0;
-    }
+       bannières ajoutent sa hauteur (2.5rem) à leur retrait sous
+       l'en-tête : leur titre reste visible. */
 
     :global(body:has(.super-hero, .super-hero-2, .banniere)) .bandeau {
       position: absolute;
@@ -371,7 +395,7 @@ const bibliotheques = lieux
     :global(body:has(.bandeau) .banniere),
     :global(body:has(.bandeau) .super-hero-2),
     :global(body:has(.bandeau) .super-hero) {
-      padding-top: calc(5rem + 3rem);
+      padding-top: calc(5rem + 2.5rem);
     }
   }
 
