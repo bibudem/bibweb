@@ -40,8 +40,6 @@ Voici la liste des icônes ayant un rôle fonctionnel :
 - :icone[tag]{taille=40} Filtrer les nouvelles par sujet
 :::
 
-Sur la page [Horaires et lieux](/horaires/), une jauge de trois barres accompagne le niveau d’achalandage d’une bibliothèque ouverte : une barre pour « Peu achalandée », deux pour « Achalandée », trois pour « Très achalandée, peu de places ». Le niveau est toujours écrit en toutes lettres à côté de la jauge.
-
 ### Limites connues
 
 Malgré nos efforts, certains contenus ne sont pas encore pleinement accessibles :
