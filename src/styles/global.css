@@ -535,7 +535,7 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
    focus clavier, texte dans data-infobulle. Texte d'appoint : le nom de
    l'élément est déjà porté par son texte ou son aria-label, d'où le texte
    de remplacement vide (pas de double lecture). L'élément porte aussi la
-   position (`.infobulle-gauche`, `.infobulle-dessous`), et son propre
+   position (`.infobulle-gauche`, `.infobulle-dessous`, `.infobulle-dessus`), et son propre
    `position` (relative, fixed). Une bande transparente (::before) relie la
    bulle à l'élément : le pointeur passe de l'un à l'autre sans la faire
    disparaître (WCAG 1.4.13). Échap pose data-infobulle-fermee (script du
@@ -591,6 +591,20 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
   top: 50%;
   right: calc(100% + 8px);
   translate: 0 -50%;
+}
+
+/* Au-dessus de l'élément, centrée (? de la recherche Sofia de l'accueil) */
+.infobulle-dessus::before {
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 8px;
+}
+
+.infobulle-dessus::after {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  translate: -50% 0;
 }
 
 /* Sous l'élément, alignée à gauche (liens de l'en-tête) */
