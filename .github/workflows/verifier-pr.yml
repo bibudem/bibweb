@@ -25,11 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Astro 7 exige Node 22.22 ou plus récent (engines de package.json)
       - name: Installer Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -43,7 +43,7 @@ jobs:
       # Images optimisées du dernier déploiement (deployer-pages.yml), en
       # lecture seule : une PR ne remplace pas le cache de main
       - name: Récupérer les images optimisées
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: node_modules/.astro/assets
           key: images-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.avif', 'src/**/*.gif', 'astro.config.mjs') }}

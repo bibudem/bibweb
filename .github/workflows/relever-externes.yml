@@ -1,23 +1,43 @@
-# Relève chaque semaine les pages de Studio·bib et de la Boîte à outils
+# Relève chaque soir les pages de Studio·bib et de la Boîte à outils
 # (scripts/indexer-externes.mjs) pour les suggestions de la recherche du
-# menu. Si l'un des relevés a changé, le workflow fait un commit sur main
-# avec src/data/recherche/, puis lance le déploiement de la pré-production
-# (qui ouvre ensuite la PR vers production) : un push fait avec le
-# GITHUB_TOKEN ne déclenche pas les autres workflows, d'où l'appel explicite.
+# menu, et les met en production sans intervention.
 #
-# Le script ne réécrit pas un fichier dont les pages n'ont pas changé : une
-# semaine sans changement ne produit ni commit ni déploiement. Si un site ne
-# répond pas, le script échoue et GitHub prévient par courriel ; les fichiers
-# versionnés restent tels quels.
+# Si l'un des relevés a changé :
+# 1. commit sur main (src/data/recherche/ seulement), puis déploiement de la
+#    pré-production ;
+# 2. les mêmes fichiers, et eux seuls, sont commités sur production : le
+#    reste de main (contenu pas encore validé) n'y part pas. Le commit sur
+#    main arrive aussi dans la PR main → production, avec un contenu
+#    identique : la fusion ne crée pas de conflit ;
+# 3. déploiement de la production (deployer-production.yml), qui fait passer
+#    les tests et le contrôle du robots.txt avant de livrer.
+# Un push fait avec le GITHUB_TOKEN ne déclenche pas les autres workflows,
+# d'où les appels explicites (gh workflow run).
+#
+# Garde-fous : le script ne réécrit pas un fichier dont les pages n'ont pas
+# changé (un soir sans changement ne produit ni commit ni déploiement). Il
+# échoue si un site ne répond pas, ne renvoie aucune page ou perd plus de
+# 20 % de ses pages d'un coup ; rien n'est alors publié, et GitHub prévient
+# par courriel. Une baisse voulue se force à la main : FORCER_RELEVE=1 npm
+# run indexer:externes, puis commit.
+#
+# Suppose que la branche production accepte un push direct du workflow (pas
+# de règle qui exige une PR). Sinon : ruleset avec « GitHub Actions » en
+# contournement.
 #
 # À noter : GitHub suspend les workflows planifiés d'un dépôt public après
-# 60 jours sans activité ; un commit ou un lancement manuel les réactive.
+# 60 jours sans activité ; un commit ou un lancement manuel les réactive. Les
+# lancements planifiés peuvent aussi être retardés, voire sautés, quand
+# GitHub est chargé (surtout à l'heure pile) : le relevé du lendemain
+# rattrape alors celui qui manque.
 name: Relever les sites externes
 
 on:
   schedule:
-    # Lundi, 6 h UTC (1 h ou 2 h à Montréal)
-    - cron: '0 6 * * 1'
+    # Chaque jour à 4 h 07 UTC : 23 h 07 à Montréal l'hiver, 0 h 07 l'été
+    # (la planification de GitHub est en UTC). Minute décalée de l'heure pile,
+    # où les lancements sont le plus souvent retardés ou sautés.
+    - cron: '7 4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -34,10 +54,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Installer Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -48,7 +70,7 @@ jobs:
       - name: Relever Studio·bib et la Boîte à outils
         run: npm run indexer:externes
 
-      - name: Enregistrer les changements
+      - name: Enregistrer les changements sur main
         id: commit
         run: |
           if git diff --quiet -- src/data/recherche/; then
@@ -59,12 +81,32 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/data/recherche/
-          git commit -m "Recherche : relevé de Studio·bib et de la Boîte à outils du $(date -u +%F)"
-          git push
+          git commit -m "Recherche : relevé de Studio·bib et de la Boîte à outils du $(TZ=America/Montreal date +%F)"
+          # main a pu bouger pendant le relevé (Decap, autre push) : on se
+          # replace par-dessus. Le relevé ne touche que ses propres fichiers.
+          git pull --rebase -q origin main
+          git push origin HEAD:main
           echo "change=oui" >> "$GITHUB_OUTPUT"
 
-      - name: Lancer le déploiement
+      - name: Enregistrer les mêmes relevés sur production
         if: steps.commit.outputs.change == 'oui'
-        run: gh workflow run deployer-pages.yml --ref main
+        run: |
+          git fetch -q origin production
+          git checkout -q -B production origin/production
+          git checkout main -- src/data/recherche/
+          if git diff --cached --quiet -- src/data/recherche/; then
+            echo "production a déjà ces relevés."
+            exit 0
+          fi
+          git commit -m "Recherche : relevé de Studio·bib et de la Boîte à outils du $(TZ=America/Montreal date +%F)"
+          git push origin production
+
+      # Toujours après un changement, même si production avait déjà ces
+      # relevés : un déploiement précédent a pu échouer
+      - name: Lancer les déploiements
+        if: steps.commit.outputs.change == 'oui'
+        run: |
+          gh workflow run deployer-pages.yml --ref main
+          gh workflow run deployer-production.yml --ref production
         env:
           GH_TOKEN: ${{ github.token }}

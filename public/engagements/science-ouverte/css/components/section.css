@@ -1,0 +1,15 @@
+/* ---------- Sections ---------- */
+@layer components {
+  section { padding: clamp(72px, 12vw, 136px) 0; }
+  #piliers { background: var(--bg-alt); }
+  .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--accent); margin: 0 0 18px; }
+  .kicker::before { content: ""; width: 10px; height: 10px; background: currentColor; }
+  /* Titres suivants : Lora Regular */
+  h2 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(38px, 6.4vw, 72px); line-height: 1.05; letter-spacing: -0.02em;
+    margin: 0; max-width: 15ch;
+  }
+  h2 em { font-style: italic; color: var(--accent); }
+  .section-intro { color: var(--ink-2); max-width: 540px; margin: 20px 0 0; font-size: 18px; }
+}

@@ -1,0 +1,25 @@
+/* Accessibilité : focus visible, lien d’évitement, texte pour lecteurs d’écran */
+@layer a11y {
+  :where(a, button, [tabindex]):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .hero :focus-visible, .cta :focus-visible, .nav:not(.scrolled) :focus-visible { outline-color: var(--udem-jaune); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .skip-link {
+    position: fixed; z-index: 100; left: 16px; top: calc(12px + env(safe-area-inset-top));
+    padding: 12px 18px; border-radius: 999px; font-weight: 600; text-decoration: none;
+    background: var(--udem-jaune); color: var(--udem-bleu-fonce);
+    transform: translateY(-200%); transition: transform 200ms var(--ease-out);
+  }
+  .skip-link:focus { transform: none; outline-color: var(--udem-bleu-fonce); }
+  html:not(.js) .motion-toggle { display: none; }
+  .motion-toggle {
+    position: absolute; right: var(--gutter); bottom: calc(24px + env(safe-area-inset-bottom));
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.5);
+    transition: transform 160ms var(--ease-out), background-color 150ms ease;
+  }
+  .motion-toggle:active { transform: scale(0.94); }
+  @media (hover: hover) and (pointer: fine) { .motion-toggle:hover { background: rgba(255,255,255,.22); } }
+  .motion-toggle .i-play, .motion-paused .motion-toggle .i-pause { display: none; }
+  .motion-paused .motion-toggle .i-play { display: block; }
+  @media (prefers-reduced-motion: reduce) { .motion-toggle { display: none; } }
+}
