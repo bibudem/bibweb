@@ -305,12 +305,13 @@ const aEnfants = Astro.slots.has('default')
       translate: 0 calc(-1 * var(--decalage-mobile, 0%));
     }
 
-    /* Slogan, nom et fonction descendent sur le haut du dégradé de la
-       recherche (zone vide, plus foncée) : ils ne cachent plus le visage */
+    /* Slogan, nom et fonction au-dessus du dégradé de la recherche, un peu
+       détachés d'elle (ils y descendaient de 3rem) ; la remontée de la photo
+       garde la tête au-dessus du slogan */
     .avec-portraits .texte {
       position: relative;
       z-index: var(--z-dessus-1);
-      margin-bottom: -3rem;
+      margin-bottom: 1rem;
       padding-bottom: 0;
     }
   }
@@ -346,11 +347,13 @@ const aEnfants = Astro.slots.has('default')
   /* Une vague bleu foncé : le dégradé de la recherche, en bas, remonte en
      courbe le long du côté gauche, sous le texte. Plus dense à la hauteur du
      nom et de la fonction (texte fin, 4,5:1 devant les zones claires), plus
-     légère derrière le slogan, qui se lit aussi par son ombre portée */
+     légère derrière le slogan, qui se lit aussi par son ombre portée.
+     Moins haute que la photo : elle s'efface avant le coin en haut à
+     gauche, qui garde ses couleurs */
   .super-hero.avec-portraits::before {
     content: '';
     background: radial-gradient(
-      ellipse 150% 85% at 0% 100%,
+      ellipse 150% 75% at 0% 100%,
       color-mix(in srgb, var(--bleu-fonce) 66%, transparent),
       color-mix(in srgb, var(--bleu-fonce) 58%, transparent) 50%,
       color-mix(in srgb, var(--bleu-fonce) 34%, transparent) 72%,
@@ -362,7 +365,7 @@ const aEnfants = Astro.slots.has('default')
   @media (width >= 900px) {
     .super-hero.avec-portraits::before {
       background: radial-gradient(
-        ellipse 72% 125% at 0% 100%,
+        ellipse 72% 95% at 0% 100%,
         color-mix(in srgb, var(--bleu-fonce) 66%, transparent),
         color-mix(in srgb, var(--bleu-fonce) 58%, transparent) 45%,
         color-mix(in srgb, var(--bleu-fonce) 34%, transparent) 68%,
