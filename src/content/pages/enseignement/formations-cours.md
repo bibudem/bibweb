@@ -23,25 +23,16 @@ Vous avez une idée ou un sujet en tête? Votre [bibliothécaire disciplinaire](
 ### Évaluation de l’information et bonnes pratiques de citation
 
 - Distinction entre les revues scientifiques et professionnelles
-
 - Critères pour évaluer la qualité des sources
-
 - Sensibilisation au plagiat
-
 - Citation des sources selon les standards de votre discipline
+- Introduction aux outils de gestion bibliographique (EndNote, Zotero, BibTeX)
 
-- Introduction aux outils de gestion bibliographique (EndNote, Zotero, BibTex)
-
-### Découverte des outils et pratiques de la publication scientifique :
+### Découverte des outils et pratiques de la publication scientifique
 
 - Introduction au libre accès
-
 - Gestion des données de recherche
-
 - Notions de droit d’auteur
-
 - Processus de publication scientifique et révision par les pairs
-
 - Compréhension des mesures d’impact
-
 - Initiation à l’intelligence artificielle dans le contexte académique
