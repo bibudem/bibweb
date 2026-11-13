@@ -26,6 +26,10 @@
      (de 4,61:1 sur bleu 200 à 5,87:1 sur le fond). Le #f04e24 reste pour
      les icônes et les éléments graphiques (3:1 suffit, WCAG 1.4.11). */
   --rouge-orange-texte-sur-clair: #b33410;
+  /* Orange du chandail orange (« Chaque enfant compte », 30 septembre),
+     plus chaud que le rouge orangé : fond de l'icône Premiers Peuples
+     (engagements). L'icône assombrie d'IconeCarree y fait environ 7:1 */
+  --orange: #f7941d;
   --vert-fonce: #024244;
   --vert-pale: #52b782;
   --violet-fonce: #9374f6;

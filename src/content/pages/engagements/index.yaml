@@ -100,7 +100,7 @@ sections:
   - type: icone-texte
     fond: bleu100
     icone: savoirs-autochtones
-    couleurIcone: vertPale
+    couleurIcone: orange
     titre: Soutien et valorisation des savoirs des Premiers Peuples
     libelle: Premiers Peuples
     texte: Nous nous engageons à contribuer au soutien et à la valorisation des savoirs des Premiers Peuples. Ces actions s’inscrivent dans une volonté de décolonisation et de soutien à l’inclusion, en cohérence avec les principes du plan d’action *Place aux Premiers Peuples 2024-2029* de l'UdeM.

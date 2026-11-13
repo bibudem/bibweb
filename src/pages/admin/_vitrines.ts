@@ -21,6 +21,7 @@ const LIBELLES_FONDS: Record<(typeof NOMS_FONDS)[number], string> = {
   bleu600: 'Bleu 600',
   vertFonce: 'Vert foncé',
   rougeOrange: 'Rouge orangé',
+  orange: 'Orange (chandail orange)',
   violetFonce: 'Violet foncé',
   vertPale: 'Vert pâle',
   jaune: 'Jaune',
