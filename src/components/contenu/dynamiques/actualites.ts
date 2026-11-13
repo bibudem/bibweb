@@ -3,7 +3,7 @@ import { toutesLesNouvelles, urlDeNouvelle } from '@/lib/contenu'
 import type { IdSujet } from '@/data/sujets'
 // Seulement pour l'ordre du fichier, que getCollection ne garde pas : à date
 // égale, les articles de presse restent dans l'ordre où l'équipe les a saisis.
-import articles from '@/content/revue-de-presse/articles.json'
+import revueDePresse from '@/content/revue-de-presse/articles.json'
 
 /*
  * Les nouvelles réunissent deux sources (useNouvelles de coquille-web) :
@@ -71,7 +71,7 @@ export async function toutesLesActualites(): Promise<Actualite[]> {
     sujets: data.sujets,
     ...champsDate(data.date),
   }))
-  const rang = new Map(articles.map((a: { url: string }, i: number) => [a.url, i]))
+  const rang = new Map(revueDePresse.articles.map((a: { url: string }, i: number) => [a.url, i]))
   presse.sort((a, b) => (rang.get(a.id) ?? 0) - (rang.get(b.id) ?? 0))
   return [...communications, ...presse].sort((a, b) => b.timestamp - a.timestamp)
 }

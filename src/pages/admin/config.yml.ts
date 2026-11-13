@@ -66,7 +66,7 @@ const corps = {
   name: 'body',
   widget: 'markdown',
   modes: ['raw'],
-  hint: 'Markdown et directives du site (:::tableau, ::bouton, :::alerte…) : voir le guide de rédaction.',
+  hint: 'Markdown : ## intertitres, **gras**, [liens](/adresse/), listes. Les blocs du site (:::alerte, ::bouton, :::tableau…) s’écrivent entre deux-points ; reprendre ceux d’une page existante.',
 }
 
 const champsPage = [
@@ -278,6 +278,47 @@ export const GET: APIRoute = async () => {
     ],
   }
 
+  // Revue de presse : un seul fichier JSON, les articles sous la clé `articles`
+  const collectionRevueDePresse = {
+    name: 'revue-de-presse',
+    label: 'Revue de presse',
+    files: [
+      {
+        name: 'articles',
+        label: 'Articles',
+        file: 'src/content/revue-de-presse/articles.json',
+        format: 'json',
+        fields: [
+          {
+            label: 'Articles',
+            name: 'articles',
+            widget: 'list',
+            collapsed: true,
+            summary: '{{fields.date}} · {{fields.source}} · {{fields.title}}',
+            add_to_top: true,
+            hint: 'Le plus récent en haut. La liste du site est triée par date.',
+            fields: [
+              { label: 'Titre', name: 'title', widget: 'string', hint: 'Le titre de l’article, tel que publié.' },
+              { label: 'Date', name: 'date', widget: 'datetime', format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false, hint: 'Date de publication de l’article.' },
+              { label: 'Source', name: 'source', widget: 'string', hint: 'Nom du média (ex. Le Devoir, Radio-Canada, UdeMNouvelles).' },
+              { label: 'Lien', name: 'url', widget: 'string', pattern: ['^https?://', 'Une adresse complète (https://…)'] },
+              { label: 'Langue', name: 'lang', widget: 'string', required: false, hint: 'Seulement si l’article n’est pas en français (ex. en).' },
+              {
+                label: 'Sujets',
+                name: 'sujets',
+                widget: 'select',
+                multiple: true,
+                required: false,
+                options: SUJETS.map(({ id, libelle }) => ({ label: libelle, value: id })),
+                hint: 'Livres rares : l’article paraît aussi dans la revue de presse de la Bibliothèque des livres rares.',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+
   const developpement = import.meta.env.DEV
   const config = {
     locale: 'fr',
@@ -327,6 +368,7 @@ export const GET: APIRoute = async () => {
         ...imagesACote,
         fields: champsNouvelle,
       },
+      collectionRevueDePresse,
       collectionVitrines,
       collectionPersonnel,
       ...collectionsPages,

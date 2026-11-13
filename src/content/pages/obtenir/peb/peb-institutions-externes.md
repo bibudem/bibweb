@@ -24,7 +24,7 @@ Afin d’accéder au formulaire de demande de PEB, il est nécessaire d’obteni
 * Après que notre équipe a créé le compte, vous recevrez un courriel de confirmation vous transmettant l’information requise pour l’activation du compte. Veuillez noter qu’un délai est possible avant l’envoi de ce courriel.
 * Vous aurez 24 heures afin de compléter l’activation.
 
-#### 2. Faire une demande de PEB
+#### 2. Faire une demande de PEB 
 
 Par la suite, vous pourrez nous transmettre une demande avec le [formulaire de demande de PEB](https://42113.account.worldcat.org/account/route/lending/workform). Il est nécessaire de remplir une demande par document.
 

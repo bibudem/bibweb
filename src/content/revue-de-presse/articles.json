@@ -1,57 +1,112 @@
-[
-  {
-    "title": "Se réapproprier l’histoire par le zine: entre science ouverte et rencontre culturelle",
-    "date": "2026-05-26",
-    "source": "UdeMNouvelles",
-    "url": "https://nouvelles.umontreal.ca/article/2026/05/26/se-reapproprier-l-histoire-par-le-zine-entre-science-ouverte-et-rencontre-culturelle",
-    "sujets": ["livres-rares"]
-  },
-  {
-    "title": "Des trésors du Moyen Âge entrent à la bibliothèque de l’Université de Montréal",
-    "date": "2026-05-06",
-    "source": "Le Devoir",
-    "url": "https://www.ledevoir.com/lire/978128/tresors-moyen-age-entrent-bibliotheque-universite-montreal",
-    "sujets": ["livres-rares"]
-  },
-  {
-    "title": "Du parchemin à l’imprimé: de nouveaux trésors à l’UdeM",
-    "date": "2026-05-06",
-    "source": "UdeMNouvelles",
-    "url": "https://nouvelles.umontreal.ca/article/2026/05/06/du-parchemin-a-l-imprime-de-nouveaux-tresors-a-l-udem",
-    "sujets": ["livres-rares"]
-  },
-  {
-    "title": "Bibliothèques de l’UdeM: trois nouveaux outils d’IA au service de la recherche documentaire",
-    "date": "2026-05-04",
-    "source": "UdeMNouvelles",
-    "url": "https://nouvelles.umontreal.ca/article/2026/05/04/bibliotheques-trois-nouveaux-outils-d-ia-au-service-de-la-recherche-documentaire"
-  },
-  {
-    "title": "Dans l’univers de Claude Gingras - Entrevue avec Christiane Melançon",
-    "date": "2025-11-16",
-    "source": "Radio-Canada",
-    "url": "https://ici.radio-canada.ca/ohdio/premiere/emissions/tout-terrain/segments/rattrapage/2227843/dans-univers-claude-gingras-entrevue-avec-christiane-melancon",
-    "sujets": ["livres-rares"]
-  },
-  {
-    "title": "Dans l’univers de Claude Gingras",
-    "date": "2025-11-12",
-    "source": "La Presse",
-    "url": "https://www.lapresse.ca/arts/chroniques/2025-11-12/vitrine-virtuelle-a-l-udem/dans-l-univers-de-claude-gingras.php",
-    "sujets": ["livres-rares"]
-  },
-  {
-    "title": "Incursion dans la bibliothèque de magie et sorcellerie de l’UdeM",
-    "date": "2025-10-31",
-    "source": "24 heures",
-    "url": "https://www.24heures.ca/2025/10/31/incursion-dans-la-bibliotheque-de-magie-et-sorcellerie-de-ludem",
-    "sujets": ["livres-rares"]
-  },
-  {
-    "title": "Échappées belles: livres, co-création, correspondances dans le surréalisme au féminin",
-    "date": "2024-10-29",
-    "source": "UdeMNouvelles",
-    "url": "https://nouvelles.umontreal.ca/article/2024/10/29/echappees-belles-livres-co-creation-correspondances-dans-le-surrealisme-au-feminin/",
-    "sujets": ["livres-rares"]
-  }
-]
+{
+  "articles": [
+    {
+      "title": "Une nouvelle vie pour les déchets de l’impression 3D",
+      "date": "2026-10-13",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2026/10/13/une-nouvelle-vie-pour-les-dechets-de-l-impression-3d"
+    },
+    {
+      "title": "Une BLSH plus verte et moins coûteuse",
+      "date": "2026-09-28",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/annonce/2026/09/28/une-blsh-plus-verte-et-moins-couteuse"
+    },
+    {
+      "title": "Derrière la rentrée: le personnel de l’UdeM dans le feu de l’action!",
+      "date": "2026-08-31",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2026/08/31/derriere-la-rentree-le-personnel-de-l-udem-dans-le-feu-de-l-action"
+    },
+    {
+      "title": "L’UdeM offre une nouvelle formation pour apprivoiser l’IA en enseignement et en recherche",
+      "date": "2026-08-24",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2026/08/24/l-udem-offre-une-nouvelle-formation-pour-apprivoiser-l-ia-en-enseignement-et-en-recherche"
+    },
+    {
+      "title": "Le 15-18, émission du mardi 28 juillet 2026",
+      "date": "2026-07-28",
+      "source": "Radio-Canada",
+      "url": "https://ici.radio-canada.ca/ohdio/premiere/emissions/le-15-18/segments/rattrapage/2438647/entrevue"
+    },
+    {
+      "title": "Rare manuscript fragment among new heritage acquisitions at Université de Montréal",
+      "date": "2026-07-09",
+      "source": "CityNews",
+      "url": "https://montreal.citynews.ca/2026/07/09/rare-manuscript-heritage-universite-de-montreal/",
+      "lang": "en",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Un rare manuscrit vieux de 1000 ans entre les mains de l’Université de Montréal",
+      "date": "2026-07-09",
+      "source": "Noovo Info",
+      "url": "https://www.noovo.info/nouvelles/education/article/un-rare-manuscrit-vieux-de-1000-ans-entre-les-mains-de-luniversite-de-montreal/",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "A Montreal university is preserving a rare 1000-year-old manuscript",
+      "date": "2026-07-08",
+      "source": "CTV News",
+      "url": "https://www.ctvnews.ca/montreal/article/a-montreal-university-is-preserving-a-rare-1000-year-old-manuscript/",
+      "lang": "en",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Se réapproprier l’histoire par le zine: entre science ouverte et rencontre culturelle",
+      "date": "2026-05-26",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2026/05/26/se-reapproprier-l-histoire-par-le-zine-entre-science-ouverte-et-rencontre-culturelle",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Des trésors du Moyen Âge entrent à la bibliothèque de l’Université de Montréal",
+      "date": "2026-05-06",
+      "source": "Le Devoir",
+      "url": "https://www.ledevoir.com/lire/978128/tresors-moyen-age-entrent-bibliotheque-universite-montreal",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Du parchemin à l’imprimé: de nouveaux trésors à l’UdeM",
+      "date": "2026-05-06",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2026/05/06/du-parchemin-a-l-imprime-de-nouveaux-tresors-a-l-udem",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Bibliothèques de l’UdeM: trois nouveaux outils d’IA au service de la recherche documentaire",
+      "date": "2026-05-04",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2026/05/04/bibliotheques-trois-nouveaux-outils-d-ia-au-service-de-la-recherche-documentaire"
+    },
+    {
+      "title": "Dans l’univers de Claude Gingras - Entrevue avec Christiane Melançon",
+      "date": "2025-11-16",
+      "source": "Radio-Canada",
+      "url": "https://ici.radio-canada.ca/ohdio/premiere/emissions/tout-terrain/segments/rattrapage/2227843/dans-univers-claude-gingras-entrevue-avec-christiane-melancon",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Dans l’univers de Claude Gingras",
+      "date": "2025-11-12",
+      "source": "La Presse",
+      "url": "https://www.lapresse.ca/arts/chroniques/2025-11-12/vitrine-virtuelle-a-l-udem/dans-l-univers-de-claude-gingras.php",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Incursion dans la bibliothèque de magie et sorcellerie de l’UdeM",
+      "date": "2025-10-31",
+      "source": "24 heures",
+      "url": "https://www.24heures.ca/2025/10/31/incursion-dans-la-bibliotheque-de-magie-et-sorcellerie-de-ludem",
+      "sujets": ["livres-rares"]
+    },
+    {
+      "title": "Échappées belles: livres, co-création, correspondances dans le surréalisme au féminin",
+      "date": "2024-10-29",
+      "source": "UdeMNouvelles",
+      "url": "https://nouvelles.umontreal.ca/article/2024/10/29/echappees-belles-livres-co-creation-correspondances-dans-le-surrealisme-au-feminin/",
+      "sujets": ["livres-rares"]
+    }
+  ]
+}

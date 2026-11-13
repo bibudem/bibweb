@@ -187,6 +187,9 @@ const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !=
     --couleur-focus-bande: var(--couleur-sur-fonce);
     /* Le jaune garde l'accent : 4,66:1 sur bleu principal, 7,4:1 sur vert foncé */
     --rouge-orange-texte: var(--jaune);
+    /* Texte secondaire (légendes) : le gris du thème clair restait illisible
+       sur le fond foncé (environ 1,5:1) ; blanc atténué, au-dessus de 4,5:1 */
+    --couleur-texte-secondaire: color-mix(in srgb, var(--couleur-sur-fonce) 82%, transparent);
     color: var(--couleur-sur-fonce);
   }
 

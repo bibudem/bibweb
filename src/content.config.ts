@@ -149,10 +149,11 @@ const nouvelles = defineCollection({
     }),
 })
 
-// Revue de presse : un seul fichier JSON que l'équipe édite à la main
+// Revue de presse : un seul fichier JSON, modifiable dans Decap (« Revue de
+// presse ») ; les articles sont sous la clé `articles`, Decap n'éditant qu'un objet
 const revueDePresse = defineCollection({
   loader: file('src/content/revue-de-presse/articles.json', {
-    parser: (texte) => JSON.parse(texte).map((article: { url: string }) => ({ id: article.url, ...article })),
+    parser: (texte) => JSON.parse(texte).articles.map((article: { url: string }) => ({ id: article.url, ...article })),
   }),
   schema: z.object({
     title: z.string().trim(),

@@ -81,6 +81,9 @@ sections:
         texte: Synthèse des connaissances
       - icone: share-network
         texte: Bibliographies partagées
+    bouton:
+      texte: Contactez votre bibliothécaire disciplinaire pour en savoir plus
+      lien: /nous-joindre/notre-equipe/
 
   - type: liste-liens
     fond: bleu100

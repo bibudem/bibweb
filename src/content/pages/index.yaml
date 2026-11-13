@@ -87,36 +87,36 @@ sections:
     titre: Quoi de neuf
     nombre: 3
 
-  # Les pages de la barre de navigation, dans le même ordre et sous le même nom
+  # Les pages de la barre de navigation, dans le même ordre
   - type: cartes-sections
     cartes:
       - fond: bleu100
-        titre: Espaces
-        texte: "Tout le monde s’y retrouve. Choisissez votre espace selon vos besoins du moment : horaires étendus, accès autonome, création numérique, cabine silencieuse, salon de détente… Le réseau, c’est 14 bibliothèques, chacune avec sa personnalité."
+        titre: Des espaces pour chaque moment
+        texte: "Le réseau, c’est 14 bibliothèques, chacune avec sa personnalité. Choisissez votre espace selon vos besoins du jour : horaires étendus, accès autonome, création numérique, cabine silencieuse, salon de détente…"
         image: ./images/espaces-alveoles.webp
         bouton:
-          texte: Découvrir nos espaces
+          texte: Explorer la section Espaces
           lien: /espaces/
       - fond: bleu100
-        titre: Études
-        texte: "Mille et une façons d’apprendre : guides de nos spécialistes, soutien informatique, formations gratuites, Service Accessibilité et aide personnalisée, de la première à la dernière session."
+        titre: Des études à votre manière
+        texte: "Il y a mille et une façons d’apprendre : guides de nos spécialistes, soutien informatique, formations gratuites, Service Accessibilité et aide personnalisée, de la première à la dernière session."
         image: ./images/super-heroes/etudes.webp
         bouton:
-          texte: Découvrir les services pour la communauté étudiante
+          texte: Découvrir la section Études
           lien: /etudes/
       - fond: bleu100
-        titre: Recherche
+        titre: De l’accompagnement pour faire de la recherche
         texte: "Nos spécialistes vous accompagnent tout au long du cycle de la recherche : intelligence artificielle générative, données, synthèses des connaissances, publication et libre accès, mesure de l’impact."
         image: ./images/recherche-accueil.webp
         bouton:
-          texte: Explorer les services pour la recherche
+          texte: Voir la section Recherche
           lien: /recherche/
       - fond: bleu100
-        titre: Enseignement
+        titre: Des ressources pour enseigner à l’UdeM
         texte: "Réserve de cours, droit d’auteur et déclarations dans Savia, formations dans vos cours et dans StudiUM, salles et ressources éducatives libres : notre équipe appuie votre enseignement."
         image: ./images/enseignement-accueil.webp
         bouton:
-          texte: Découvrir les services pour l’enseignement
+          texte: Consulter la section Enseignement
           lien: /enseignement/
 
   - type: image-texte

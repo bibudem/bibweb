@@ -65,7 +65,7 @@ const icone = (label = 'Icône', name = 'icone'): Champ => ({
   label,
   name,
   widget: 'string',
-  hint: 'Nom d’une icône Phosphor (ex. book-open-text) ou d’une icône maison : voir docs/REDACTION.md. Un nom inconnu fait échouer la publication.',
+  hint: 'Nom d’une icône du site phosphoricons.com (ex. book-open-text) ou d’une icône maison : sofia, udem, lien-interne, lien-externe, accordeon, savoirs-autochtones. Un nom inconnu fait échouer la publication.',
 })
 
 const caseACocher = (label: string, name: string, hint?: string): Champ => facultatif({ label, name, widget: 'boolean', ...(hint && { hint }) })
