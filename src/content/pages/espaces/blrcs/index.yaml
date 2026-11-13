@@ -55,7 +55,7 @@ sections:
   # Ajouter `transcription` quand la page de transcription existera
   - type: video
     fond: rose100
-    titre: Une histoire de cœur
+    titre: Des ouvrages d’exception
     youtube: 3cMdFZbivdg
     image: ./images/video-ouvrages-exception.webp
     titreVideo: Ouvrages d’exception | La Bibliothèque des livres rares et collections spéciales de l’UdeM
