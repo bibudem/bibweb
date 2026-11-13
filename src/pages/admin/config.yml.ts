@@ -269,7 +269,6 @@ export const GET: APIRoute = async () => {
               { label: 'Téléphone', name: 'telephone', widget: 'string', required: false, hint: 'Ex. 514 343-6111, poste 3585' },
               { label: 'Courriel', name: 'courriel', widget: 'string', required: false, hint: 'L’adresse seule, sans « mailto: ».' },
               { label: 'Lien Teams', name: 'teams', widget: 'string', required: false },
-              { label: 'ORCID', name: 'orcid', widget: 'string', required: false, hint: 'L’identifiant seul, ex. 0000-0002-1825-0097. Affiche le logo ORCID et le lien vers le profil.' },
               { label: 'Photo', name: 'photo', widget: 'image', required: false, hint: 'Carrée, 200 × 200 px, en WebP.' },
             ],
           },
