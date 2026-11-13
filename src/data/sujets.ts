@@ -5,7 +5,7 @@
  * (la Bibliothèque des livres rares, bouton « Consulter la revue de presse »).
  *
  * Une nouvelle le déclare dans son frontmatter (`sujets: [livres-rares]`), un
- * article de presse dans src/content/revue-de-presse/articles.json. Un
+ * article de presse dans src/content/revue-de-presse/articles.json (clé articles). Un
  * identifiant absent d'ici fait échouer le build (content.config.ts).
  */
 export const SUJETS = [{ id: 'livres-rares', libelle: 'Livres rares et collections spéciales' }] as const
