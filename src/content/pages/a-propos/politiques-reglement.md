@@ -5,7 +5,7 @@ crumbLabel: Politiques et règlement
 secondaryNav:
   order: 5
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Politiques et règlement

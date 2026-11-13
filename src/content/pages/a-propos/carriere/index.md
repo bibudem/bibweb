@@ -4,7 +4,7 @@ crumbLabel: Carrière
 secondaryNav:
   order: 6
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 sansSommaire: true
 ---

@@ -4,7 +4,7 @@ crumbLabel: Mission et vision
 secondaryNav:
   order: 3
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Mission, vision, valeurs et objectifs

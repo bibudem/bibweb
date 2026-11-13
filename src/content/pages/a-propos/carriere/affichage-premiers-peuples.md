@@ -5,7 +5,7 @@ secondaryNav:
   title: Premiers Peuples
   order: 2
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Affichage destiné aux étudiants et étudiantes issues des Premiers Peuples
