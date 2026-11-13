@@ -4,7 +4,7 @@ crumbLabel: Réserve de cours
 secondaryNav:
   order: 3
 superHero:
-  imageName: enseignement
+  imageName: amenagement
   title: 'Épauler l’enseignement, c’est notre rayon'
 ---
 ## Réserve de cours
