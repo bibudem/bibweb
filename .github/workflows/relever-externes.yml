@@ -28,16 +28,19 @@
 # À noter : GitHub suspend les workflows planifiés d'un dépôt public après
 # 60 jours sans activité ; un commit ou un lancement manuel les réactive. Les
 # lancements planifiés peuvent aussi être retardés, voire sautés, quand
-# GitHub est chargé (surtout à l'heure pile) : le relevé du lendemain
-# rattrape alors celui qui manque.
+# GitHub est chargé : d'où les trois lancements par soir (voir schedule).
 name: Relever les sites externes
 
 on:
   schedule:
-    # Chaque jour à 4 h 07 UTC : 23 h 07 à Montréal l'hiver, 0 h 07 l'été
-    # (la planification de GitHub est en UTC). Minute décalée de l'heure pile,
-    # où les lancements sont le plus souvent retardés ou sautés.
+    # Trois lancements par soir (heures UTC ; à Montréal : 21 h 47, 23 h 07 et
+    # 0 h 37 l'hiver, une heure de plus l'été). GitHub peut retarder ou sauter
+    # un lancement planifié : les suivants rattrapent celui qui manque. Sans
+    # changement depuis le précédent, un lancement ne commite ni ne déploie
+    # rien. Minutes décalées de l'heure pile, où les sauts sont plus fréquents.
+    - cron: '47 2 * * *'
     - cron: '7 4 * * *'
+    - cron: '37 5 * * *'
   workflow_dispatch:
 
 permissions:
