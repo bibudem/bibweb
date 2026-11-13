@@ -127,9 +127,6 @@ sections:
     boutons:
       - texte: Explorer les collections spéciales
         lien: https://collections-speciales.bib.umontreal.ca/
-      - texte: Découvrir la Bibliothèque des livres rares et collections spéciales
-        lien: /espaces/blrcs/
-        contour: true
 
   - type: image-fond
     image: ./images/engagement-accueil.webp

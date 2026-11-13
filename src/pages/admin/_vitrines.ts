@@ -287,6 +287,7 @@ const blocs: Champ[] = [
       pattern: ['^[A-Za-z0-9_-]{11}$', '11 caractères : ce qui suit « watch?v= » dans l’adresse'],
     },
     texte('Titre de la vidéo', 'titreVideo', 'Annoncé sur le bouton de lecture.'),
+    facultatif({ ...image(), hint: 'Photo derrière le bouton de lecture (une image tirée de la vidéo, par exemple). Sans photo : fond bleu foncé.' }),
     facultatif(lien('Page de la transcription', 'transcription')),
   ]),
   bloc('quoi-de-neuf', 'Quoi de neuf (accueil)', [...communs(), titre(), nombre('Nombre', 'nombre', 1, 10, 'Par défaut : 4.')]),

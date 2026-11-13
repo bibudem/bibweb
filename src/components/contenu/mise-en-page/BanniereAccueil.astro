@@ -90,7 +90,7 @@ const aEnfants = Astro.slots.has('default')
     premier && premiereImage ? (
       <Fragment>
         {/* Sans src : le script ci-dessous donne celle de la photo tirée */}
-        <img class="super-hero-image" data-portrait-image alt="" sizes={TAILLES_PORTRAIT} width={premiereImage.width} height={premiereImage.height} loading="eager" fetchpriority="high" decoding="async" />
+        <img class="super-hero-image photo-fondu" data-portrait-image alt="" sizes={TAILLES_PORTRAIT} width={premiereImage.width} height={premiereImage.height} loading="eager" fetchpriority="high" decoding="async" />
         <noscript>
           <img class="super-hero-image" src={premier.src} srcset={premier.srcset} sizes={TAILLES_PORTRAIT} alt="" width={premiereImage.width} height={premiereImage.height} />
         </noscript>
@@ -104,10 +104,25 @@ const aEnfants = Astro.slots.has('default')
         alt={alt}
         loading="eager"
         fetchpriority="high"
-        class="super-hero-image"
+        class="super-hero-image photo-fondu"
       />
     )
   }
+  {/* Fondu à l'arrivée de la photo fixe (global.css, .photo-fondu) ; pour
+      les portraits, le script du tirage s'en charge, une fois la src posée */}
+  {!premier && (
+    <script is:inline data-astro-rerun>
+      {
+        const img = document.currentScript.parentElement.querySelector('img.super-hero-image')
+        if (img && !img.complete) {
+          img.setAttribute('data-fondu', '')
+          const fin = () => img.removeAttribute('data-fondu')
+          img.addEventListener('load', fin, { once: true })
+          img.addEventListener('error', fin, { once: true })
+        }
+      }
+    </script>
+  )}
   <div class="texte">
     <div class="colonne">
       {/* Nom du site (h1) : premier titre du contenu pour les moteurs et les
@@ -148,6 +163,13 @@ const aEnfants = Astro.slots.has('default')
         const img = hero.querySelector('[data-portrait-image]')
         img.srcset = p.srcset
         img.src = p.src
+        // Fondu à l'arrivée de la photo (global.css, .photo-fondu)
+        if (!img.complete) {
+          img.setAttribute('data-fondu', '')
+          const fin = () => img.removeAttribute('data-fondu')
+          img.addEventListener('load', fin, { once: true })
+          img.addEventListener('error', fin, { once: true })
+        }
         if (p.cadrage) hero.style.setProperty('--cadrage', p.cadrage)
         if (p.cadrageHorizontal) hero.style.setProperty('--cadrage-x', p.cadrageHorizontal)
         if (p.decalageMobile) hero.style.setProperty('--decalage-mobile', p.decalageMobile)
@@ -182,6 +204,8 @@ const aEnfants = Astro.slots.has('default')
 <style>
   .super-hero {
     --hauteur: 85vh;
+    /* Sous la photo pendant son chargement (fondu) */
+    background-color: var(--bleu-fonce);
     /* Sous 600 px : 2rem sous la bannière, en plus de la marge de la bande
        suivante (48 px) ; le Quoi de neuf paraissait collé à la photo */
     --retrait: 3rem;

@@ -666,6 +666,19 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
   text-shadow: none;
 }
 
+/* Fondu des photos de bannière (BanniereAccueil, BannierePage) : un script
+   en ligne pose [data-fondu] sur la photo si elle n'est pas encore chargée
+   et le retire au chargement ; la photo apparaît alors en fondu sur le bleu
+   foncé de la bannière. Déjà en cache : rien à faire, elle s'affiche tout
+   de suite. Sans JavaScript, pas de fondu ; le mouvement réduit le coupe. */
+.photo-fondu {
+  transition: opacity var(--duree-longue-2) var(--courbe-standard-deceleree);
+}
+
+.photo-fondu[data-fondu] {
+  opacity: 0;
+}
+
 .fond-photo-image {
   position: absolute;
   z-index: var(--z-fond);
