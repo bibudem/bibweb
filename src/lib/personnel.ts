@@ -31,8 +31,6 @@ export type Personne = {
   telephone?: string
   courriel?: string
   teams?: string
-  /** Identifiant ORCID (0000-0002-1825-0097), sans l'adresse */
-  orcid?: string
   /** Nom du fichier de la photo dans src/content/personnel/photos, ou undefined */
   photo?: string
 }
@@ -63,13 +61,6 @@ const SCHEMA = z.object({
         telephone: texte.optional(),
         courriel: z.string().trim().email().optional(),
         teams: z.string().trim().url().optional(),
-        /** Identifiant ORCID seul ; une adresse https://orcid.org/… est ramenée à l'identifiant */
-        orcid: z
-          .string()
-          .trim()
-          .transform((v) => v.replace(/^https?:\/\/(www\.)?orcid\.org\//i, ''))
-          .pipe(z.string().regex(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/, 'Identifiant ORCID attendu, ex. 0000-0002-1825-0097'))
-          .optional(),
         /** Nom du fichier dans src/content/personnel/photos (l'extension est facultative) */
         photo: texte.optional(),
       })
@@ -112,7 +103,6 @@ export function personnel(): Personne[] {
         telephone: p.telephone,
         courriel: p.courriel,
         teams: p.teams,
-        orcid: p.orcid,
         photo,
       }
     })

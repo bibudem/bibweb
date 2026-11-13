@@ -285,8 +285,8 @@ const LIENS = [
     fill: currentColor;
   }
 
-  /* Liens d'appoint, discrets pour ne pas concurrencer la barre : petit
-     texte en blanc atténué (75 % : plus de 9:1 sur le bleu foncé de la
+  /* Liens d’appoint, discrets pour ne pas concurrencer la barre : texte
+     réduit (15 px) en blanc atténué (75 % : plus de 9:1 sur le bleu foncé de la
      bande), séparés par des points médians ; blanc plein au survol */
   .liens {
     display: flex;
@@ -297,7 +297,7 @@ const LIENS = [
     padding: 0;
     list-style: none;
     color: color-mix(in srgb, var(--couleur-sur-fonce) 75%, transparent);
-    font-size: var(--texte-tres-petit);
+    font-size: var(--texte-reduit);
   }
 
   /* Sous 600 px, les liens passent à la ligne : un espace plutôt qu'un

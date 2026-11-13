@@ -5,7 +5,7 @@ secondaryNav:
   title: Stéphanie Gagnon – directrice générale
   order: 2
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Stéphanie Gagnon – directrice générale

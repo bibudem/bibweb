@@ -23,7 +23,6 @@ import { MicrosoftTeamsLogoIcon } from '@phosphor-icons/react/dist/ssr/Microsoft
 import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X'
 import ChampListe from '@/components/primitives/ChampListe.astro'
-import LogoOrcid from '@/components/icones/LogoOrcid.astro'
 import { personnel } from '@/lib/personnel'
 import { bibliotheques } from '@/data/bibliotheques'
 import { normaliserMots, cle, majuscule, SEPARATEUR } from './normaliser'
@@ -122,8 +121,6 @@ const fiches = personnes.map((p) => ({
   photoImage: photoDe(p),
   hrefTelephone: p.telephone ? lienTelephone(p.telephone) : undefined,
   hrefTeams: p.teams && /^https:\/\//.test(p.teams) ? p.teams : undefined,
-  // « d'Alexandre », « de Viviane » : élision devant une voyelle ou un h muet
-  deNom: /^[aeiouyhàâäéèêëîïôöùûü]/i.test(p.prenom) ? `d’${p.nomComplet}` : `de ${p.nomComplet}`,
   texte: normaliserMots([p.nom, p.prenom, p.fonction, p.disciplines.join(' '), p.expertises.join(' '), p.bibliotheques.join(' '), p.direction].join(' ')),
   // Comme la source : la première lettre en majuscule, la suite telle quelle
   disciplinesAffichees: p.disciplines.map((d, i) => (i === 0 ? majuscule(d) : d)).join(', '),
@@ -233,16 +230,6 @@ const ids = { q: `${n}-q`, bib: `${n}-bib`, disc: `${n}-disc` }
                     <IconeSprite icone={MicrosoftTeamsLogoIcon} size={25} aria-hidden="true" />
                     <span>
                       Clavarder sur Teams<span class="visuellement-masque"> avec {p.nomComplet} (nouvel onglet)</span>
-                    </span>
-                  </a>
-                </li>
-              )}
-              {p.orcid && (
-                <li>
-                  <a href={`https://orcid.org/${p.orcid}`} target="_blank" rel="noopener noreferrer">
-                    <LogoOrcid size={25} />
-                    <span>
-                      Profil ORCID<span class="visuellement-masque"> {p.deNom} (nouvel onglet)</span>
                     </span>
                   </a>
                 </li>
@@ -463,7 +450,7 @@ const ids = { q: `${n}-q`, bib: `${n}-bib`, disc: `${n}-disc` }
   }
 
   /* Texte agrandi à 200 % sur 320 px : sans min-width: 0, une colonne de la
-     grille et ses liens (Teams, ORCID) débordaient de la fiche (WCAG 1.4.10) */
+     grille et ses liens (Teams) débordaient de la fiche (WCAG 1.4.10) */
   .details > *,
   .contacts a > span {
     min-width: 0;

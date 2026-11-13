@@ -5,7 +5,7 @@ crumbLabel: Rapports annuels
 secondaryNav:
   order: 4
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Rapports annuels

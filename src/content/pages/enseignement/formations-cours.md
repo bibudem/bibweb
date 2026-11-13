@@ -4,7 +4,7 @@ crumbLabel: Formations intégrées au cursus
 secondaryNav:
   order: 2
 superHero:
-  imageName: enseignement
+  imageName: amenagement
   title: 'Épauler l’enseignement, c’est notre rayon'
 ---
 ## Enrichissez vos cours avec nos formations sur mesure!

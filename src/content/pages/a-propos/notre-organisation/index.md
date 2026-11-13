@@ -5,7 +5,7 @@ crumbLabel: Notre organisation
 secondaryNav:
   order: 1
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Notre organisation

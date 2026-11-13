@@ -4,7 +4,7 @@ crumbLabel: Nos collections
 secondaryNav:
   order: 2
 superHero:
-  imageName: espaces
+  imageName: rayonnages
   title: À propos
 ---
 ## Nos collections

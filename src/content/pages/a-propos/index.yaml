@@ -6,9 +6,9 @@ secondaryNav:
 
 banniere:
   titre: À propos
-  image: espaces
+  image: rayonnages
   taille: petite
-  cadrage: 34%
+  cadrage: 50%
 
 sections:
   - type: liste-liens
