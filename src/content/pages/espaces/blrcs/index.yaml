@@ -57,7 +57,8 @@ sections:
     fond: rose100
     titre: Une histoire de cœur
     youtube: 3cMdFZbivdg
-    titreVideo: Ouvrages d’exception | La Bibliothèque des livres rares et collections spéciales de l’UdeM (Université de Montréal)
+    image: ./images/video-ouvrages-exception.webp
+    titreVideo: Ouvrages d’exception | La Bibliothèque des livres rares et collections spéciales de l’UdeM
 
   - type: image-texte
     fond: bleu100

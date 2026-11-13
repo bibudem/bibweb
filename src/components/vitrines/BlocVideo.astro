@@ -9,7 +9,10 @@
  * par le lecteur youtube-nocookie, qui démarre et reçoit le focus.
  * Le lecteur et le lien portent le titre de la vidéo (WCAG 4.1.2) ; la
  * transcription, si elle existe, est liée sous la vidéo (WCAG 1.2).
+ * `image`, facultative, se place derrière le bouton (décorative), sous un
+ * voile bleu foncé qui garde le texte blanc lisible.
  */
+import { Picture } from 'astro:assets'
 import { PlayIcon } from '@phosphor-icons/react/dist/ssr/Play'
 import Titre from './Titre.astro'
 import TexteMarkdown from './TexteMarkdown.astro'
@@ -20,12 +23,18 @@ type Props = { bloc: BlocDe<'video'> }
 
 const { bloc } = Astro.props
 const lienYouTube = `https://www.youtube.com/watch?v=${bloc.youtube}`
+const largeurImage = bloc.image?.width ?? 0
 ---
 
 <Titre texte={bloc.titre} id={bloc.id} />
 {bloc.texte && <TexteMarkdown texte={bloc.texte} brut />}
 <div class="cadre" data-video={bloc.youtube} data-titre-video={bloc.titreVideo}>
-  <a class="lecture" href={lienYouTube}>
+  {
+    bloc.image && (
+      <Picture class="fond-video" src={bloc.image} formats={['avif', 'webp']} fallbackFormat="webp" widths={[480, 768, 1024, 1536].filter((l) => l < largeurImage).concat(Math.min(largeurImage, 1536))} sizes="(min-width: 1024px) 960px, 92vw" alt="" loading="lazy" />
+    )
+  }
+  <a class:list={['lecture', { 'sur-photo': bloc.image }]} href={lienYouTube}>
     <span class="pastille" aria-hidden="true"><IconeSprite icone={PlayIcon} size="2.5rem" weight="fill" /></span>
     <span class="texte-lecture">
       <span class="action">Lire la vidéo</span>
@@ -74,6 +83,21 @@ const lienYouTube = `https://www.youtube.com/watch?v=${bloc.youtube}`
     overflow: hidden;
     border-radius: var(--rayon-carte);
     background-color: var(--bleu-fonce);
+  }
+
+  .cadre :global(.fond-video),
+  .cadre :global(.fond-video img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Voile bleu foncé sur la photo : le texte blanc reste lisible (WCAG 1.4.3) */
+  .lecture.sur-photo {
+    background: linear-gradient(color-mix(in srgb, var(--bleu-fonce) 55%, transparent), color-mix(in srgb, var(--bleu-fonce) 55%, transparent));
+    text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
   }
 
   .cadre :global(iframe) {

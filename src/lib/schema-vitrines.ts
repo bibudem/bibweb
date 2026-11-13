@@ -237,6 +237,8 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       youtube: z.string().regex(/^[A-Za-z0-9_-]{11}$/, 'L’identifiant YouTube a 11 caractères : ce qui suit « watch?v= » dans l’adresse de la vidéo'),
       /** Titre de la vidéo, annoncé sur le bouton de lecture et le lecteur */
       titreVideo: texteCourt,
+      /** Photo derrière le bouton de lecture (décorative, voilée) ; sans elle, fond bleu foncé */
+      image: image().optional(),
       /** Page de la transcription (WCAG 1.2) */
       transcription: lien.optional(),
     })
