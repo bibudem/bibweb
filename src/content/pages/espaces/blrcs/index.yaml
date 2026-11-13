@@ -61,7 +61,6 @@ sections:
     titreVideo: Ouvrages d’exception | La Bibliothèque des livres rares et collections spéciales de l’UdeM
 
   - type: image-texte
-    fond: bleu100
     titre: On parle de nous
     texte: |
       Les collections, les acquisitions et les projets de la bibliothèque suscitent l’intérêt bien au-delà du campus. Découvrez les articles, entrevues et reportages sur nos documents et projets, et les recherches qu’ils inspirent.
@@ -75,7 +74,7 @@ sections:
       lien: /nouvelles/?sujet=livres-rares
 
   - type: image-texte
-    fond: vertFonce
+    fond: rose100
     titre: Ressources complémentaires
     image: ./images/estampes-cartes.webp
     legende: Cartons d’invitation à des vernissages d’exposition, collection Gilles-Rioux
