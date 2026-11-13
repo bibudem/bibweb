@@ -166,7 +166,7 @@ export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
       { libelle: 'Bases de données A-Z', fonction: 'Ressources électroniques par sujet', href: 'https://boite-outils.bib.umontreal.ca/az.php', point: 'var(--rouge-orange)' },
       { libelle: 'Studio·bib', fonction: 'Informatique et création numérique', href: 'https://studio.bib.umontreal.ca/', point: 'var(--jaune)' },
       { libelle: 'Papyrus', fonction: 'Dépôt institutionnel', href: 'https://umontreal.scholaris.ca/', point: 'var(--vert-fonce)' },
-      { libelle: 'GéoIndex', fonction: 'Données géospatiales', href: 'https://geoapp.bibl.ulaval.ca/', rel: 'noopener noreferrer', point: 'var(--bleu-200)' },
+      { libelle: 'Sofia', fonction: 'Catalogue des collections', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', rel: 'noopener noreferrer', point: 'var(--bleu-200)' },
       { libelle: 'Collections spéciales', fonction: 'Objets numériques', href: 'https://collections-speciales.bib.umontreal.ca/', point: 'var(--rose-300)' },
     ],
   },
