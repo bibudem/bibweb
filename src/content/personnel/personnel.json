@@ -1,45 +1,45 @@
 {
   "personnes": [
     {
-      "prenom": "Alexandre",
-      "nom": "Amar-Zifkin",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Ophtalmologie",
         "optométrie",
         "neurosciences",
         "sciences de la vision"
       ],
+      "telephone": "514 343-6111, poste 3585",
+      "courriel": "alexandre.amar-zifkin@umontreal.ca",
+      "prenom": "Alexandre",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 3585",
-      "courriel": "alexandre.amar-zifkin@umontreal.ca",
+      "nom": "Amar-Zifkin",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "alexandre-amar-zifkin.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=alexandre.amar-zifkin@umontreal.ca",
-      "orcid": "0000-0002-1196-5209",
-      "photo": "alexandre-amar-zifkin.webp"
+      "orcid": "0000-0002-1196-5209"
     },
     {
-      "prenom": "Viviane",
-      "nom": "Angers",
-      "fonction": "Bibliothécaire",
-      "disciplines": [
-        "Psychoéducation",
-        "psychologie",
-        "sciences de l’éducation",
-        "sciences infirmières",
-        "travail social – premier cycle"
-      ],
       "expertises": [
         "Référence et offre pédagogique de première ligne"
       ],
-      "bibliotheques": [
-        "Bibliothèque du campus de l’UdeM à Laval"
+      "disciplines": [
+        "Soutien aux études au Campus de Laval (Psychoéducation",
+        "psychologie",
+        "sc. de l'éducation",
+        "sc. infirmières",
+        "travail social)"
       ],
       "telephone": "514 343-6111, poste 45163",
       "courriel": "viviane.angers@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=viviane.angers@umontreal.ca",
-      "photo": "viviane-angers.webp"
+      "prenom": "Viviane",
+      "bibliotheques": [
+        "Bibliothèque du campus de l’UdeM à Laval"
+      ],
+      "nom": "Angers",
+      "fonction": "Bibliothécaire",
+      "photo": "viviane-angers.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=viviane.angers@umontreal.ca"
     },
     {
       "prenom": "Busch",
@@ -54,47 +54,46 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=busch.antenor.alexandre@umontreal.ca"
     },
     {
-      "prenom": "Nadège",
-      "nom": "Arsa",
-      "fonction": "Bibliothécaire",
       "expertises": [
         "Collections"
       ],
+      "telephone": "514 343-6111, poste 2612",
+      "courriel": "nadege.arsa@bib.umontreal.ca",
+      "prenom": "Nadège",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2612",
-      "courriel": "nadege.arsa@bib.umontreal.ca",
+      "nom": "Arsa",
+      "fonction": "Bibliothécaire",
+      "photo": "nadege-arsa.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=nadege.arsa@bib.umontreal.ca",
-      "orcid": "0009-0001-8700-6469",
-      "photo": "nadege-arsa.webp"
+      "orcid": "0009-0001-8700-6469"
     },
     {
-      "prenom": "Denis",
-      "nom": "Arvisais",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Études médicales postdoctorales (programmes de résidence)",
         "éducation physique et à la santé",
         "kinésiologie"
       ],
+      "telephone": "514 343-6111, poste 4696",
+      "courriel": "denis.arvisais@umontreal.ca",
+      "prenom": "Denis",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 4696",
-      "courriel": "denis.arvisais@umontreal.ca",
+      "nom": "Arvisais",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "denis-arvisais.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=denis.arvisais@umontreal.ca",
-      "orcid": "0000-0001-7727-4104",
-      "photo": "denis-arvisais.webp"
+      "orcid": "0000-0001-7727-4104"
     },
     {
-      "prenom": "Audrey",
-      "nom": "Attia",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques Sociétés et création",
       "expertises": [
         "Soutien à la recherche et à l’enseignement"
       ],
+      "telephone": "514 343-6111, poste 1707",
+      "courriel": "audrey.attia@umontreal.ca",
+      "prenom": "Audrey",
       "bibliotheques": [
         "Bibliothèque d’aménagement",
         "Bibliothèque de droit",
@@ -102,11 +101,12 @@
         "Bibliothèque du campus de l’UdeM à Laval",
         "Bibliothèque de musique"
       ],
-      "telephone": "514 343-6111, poste 1707",
-      "courriel": "audrey.attia@umontreal.ca",
+      "nom": "Attia",
+      "fonction": "Chef(fe) de service",
+      "photo": "audrey-attia.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=audrey.attia@umontreal.ca",
       "orcid": "0009-0004-6266-1442",
-      "photo": "audrey-attia.webp"
+      "direction": "Direction des bibliothèques Sociétés et création"
     },
     {
       "prenom": "Monica",
@@ -121,24 +121,24 @@
       "photo": "monica-audet.webp"
     },
     {
-      "prenom": "Valérie",
-      "nom": "Bastien",
-      "fonction": "Bibliothécaire disciplinaire",
+      "expertises": [
+        "Didacthèque"
+      ],
       "disciplines": [
         "Sciences de l’éducation",
         "didactique",
         "littérature jeunesse"
       ],
-      "expertises": [
-        "Didacthèque"
-      ],
+      "telephone": "514 343-6111, poste 1746",
+      "courriel": "valerie.bastien@umontreal.ca",
+      "prenom": "Valérie",
       "bibliotheques": [
         "Bibliothèque Thérèse-Gouin-Décarie"
       ],
-      "telephone": "514 343-6111, poste 1746",
-      "courriel": "valerie.bastien@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=valerie.bastien@umontreal.ca",
-      "photo": "valerie-bastien.webp"
+      "nom": "Bastien",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "valerie-bastien.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=valerie.bastien@umontreal.ca"
     },
     {
       "prenom": "Magalie",
@@ -153,81 +153,81 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=magalie.beaudoin@umontreal.ca"
     },
     {
-      "prenom": "Maryna",
-      "nom": "Beaulieu",
-      "fonction": "Directeur(trice)",
-      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales",
       "expertises": [
         "Prêt entre bibliothèques"
       ],
+      "telephone": "514 343-6111, poste 2644",
+      "courriel": "maryna.beaulieu@umontreal.ca",
+      "prenom": "Maryna",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines",
         "Bibliothèque des livres rares et collections spéciales"
       ],
-      "telephone": "514 343-6111, poste 2644",
-      "courriel": "maryna.beaulieu@umontreal.ca",
+      "nom": "Beaulieu",
+      "fonction": "Directeur(trice)",
+      "photo": "maryna-beaulieu.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=maryna.beaulieu@umontreal.ca",
-      "photo": "maryna-beaulieu.webp"
+      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales"
     },
     {
-      "prenom": "Audrey",
-      "nom": "Bégin-Poissant",
-      "fonction": "Chargé(e) de projets numériques",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Projets numériques et numérisation"
       ],
+      "telephone": "514 343-6111, poste 0994",
+      "courriel": "audrey.begin-poissant@umontreal.ca",
+      "prenom": "Audrey",
       "bibliotheques": [
         "Collections et numérisation"
       ],
-      "telephone": "514 343-6111, poste 0994",
-      "courriel": "audrey.begin-poissant@umontreal.ca",
+      "nom": "Bégin-Poissant",
+      "fonction": "Chargé(e) de projets numériques",
+      "photo": "audrey-begin-poisson.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=audrey.begin-poissant@umontreal.ca",
-      "photo": "audrey-begin-poisson.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
+      "telephone": "514 343-2080",
+      "courriel": "nima.behforouz@umontreal.ca",
       "prenom": "Nima",
-      "nom": "Behforouz",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "bibliotheques": [
         "Infrastructure de recherche"
       ],
-      "telephone": "514 343-2080",
-      "courriel": "nima.behforouz@umontreal.ca",
+      "nom": "Behforouz",
+      "fonction": "Bibliothécaire",
+      "photo": "nima-behforouz.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=nima.behforouz@umontreal.ca",
       "orcid": "0009-0007-8194-3316",
-      "photo": "nima-behforouz.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
+      "telephone": "514 343-1631",
+      "courriel": "christian.belanger@umontreal.ca",
       "prenom": "Christian",
-      "nom": "Bélanger",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "bibliotheques": [
         "Expérience numérique en bibliothèque"
       ],
-      "telephone": "514 343-1631",
-      "courriel": "christian.belanger@umontreal.ca",
+      "nom": "Bélanger",
+      "fonction": "Chef(fe) de service",
+      "photo": "christian-belanger.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=christian.belanger@umontreal.ca",
-      "photo": "christian-belanger.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
-      "prenom": "Amy",
-      "nom": "Bergeron",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "expertises": [
         "Offre pédagogique en bibliothèque"
       ],
+      "telephone": "514 343-6111, poste 0865",
+      "courriel": "amy.bergeron@umontreal.ca",
+      "prenom": "Amy",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 0865",
-      "courriel": "amy.bergeron@umontreal.ca",
+      "nom": "Bergeron",
+      "fonction": "Bibliothécaire",
+      "photo": "amy-bergeron.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=amy.bergeron@umontreal.ca",
       "orcid": "0000-0002-4224-0307",
-      "photo": "amy-bergeron.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
       "prenom": "Billie",
@@ -242,17 +242,17 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=billie.bergeron@umontreal.ca"
     },
     {
+      "telephone": "514 343-6111, poste 4313",
+      "courriel": "amelie.bernard@umontreal.ca",
       "prenom": "Amélie",
-      "nom": "Bernard",
-      "fonction": "Technicien(ne) en documentation",
       "bibliotheques": [
         "Bibliothèque de droit"
       ],
-      "telephone": "514 343-6111, poste 4313",
-      "courriel": "amelie.bernard@umontreal.ca",
+      "nom": "Bernard",
+      "fonction": "Technicien(ne) en documentation",
+      "photo": "amelie-bernard.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=amelie.bernard@umontreal.ca",
-      "orcid": "0009-0009-4486-6053",
-      "photo": "amelie-bernard.webp"
+      "orcid": "0009-0009-4486-6053"
     },
     {
       "prenom": "Hugo",
@@ -281,36 +281,36 @@
       "photo": "marie-france-bernier.webp"
     },
     {
-      "prenom": "Cathy",
-      "nom": "Bingoye",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "expertises": [
         "Gestion des données de recherche",
         "Recherche et communication savante"
       ],
+      "courriel": "cathy.bingoye@umontreal.ca",
+      "prenom": "Cathy",
       "bibliotheques": [
         "Direction de la recherche et des initiatives numériques"
       ],
-      "courriel": "cathy.bingoye@umontreal.ca",
+      "nom": "Bingoye",
+      "fonction": "Bibliothécaire",
+      "photo": "cathy-bingoye.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=cathy.bingoye@umontreal.ca",
       "orcid": "0009-0007-6147-5236",
-      "photo": "cathy-bingoye.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
-      "prenom": "Simon",
-      "nom": "Blais Longtin",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "expertises": [
         "Soutien à l’utilisation de l’intelligence artificielle générative"
       ],
+      "courriel": "simon.blais.longtin@umontreal.ca",
+      "prenom": "Simon",
       "bibliotheques": [
         "Recherche et communication savante"
       ],
-      "courriel": "simon.blais.longtin@umontreal.ca",
+      "nom": "Blais Longtin",
+      "fonction": "Bibliothécaire",
+      "photo": "simon-blais-longtin.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=simon.blais.longtin@umontreal.ca",
-      "photo": "simon-blais-longtin.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
       "prenom": "Guy",
@@ -324,22 +324,22 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=guy.blondeau@umontreal.ca"
     },
     {
-      "prenom": "Tatiana",
-      "nom": "Bobeica Talpa",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Médecine dentaire",
         "biochimie et médecine moléculaire",
         "microbiologie et immunologie"
       ],
+      "telephone": "514 343-6111, poste 3580",
+      "courriel": "tatiana.talpa@umontreal.ca",
+      "prenom": "Tatiana",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 3580",
-      "courriel": "tatiana.talpa@umontreal.ca",
+      "nom": "Bobeica Talpa",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "tatiana-bobeica-talpa.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=tatiana.talpa@umontreal.ca",
-      "orcid": "0009-0005-7763-2852",
-      "photo": "tatiana-bobeica-talpa.webp"
+      "orcid": "0009-0005-7763-2852"
     },
     {
       "prenom": "Joanna",
@@ -351,10 +351,9 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=joanna.bodnar@umontreal.ca"
     },
     {
+      "telephone": "514 343-7810",
+      "courriel": "alain.borsi@umontreal.ca",
       "prenom": "Alain",
-      "nom": "Borsi",
-      "fonction": "Directeur(trice)",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "bibliotheques": [
         "Bibliothèque de médecine vétérinaire",
         "Bibliothèque Hubert-Reeves",
@@ -364,76 +363,77 @@
         "Bibliothèque de la santé",
         "Bibliothèque de mathématiques et informatique"
       ],
-      "telephone": "514 343-7810",
-      "courriel": "alain.borsi@umontreal.ca",
+      "nom": "Borsi",
+      "fonction": "Directeur(trice)",
+      "photo": "alain-borsi.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=alain.borsi@umontreal.ca",
-      "photo": "alain-borsi.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
-      "prenom": "Éric",
-      "nom": "Bouchard",
-      "fonction": "Bibliothécaire",
       "expertises": [
         "Livres rares et collections spéciales"
       ],
+      "telephone": "514 343-6111, poste 1013",
+      "courriel": "eric.p.bouchard@umontreal.ca",
+      "prenom": "Éric",
       "bibliotheques": [
         "Bibliothèque des livres rares et collections spéciales"
       ],
-      "telephone": "514 343-6111, poste 1013",
-      "courriel": "eric.p.bouchard@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=eric.p.bouchard@umontreal.ca",
-      "photo": "eric-bouchard.webp"
+      "nom": "Bouchard",
+      "fonction": "Bibliothécaire",
+      "photo": "eric-bouchard.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=eric.p.bouchard@umontreal.ca"
     },
     {
-      "prenom": "Sara",
-      "nom": "Bouhlal",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Droit"
       ],
+      "telephone": "514 343-6111, poste 4309",
+      "courriel": "refdroi@bib.umontreal.ca",
+      "prenom": "Sara",
       "bibliotheques": [
         "Bibliothèque de droit"
       ],
-      "telephone": "514 343-6111, poste 4309",
-      "courriel": "refdroi@bib.umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=refdroi@bib.umontreal.ca",
-      "photo": "sara-bouhlal.webp"
+      "nom": "Bouhlal",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "sara-bouhlal.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=refdroi@bib.umontreal.ca"
     },
     {
-      "prenom": "Myriam",
-      "nom": "Boyer",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Gestion des collections et numérisation"
       ],
+      "telephone": "514 343-6111, poste 13788",
+      "courriel": "myriam.boyer@umontreal.ca",
+      "prenom": "Myriam",
       "bibliotheques": [
         "Collections et numérisation",
         "Centre de conservation Lionel-Groulx",
         "Centre de conservation Marcel-Laurin"
       ],
-      "telephone": "514 343-6111, poste 13788",
-      "courriel": "myriam.boyer@umontreal.ca",
+      "nom": "Boyer",
+      "fonction": "Chef(fe) de service",
+      "photo": "myriam-boyer.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=myriam.boyer@umontreal.ca",
-      "photo": "myriam-boyer.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
-      "prenom": "Guylaine",
-      "nom": "Brazeau",
-      "fonction": "Technicien(ne) en documentation",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Gestion des collections"
       ],
+      "telephone": "514 343-6111, poste 42680",
+      "courriel": "guylaine.brazeau@umontreal.ca",
+      "prenom": "Guylaine",
       "bibliotheques": [
         "Collections et numérisation",
         "Centre de conservation Lionel-Groulx",
         "Centre de conservation Marcel-Laurin"
       ],
-      "telephone": "514 343-6111, poste 42680",
-      "courriel": "guylaine.brazeau@umontreal.ca",
+      "nom": "Brazeau",
+      "fonction": "Technicien(ne) en documentation",
+      "photo": "guylaine-brazeau.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=guylaine.brazeau@umontreal.ca",
-      "photo": "guylaine-brazeau.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
       "prenom": "Anne-Marie",
@@ -458,23 +458,23 @@
       "photo": "sophie-brisebois.webp"
     },
     {
-      "prenom": "Tanya",
-      "nom": "Buchet",
-      "fonction": "Bibliothécaire disciplinaire",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "disciplines": [
         "Études médicales de premier cycle (Doctorat en médecine)",
         "gériatrie",
         "sciences biomédicales"
       ],
+      "telephone": "514 343-6111, poste 0865",
+      "courriel": "tanya.buchet@umontreal.ca",
+      "prenom": "Tanya",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 0865",
-      "courriel": "tanya.buchet@umontreal.ca",
+      "nom": "Buchet",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "tanya-buchet.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=tanya.buchet@umontreal.ca",
       "orcid": "0009-0002-3369-6449",
-      "photo": "tanya-buchet.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
       "prenom": "Fanny",
@@ -501,49 +501,49 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=thierry.caballero@umontreal.ca"
     },
     {
-      "prenom": "Delphine",
-      "nom": "Cado",
-      "fonction": "Bibliothécaire disciplinaire",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "disciplines": [
         "Sciences infirmières et gérontologie"
       ],
+      "telephone": "514 343-6111, poste 1845",
+      "courriel": "delphine.cado@umontreal.ca",
+      "prenom": "Delphine",
       "bibliotheques": [
         "Bibliothèque Marguerite-d’Youville"
       ],
-      "telephone": "514 343-6111, poste 1845",
-      "courriel": "delphine.cado@umontreal.ca",
+      "nom": "Cado",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "delphine-cado.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=delphine.cado@umontreal.ca",
-      "photo": "delphine-cado.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
+      "telephone": "514 343-6111, poste 3792",
+      "courriel": "siv.kham.chao@umontreal.ca",
       "prenom": "Siv Kham",
-      "nom": "Chao",
-      "fonction": "Technicien(ne) en documentation",
       "bibliotheques": [
         "Bibliothèque de kinésiologie"
       ],
-      "telephone": "514 343-6111, poste 3792",
-      "courriel": "siv.kham.chao@umontreal.ca",
+      "nom": "Chao",
+      "fonction": "Technicien(ne) en documentation",
+      "photo": "siv-kham-chao.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=siv.kham.chao@umontreal.ca",
-      "orcid": "0009-0002-0021-6517",
-      "photo": "siv-kham-chao.webp"
+      "orcid": "0009-0002-0021-6517"
     },
     {
-      "prenom": "Laurence",
-      "nom": "Charest",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Papyrus"
       ],
+      "courriel": "laurence.charest@umontreal.ca",
+      "prenom": "Laurence",
       "bibliotheques": [
         "Traitement documentaire et métadonnées"
       ],
-      "courriel": "laurence.charest@umontreal.ca",
+      "nom": "Charest",
+      "fonction": "Bibliothécaire",
+      "photo": "laurence-charest.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=laurence.charest@umontreal.ca",
       "orcid": "0009-0008-7938-3417",
-      "photo": "laurence-charest.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
       "prenom": "Annick",
@@ -581,9 +581,6 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=wassif.cheikh@umontreal.ca"
     },
     {
-      "prenom": "Sarah",
-      "nom": "Cherrier",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Audiologie",
         "ergothérapie",
@@ -591,57 +588,59 @@
         "physiothérapie",
         "sciences de la réadaptation"
       ],
+      "telephone": "514 343-6111, poste 1847",
+      "courriel": "sarah.cherrier@umontreal.ca",
+      "prenom": "Sarah",
       "bibliotheques": [
         "Bibliothèque Marguerite-d’Youville"
       ],
-      "telephone": "514 343-6111, poste 1847",
-      "courriel": "sarah.cherrier@umontreal.ca",
+      "nom": "Cherrier",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "sarah-cherrier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=sarah.cherrier@umontreal.ca",
-      "orcid": "0009-0009-7008-3079",
-      "photo": "sarah-cherrier.webp"
+      "orcid": "0009-0009-7008-3079"
     },
     {
-      "prenom": "Emir",
-      "nom": "Chouchane",
-      "fonction": "Conseiller(ère)",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "expertises": [
         "Médiation technologique",
         "Création numérique"
       ],
+      "telephone": "514 343-6111, poste 48343",
+      "courriel": "emir.chouchane@umontreal.ca",
+      "prenom": "Emir",
       "bibliotheques": [
         "Expérience numérique en bibliothèque"
       ],
-      "telephone": "514 343-6111, poste 48343",
-      "courriel": "emir.chouchane@umontreal.ca",
+      "nom": "Chouchane",
+      "fonction": "Conseiller(ère)",
+      "photo": "emir-chouchane.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=emir.chouchane@umontreal.ca",
-      "photo": "emir-chouchane.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
-      "prenom": "François",
-      "nom": "Constantin-D’Amour",
-      "fonction": "Bibliothécaire",
       "expertises": [
         "Service Accessibilité"
       ],
+      "telephone": "514 343-2135",
+      "courriel": "accessibilite@bib.umontreal.ca",
+      "prenom": "François",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-2135",
-      "courriel": "accessibilite@bib.umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=accessibilite@bib.umontreal.ca",
-      "photo": "francois-constantin-d-amour.webp"
+      "nom": "Constantin-D’Amour",
+      "fonction": "Bibliothécaire",
+      "photo": "francois-constantin-d-amour.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=accessibilite@bib.umontreal.ca"
     },
     {
-      "prenom": "Benjamin",
-      "nom": "Constantineau",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "expertises": [
         "Circulation",
         "Gestion des collections et des espaces",
         "Création numérique"
       ],
+      "telephone": "514 343-6111, poste 3570",
+      "courriel": "benjamin.constantineau@umontreal.ca",
+      "prenom": "Benjamin",
       "bibliotheques": [
         "Bibliothèque Hubert-Reeves",
         "Bibliothèque de kinésiologie",
@@ -650,50 +649,48 @@
         "Bibliothèque de la santé",
         "Bibliothèque de mathématiques et informatique"
       ],
-      "telephone": "514 343-6111, poste 3570",
-      "courriel": "benjamin.constantineau@umontreal.ca",
+      "nom": "Constantineau",
+      "fonction": "Chef(fe) de service",
+      "photo": "benjamin-constantineau.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=benjamin.constantineau@umontreal.ca",
-      "photo": "benjamin-constantineau.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
-      "prenom": "Simon-Pierre",
-      "nom": "Crevier",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Santé publique",
         "santé environnementale et santé au travail",
         "administration des services de santé et nutrition"
       ],
+      "telephone": "514 343-6111, poste 2515",
+      "courriel": "simon-pierre.crevier@umontreal.ca",
+      "prenom": "Simon-Pierre",
       "bibliotheques": [
         "Bibliothèque Marguerite-d’Youville"
       ],
-      "telephone": "514 343-6111, poste 2515",
-      "courriel": "simon-pierre.crevier@umontreal.ca",
+      "nom": "Crevier",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "simon-pierre-crevier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=simon-pierre.crevier@umontreal.ca",
-      "orcid": "0009-0003-6926-0839",
-      "photo": "simon-pierre-crevier.webp"
+      "orcid": "0009-0003-6926-0839"
     },
     {
-      "prenom": "Marc-Olivier",
-      "nom": "Croteau",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Communication",
         "journalisme et travail social"
       ],
+      "telephone": "514 343-6111, poste 1702",
+      "courriel": "marc-olivier.croteau@umontreal.ca",
+      "prenom": "Marc-Olivier",
       "bibliotheques": [
         "Bibliothèque Thérèse-Gouin-Décarie"
       ],
-      "telephone": "514 343-6111, poste 1702",
-      "courriel": "marc-olivier.croteau@umontreal.ca",
+      "nom": "Croteau",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "marc-olivier-croteau.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=marc-olivier.croteau@umontreal.ca",
-      "orcid": "0000-0003-2284-9868",
-      "photo": "marc-olivier-croteau.webp"
+      "orcid": "0000-0003-2284-9868"
     },
     {
-      "prenom": "Émilie",
-      "nom": "Dalpé",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Littératures de langue française",
         "Littératures et langues du monde",
@@ -702,33 +699,33 @@
         "Études allemandes",
         "Études hispaniques"
       ],
+      "telephone": "514 343-6111, poste 2628",
+      "courriel": "emilie.dalpe@umontreal.ca",
+      "prenom": "Émilie",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2628",
-      "courriel": "emilie.dalpe@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=emilie.dalpe@umontreal.ca",
-      "photo": "emilie-dalpe.webp"
+      "nom": "Dalpé",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "emilie-dalpe.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=emilie.dalpe@umontreal.ca"
     },
     {
-      "prenom": "Morgane",
-      "nom": "De Bellefeuille",
-      "fonction": "Directeur(trice)",
       "expertises": [
         "Direction adjointe"
       ],
+      "telephone": "514 343-6111, poste 8770",
+      "courriel": "morgane.de.bellefeuille@umontreal.ca",
+      "prenom": "Morgane",
       "bibliotheques": [
         "Direction de l’engagement et de l’innovation sociale"
       ],
-      "telephone": "514 343-6111, poste 8770",
-      "courriel": "morgane.de.bellefeuille@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=morgane.de.bellefeuille@umontreal.ca",
-      "photo": "morgane-de-bellefeuille.webp"
+      "nom": "De Bellefeuille",
+      "fonction": "Directeur(trice)",
+      "photo": "morgane-de-bellefeuille.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=morgane.de.bellefeuille@umontreal.ca"
     },
     {
-      "prenom": "Indiana",
-      "nom": "Delsart",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Mathématiques",
         "informatique",
@@ -736,32 +733,35 @@
         "statistique",
         "physique"
       ],
+      "telephone": "514 343-6111, poste 1492",
+      "courriel": "indiana.delsart@umontreal.ca",
+      "prenom": "Indiana",
       "bibliotheques": [
         "Bibliothèque de mathématiques et informatique"
       ],
-      "telephone": "514 343-6111, poste 1492",
-      "courriel": "indiana.delsart@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=indiana.delsart@umontreal.ca",
-      "photo": "indiana-delsart.webp"
+      "nom": "Delsart",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "indiana-delsart.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=indiana.delsart@umontreal.ca"
     },
     {
-      "prenom": "Dominic",
-      "nom": "Desaulniers",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Psychologie",
         "psychoéducation",
         "intervention auprès des jeunes",
         "intervention en déficience intellectuelle et en TSA"
       ],
+      "telephone": "514 343-6111, poste 3156",
+      "courriel": "dominic.desaulniers@umontreal.ca",
+      "prenom": "Dominic",
       "bibliotheques": [
         "Bibliothèque Thérèse-Gouin-Décarie"
       ],
-      "telephone": "514 343-6111, poste 3156",
-      "courriel": "dominic.desaulniers@umontreal.ca",
+      "nom": "Desaulniers",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "dominic-desaulniers.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=dominic.desaulniers@umontreal.ca",
-      "orcid": "0009-0004-5967-1754",
-      "photo": "dominic-desaulniers.webp"
+      "orcid": "0009-0004-5967-1754"
     },
     {
       "prenom": "Chantal",
@@ -788,36 +788,36 @@
       "photo": "anne-dubois-mercier.webp"
     },
     {
-      "prenom": "Jean-François",
-      "nom": "Durnin",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Sciences de l’éducation"
       ],
+      "telephone": "514 343-6111, poste 0868",
+      "courriel": "jean-francois.durnin@umontreal.ca",
+      "prenom": "Jean-François",
       "bibliotheques": [
         "Bibliothèque Thérèse-Gouin-Décarie"
       ],
-      "telephone": "514 343-6111, poste 0868",
-      "courriel": "jean-francois.durnin@umontreal.ca",
+      "nom": "Durnin",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "jean-francois-durnin.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=jean-francois.durnin@umontreal.ca",
-      "orcid": "0000-0001-7817-8616",
-      "photo": "jean-francois-durnin.webp"
+      "orcid": "0000-0001-7817-8616"
     },
     {
-      "prenom": "Taline",
-      "nom": "Ekmekjian",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "expertises": [
         "Soutien aux synthèses de connaissances"
       ],
+      "telephone": "514 343-6111, poste 0866",
+      "courriel": "taline.ekmekjian@umontreal.ca",
+      "prenom": "Taline",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 0866",
-      "courriel": "taline.ekmekjian@umontreal.ca",
+      "nom": "Ekmekjian",
+      "fonction": "Bibliothécaire",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=taline.ekmekjian@umontreal.ca",
-      "orcid": "0000-0002-0914-0056"
+      "orcid": "0000-0002-0914-0056",
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
       "prenom": "Judith",
@@ -832,13 +832,12 @@
       "photo": "judith-fafard-larose.webp"
     },
     {
-      "prenom": "Sylvie",
-      "nom": "Fontaine",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "expertises": [
         "Soutien à la recherche et à l’enseignement"
       ],
+      "telephone": "514 343-6111, poste 38453",
+      "courriel": "sylvie.fontaine.1@umontreal.ca",
+      "prenom": "Sylvie",
       "bibliotheques": [
         "Bibliothèque de médecine vétérinaire",
         "Bibliothèque Hubert-Reeves",
@@ -848,27 +847,28 @@
         "Bibliothèque de la santé",
         "Bibliothèque de mathématiques et informatique"
       ],
-      "telephone": "514 343-6111, poste 38453",
-      "courriel": "sylvie.fontaine.1@umontreal.ca",
+      "nom": "Fontaine",
+      "fonction": "Chef(fe) de service",
+      "photo": "sylvie-fontaine.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=sylvie.fontaine.1@umontreal.ca",
-      "photo": "sylvie-fontaine.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
-      "prenom": "Catherine",
-      "nom": "Fortier",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales",
       "expertises": [
         "Soutien à la recherche et à l’enseignement"
       ],
+      "telephone": "514 343-6111, poste 2635",
+      "courriel": "c.fortier@umontreal.ca",
+      "prenom": "Catherine",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2635",
-      "courriel": "c.fortier@umontreal.ca",
+      "nom": "Fortier",
+      "fonction": "Chef(fe) de service",
+      "photo": "catherine-fortier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=c.fortier@umontreal.ca",
       "orcid": "0000-0002-6783-9930",
-      "photo": "catherine-fortier.webp"
+      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales"
     },
     {
       "prenom": "Mariana",
@@ -883,9 +883,6 @@
       "orcid": "0009-0009-0145-7559"
     },
     {
-      "prenom": "Nino",
-      "nom": "Gabrielli",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Philosophie",
         "Études religieuses",
@@ -893,46 +890,49 @@
         "Études médiévales",
         "Études asiatiques"
       ],
+      "telephone": "514 343-6111, poste 2627",
+      "courriel": "nino.gabrielli@umontreal.ca",
+      "prenom": "Nino",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2627",
-      "courriel": "nino.gabrielli@umontreal.ca",
+      "nom": "Gabrielli",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "nino-gabrielli.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=nino.gabrielli@umontreal.ca",
-      "orcid": "0000-0002-9934-9186",
-      "photo": "nino-gabrielli.webp"
+      "orcid": "0000-0002-9934-9186"
     },
     {
-      "prenom": "Marie-Pierre",
-      "nom": "Gadoua",
-      "fonction": "Conseiller(ère)",
       "expertises": [
         "Engagement et innovation sociale"
       ],
+      "courriel": "marie-pierre.gadoua@umontreal.ca",
+      "prenom": "Marie-Pierre",
       "bibliotheques": [
         "Direction de l’engagement et de l’innovation sociale"
       ],
-      "courriel": "marie-pierre.gadoua@umontreal.ca",
+      "nom": "Gadoua",
+      "fonction": "Conseiller(ère)",
+      "photo": "marie-pierre-gadoua.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=marie-pierre.gadoua@umontreal.ca",
-      "orcid": "0009-0002-8702-6563",
-      "photo": "marie-pierre-gadoua.webp"
+      "orcid": "0009-0002-8702-6563"
     },
     {
-      "prenom": "Cynthia",
-      "nom": "Gagné",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Sciences biologiques",
         "chimie"
       ],
+      "telephone": "514 343-6111, poste 48342",
+      "courriel": "cynthia.gagne.2@umontreal.ca",
+      "prenom": "Cynthia",
       "bibliotheques": [
         "Bibliothèque Hubert-Reeves"
       ],
-      "telephone": "514 343-6111, poste 48342",
-      "courriel": "cynthia.gagne.2@umontreal.ca",
+      "nom": "Gagné",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "cynthia-gagne.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=cynthia.gagne.2@umontreal.ca",
-      "orcid": "0000-0003-0251-3136",
-      "photo": "cynthia-gagne.webp"
+      "orcid": "0000-0003-0251-3136"
     },
     {
       "prenom": "Diane",
@@ -944,44 +944,44 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=diane.gagnon@umontreal.ca"
     },
     {
+      "telephone": "514 343-6905",
+      "courriel": "stephanie.gagnon@umontreal.ca",
       "prenom": "Stéphanie",
       "nom": "Gagnon",
       "fonction": "Directeur(trice) général(e)",
-      "direction": "Direction générale",
-      "telephone": "514 343-6905",
-      "courriel": "stephanie.gagnon@umontreal.ca",
+      "photo": "stephanie-gagnon.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=stephanie.gagnon@umontreal.ca",
       "orcid": "0009-0002-1034-8345",
-      "photo": "stephanie-gagnon.webp"
+      "direction": "Direction générale"
     },
     {
-      "prenom": "Thomas",
-      "nom": "Gagnon-van Leeuwen",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Droit"
       ],
+      "telephone": "514 343-6111, poste 4309",
+      "courriel": "thomas.gagnon-van.leeuwen@umontreal.ca",
+      "prenom": "Thomas",
       "bibliotheques": [
         "Bibliothèque de droit"
       ],
-      "telephone": "514 343-6111, poste 4309",
-      "courriel": "thomas.gagnon-van.leeuwen@umontreal.ca",
+      "nom": "Gagnon-van Leeuwen",
+      "fonction": "Bibliothécaire disciplinaire",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=thomas.gagnon-van.leeuwen@umontreal.ca",
       "orcid": "0009-0004-0646-2879"
     },
     {
-      "prenom": "Marjorie",
-      "nom": "Gauchier",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "expertises": [
         "Droit d’auteur"
       ],
       "telephone": "514 343-6111, poste 33198",
       "courriel": "marjorie.gauchier@umontreal.ca",
+      "prenom": "Marjorie",
+      "nom": "Gauchier",
+      "fonction": "Bibliothécaire",
+      "photo": "marjorie-gauchier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=marjorie.gauchier@umontreal.ca",
       "orcid": "0009-0007-7334-783X",
-      "photo": "marjorie-gauchier.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
       "prenom": "Lucie",
@@ -1008,101 +1008,101 @@
       "orcid": "0009-0008-1281-1923"
     },
     {
-      "prenom": "Isabelle",
-      "nom": "Giguère",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "expertises": [
         "Dépôt de données de recherche Borealis"
       ],
-      "bibliotheques": [
-        "Infrastructure de recherche"
-      ],
       "telephone": "514 343-2080",
       "courriel": "isabelle.giguere.4@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=isabelle.giguere.4@umontreal.ca",
-      "orcid": "0009-0007-7764-6917",
-      "photo": "isabelle-giguere.webp"
-    },
-    {
-      "prenom": "Stéphanie",
-      "nom": "Hainault",
-      "fonction": "Chargé(e) de projets numériques",
-      "direction": "Direction de la recherche et des initiatives numériques",
+      "prenom": "Isabelle",
       "bibliotheques": [
         "Infrastructure de recherche"
       ],
-      "telephone": "514 343-2080",
-      "courriel": "stephanie.hainault@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=stephanie.hainault@umontreal.ca",
-      "photo": "stephanie-hainault.webp"
+      "nom": "Giguère",
+      "fonction": "Bibliothécaire",
+      "photo": "isabelle-giguere.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=isabelle.giguere.4@umontreal.ca",
+      "orcid": "0009-0007-7764-6917",
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
-      "prenom": "Anne",
-      "nom": "Hakier",
-      "fonction": "Bibliothécaire disciplinaire",
-      "disciplines": [
-        "Géographie"
+      "telephone": "514 343-2080",
+      "courriel": "stephanie.hainault@umontreal.ca",
+      "prenom": "Stéphanie",
+      "bibliotheques": [
+        "Infrastructure de recherche"
       ],
+      "nom": "Hainault",
+      "fonction": "Chargé(e) de projets numériques",
+      "photo": "stephanie-hainault.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=stephanie.hainault@umontreal.ca",
+      "direction": "Direction de la recherche et des initiatives numériques"
+    },
+    {
       "expertises": [
         "Données géospatiales"
       ],
-      "bibliotheques": [
-        "Bibliothèque Hubert-Reeves"
+      "disciplines": [
+        "Géographie"
       ],
       "telephone": "514 343-6111, poste 2629",
       "courriel": "anne.hakier@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=anne.hakier@umontreal.ca",
-      "photo": "anne-hakier.webp"
+      "prenom": "Anne",
+      "bibliotheques": [
+        "Bibliothèque Hubert-Reeves"
+      ],
+      "nom": "Hakier",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "anne-hakier.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=anne.hakier@umontreal.ca"
     },
     {
-      "prenom": "Rose Carine",
-      "nom": "Henriquez",
-      "fonction": "Bibliothécaire",
-      "disciplines": [
-        "Français langue seconde"
-      ],
       "expertises": [
         "Référence et offre pédagogique de première ligne"
       ],
-      "bibliotheques": [
-        "Bibliothèque des lettres et sciences humaines"
+      "disciplines": [
+        "Français langue seconde"
       ],
       "telephone": "514 343-6111, poste 2626",
       "courriel": "rose.carine.henriquez@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=rose.carine.henriquez@umontreal.ca",
-      "photo": "rose-carine-henriquez.webp"
+      "prenom": "Rose Carine",
+      "bibliotheques": [
+        "Bibliothèque des lettres et sciences humaines"
+      ],
+      "nom": "Henriquez",
+      "fonction": "Bibliothécaire",
+      "photo": "rose-carine-henriquez.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=rose.carine.henriquez@umontreal.ca"
     },
     {
-      "prenom": "Thiên Sa",
-      "nom": "Hoàng",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Pharmacie et pharmacologie",
         "sciences biopharmaceutiques"
       ],
+      "telephone": "514 343-6111, poste 3577",
+      "courriel": "thien.sa.hoang@umontreal.ca",
+      "prenom": "Thiên Sa",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 3577",
-      "courriel": "thien.sa.hoang@umontreal.ca",
+      "nom": "Hoàng",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "thien-sa-hoang.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=thien.sa.hoang@umontreal.ca",
-      "orcid": "0000-0002-7705-3691",
-      "photo": "thien-sa-hoang.webp"
+      "orcid": "0000-0002-7705-3691"
     },
     {
+      "telephone": "514 343-2080",
+      "courriel": "natalia.jabinschi@umontreal.ca",
       "prenom": "Natalia",
-      "nom": "Jabinschi",
-      "fonction": "Analyste en informatique",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "bibliotheques": [
         "Infrastructure de recherche"
       ],
-      "telephone": "514 343-2080",
-      "courriel": "natalia.jabinschi@umontreal.ca",
+      "nom": "Jabinschi",
+      "fonction": "Analyste en informatique",
+      "photo": "natalia-jabinschi.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=natalia.jabinschi@umontreal.ca",
       "orcid": "0009-0005-4110-5487",
-      "photo": "natalia-jabinschi.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
       "prenom": "Khalid",
@@ -1115,21 +1115,21 @@
       "photo": "khalid-jouamaa.webp"
     },
     {
-      "prenom": "Aminata",
-      "nom": "Keita",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Bibliothéconomie et sciences de l’information",
         "Relations industrielles"
       ],
+      "telephone": "514 343-6111, poste 5411",
+      "courriel": "aminata.keita@umontreal.ca",
+      "prenom": "Aminata",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 5411",
-      "courriel": "aminata.keita@umontreal.ca",
+      "nom": "Keita",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "aminata-keita.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=aminata.keita@umontreal.ca",
-      "orcid": "0009-0006-3501-8376",
-      "photo": "aminata-keita.webp"
+      "orcid": "0009-0006-3501-8376"
     },
     {
       "prenom": "Mélanie",
@@ -1168,52 +1168,52 @@
       "orcid": "0009-0009-0031-3975"
     },
     {
+      "telephone": "514 343-6111, poste 41261",
+      "courriel": "marie-france.laliberte@umontreal.ca",
       "prenom": "Marie-France",
-      "nom": "Laliberté",
-      "fonction": "Technicien(ne) en documentation",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 41261",
-      "courriel": "marie-france.laliberte@umontreal.ca",
+      "nom": "Laliberté",
+      "fonction": "Technicien(ne) en documentation",
+      "photo": "marie-france-laliberte.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=marie-france.laliberte@umontreal.ca",
-      "orcid": "0009-0005-4195-6193",
-      "photo": "marie-france-laliberte.webp"
+      "orcid": "0009-0005-4195-6193"
     },
     {
-      "prenom": "Anne-Marie",
-      "nom": "Lalonde",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Gestion des collections"
       ],
+      "telephone": "514 343-6111, poste 5100",
+      "courriel": "am.lalonde@umontreal.ca",
+      "prenom": "Anne-Marie",
       "bibliotheques": [
         "Collections et numérisation",
         "Centre de conservation Lionel-Groulx",
         "Centre de conservation Marcel-Laurin"
       ],
-      "telephone": "514 343-6111, poste 5100",
-      "courriel": "am.lalonde@umontreal.ca",
+      "nom": "Lalonde",
+      "fonction": "Bibliothécaire",
+      "photo": "anne-marie-lalonde.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=am.lalonde@umontreal.ca",
-      "photo": "anne-marie-lalonde.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
-      "prenom": "Tara",
-      "nom": "Landry",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "expertises": [
         "Soutien à la recherche et à l’enseignement"
       ],
+      "telephone": "514 343-6111, poste 3583",
+      "courriel": "tara.landry@umontreal.ca",
+      "prenom": "Tara",
       "bibliotheques": [
         "Bibliothèque de la santé"
       ],
-      "telephone": "514 343-6111, poste 3583",
-      "courriel": "tara.landry@umontreal.ca",
+      "nom": "Landry",
+      "fonction": "Chef(fe) de service",
+      "photo": "tara-landry.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=tara.landry@umontreal.ca",
       "orcid": "0000-0003-1930-9529",
-      "photo": "tara-landry.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
       "prenom": "Marie-Josée",
@@ -1228,21 +1228,21 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=marie-josee.lapalme@umontreal.ca"
     },
     {
-      "prenom": "Stéphanie",
-      "nom": "Larivière-Roberge",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales",
       "expertises": [
         "Référence et offre pédagogique de première ligne",
         "Service Accessibilité"
       ],
+      "telephone": "514 343-6111, poste 2637",
+      "courriel": "stephanie.lariviere-roberge@umontreal.ca",
+      "prenom": "Stéphanie",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2637",
-      "courriel": "stephanie.lariviere-roberge@umontreal.ca",
+      "nom": "Larivière-Roberge",
+      "fonction": "Chef(fe) de service",
+      "photo": "stephanie-lariviere-roberge.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=stephanie.lariviere-roberge@umontreal.ca",
-      "photo": "stephanie-lariviere-roberge.webp"
+      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales"
     },
     {
       "prenom": "Alex-Sandrine",
@@ -1257,64 +1257,63 @@
       "photo": "alex-sandrine-lavallee-masse.webp"
     },
     {
-      "prenom": "Graham",
-      "nom": "Lavender",
-      "fonction": "Bibliothécaire disciplinaire",
+      "expertises": [
+        "Données statistiques"
+      ],
       "disciplines": [
         "Science politique",
         "Études internationales",
         "Études féministes – des genres et des sexualités",
         "Sciences économiques"
       ],
-      "expertises": [
-        "Données statistiques"
-      ],
+      "telephone": "514 343-6111, poste 2625",
+      "courriel": "graham.lavender@umontreal.ca",
+      "prenom": "Graham",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2625",
-      "courriel": "graham.lavender@umontreal.ca",
+      "nom": "Lavender",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "graham-lavender.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=graham.lavender@umontreal.ca",
-      "orcid": "0000-0002-4309-7354",
-      "photo": "graham-lavender.webp"
+      "orcid": "0000-0002-4309-7354"
     },
     {
-      "prenom": "Jessica",
-      "nom": "Legault",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Périodiques"
       ],
+      "telephone": "514 343-6111, poste 3833",
+      "courriel": "jessica.legault.2@umontreal.ca",
+      "prenom": "Jessica",
       "bibliotheques": [
         "Acquisitions"
       ],
-      "telephone": "514 343-6111, poste 3833",
-      "courriel": "jessica.legault.2@umontreal.ca",
+      "nom": "Legault",
+      "fonction": "Bibliothécaire",
+      "photo": "jessica-legault.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=jessica.legault.2@umontreal.ca",
-      "photo": "jessica-legault.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
+      "telephone": "514 343-6111, poste 4698",
+      "courriel": "genevieve.lemarier@umontreal.ca",
       "prenom": "Geneviève",
-      "nom": "Lemarier",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "bibliotheques": [
         "Traitement documentaire et métadonnées"
       ],
-      "telephone": "514 343-6111, poste 4698",
-      "courriel": "genevieve.lemarier@umontreal.ca",
+      "nom": "Lemarier",
+      "fonction": "Chef(fe) de service",
+      "photo": "genevieve-lemarier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=genevieve.lemarier@umontreal.ca",
-      "photo": "genevieve-lemarier.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
-      "prenom": "Mariane",
-      "nom": "Léonard",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques",
       "expertises": [
         "Référence et offre pédagogique de première ligne"
       ],
+      "telephone": "514 343-6111, poste 1848",
+      "courriel": "mariane.leonard@umontreal.ca",
+      "prenom": "Mariane",
       "bibliotheques": [
         "Bibliothèque Hubert-Reeves",
         "Bibliothèque de kinésiologie",
@@ -1323,54 +1322,55 @@
         "Bibliothèque de la santé",
         "Bibliothèque de mathématiques et informatique"
       ],
-      "telephone": "514 343-6111, poste 1848",
-      "courriel": "mariane.leonard@umontreal.ca",
+      "nom": "Léonard",
+      "fonction": "Chef(fe) de service",
+      "photo": "mariane-leonard.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=mariane.leonard@umontreal.ca",
-      "photo": "mariane-leonard.webp"
+      "direction": "Direction des bibliothèques des sciences de la santé et des bibliothèques scientifiques"
     },
     {
+      "telephone": "514 343-6111, poste 1817",
+      "courriel": "maude.lethiecq-normand@umontreal.ca",
       "prenom": "Maude",
-      "nom": "Lethiecq-Normand",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "bibliotheques": [
         "Recherche et communication savante"
       ],
-      "telephone": "514 343-6111, poste 1817",
-      "courriel": "maude.lethiecq-normand@umontreal.ca",
+      "nom": "Lethiecq-Normand",
+      "fonction": "Chef(fe) de service",
+      "photo": "maude-lethiecq-normand.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=maude.lethiecq-normand@umontreal.ca",
       "orcid": "0000-0001-5872-8414",
-      "photo": "maude-lethiecq-normand.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
+      "telephone": "514 343-6111, poste 3272",
+      "courriel": "danny.letourneau@umontreal.ca",
       "prenom": "Danny",
-      "nom": "Létourneau",
-      "fonction": "Chef(fe) de bibliothèque",
-      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales",
       "bibliotheques": [
         "Bibliothèque des livres rares et collections spéciales"
       ],
-      "telephone": "514 343-6111, poste 3272",
-      "courriel": "danny.letourneau@umontreal.ca",
+      "nom": "Létourneau",
+      "fonction": "Chef(fe) de bibliothèque",
+      "photo": "danny-letourneau.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=danny.letourneau@umontreal.ca",
-      "photo": "danny-letourneau.webp"
+      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales"
     },
     {
-      "prenom": "Amélie Elizabeth",
-      "nom": "Lévesque",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques Sociétés et création",
       "expertises": [
         "Référence et offre pédagogique de première ligne"
       ],
+      "telephone": "514 343-6111, poste 4700",
+      "courriel": "ae.levesque@umontreal.ca",
+      "prenom": "Amélie Elizabeth",
       "bibliotheques": [
         "Bibliothèque de droit",
         "Bibliothèque de musique"
       ],
-      "telephone": "514 343-6111, poste 4700",
-      "courriel": "ae.levesque@umontreal.ca",
+      "nom": "Lévesque",
+      "fonction": "Chef(fe) de service",
+      "photo": "amelie-elizabeth-levesque.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=ae.levesque@umontreal.ca",
-      "photo": "amelie-elizabeth-levesque.webp"
+      "direction": "Direction des bibliothèques Sociétés et création"
     },
     {
       "prenom": "Anny",
@@ -1418,50 +1418,50 @@
       "photo": "vanessa-martin.webp"
     },
     {
-      "prenom": "Pascal",
-      "nom": "Martinolli",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Histoire",
         "Linguistique et traduction"
       ],
+      "telephone": "514 343-6111, poste 3273",
+      "courriel": "pascal.martinolli@umontreal.ca",
+      "prenom": "Pascal",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 3273",
-      "courriel": "pascal.martinolli@umontreal.ca",
+      "nom": "Martinolli",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "pascal-martinolli.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=pascal.martinolli@umontreal.ca",
-      "orcid": "0000-0003-0122-5300",
-      "photo": "pascal-martinolli.webp"
+      "orcid": "0000-0003-0122-5300"
     },
     {
-      "prenom": "Mélanie",
-      "nom": "Massé",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Aménagement"
       ],
+      "telephone": "514 343-6111, poste 2741",
+      "courriel": "melanie.masse.2@umontreal.ca",
+      "prenom": "Mélanie",
       "bibliotheques": [
         "Bibliothèque d’aménagement"
       ],
-      "telephone": "514 343-6111, poste 2741",
-      "courriel": "melanie.masse.2@umontreal.ca",
+      "nom": "Massé",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "melanie-masse.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=melanie.masse.2@umontreal.ca",
-      "orcid": "0009-0000-9962-8823",
-      "photo": "melanie-masse.webp"
+      "orcid": "0009-0000-9962-8823"
     },
     {
+      "telephone": "514 343-6111, poste 4009",
+      "courriel": "gabrielle.mathieu-dupuis@umontreal.ca",
       "prenom": "Gabrielle",
-      "nom": "Mathieu-Dupuis",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "bibliotheques": [
         "Acquisitions"
       ],
-      "telephone": "514 343-6111, poste 4009",
-      "courriel": "gabrielle.mathieu-dupuis@umontreal.ca",
+      "nom": "Mathieu-Dupuis",
+      "fonction": "Chef(fe) de service",
+      "photo": "gabrielle-mathieu-dupuis.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=gabrielle.mathieu-dupuis@umontreal.ca",
-      "photo": "gabrielle-mathieu-dupuis.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
       "prenom": "Benoit",
@@ -1476,70 +1476,69 @@
       "photo": "benoit-mayrand.webp"
     },
     {
-      "prenom": "Ginette-Denyse",
-      "nom": "Melançon-Bolduc",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Aménagement"
       ],
+      "telephone": "514 343-6111, poste 2740",
+      "courriel": "ginette-denyse.melancon.bolduc@umontreal.ca",
+      "prenom": "Ginette-Denyse",
       "bibliotheques": [
         "Bibliothèque d’aménagement"
       ],
-      "telephone": "514 343-6111, poste 2740",
-      "courriel": "ginette-denyse.melancon.bolduc@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=ginette-denyse.melancon.bolduc@umontreal.ca",
-      "photo": "ginette-melancon-bolduc.webp"
+      "nom": "Melançon-Bolduc",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "ginette-melancon-bolduc.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=ginette-denyse.melancon.bolduc@umontreal.ca"
     },
     {
-      "prenom": "Justine",
-      "nom": "Ménard",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Ressources électroniques et ententes consortiales"
       ],
+      "telephone": "514 343-6111, poste 8741",
+      "courriel": "justine.menard.1@umontreal.ca",
+      "prenom": "Justine",
       "bibliotheques": [
         "Collections et numérisation"
       ],
-      "telephone": "514 343-6111, poste 8741",
-      "courriel": "justine.menard.1@umontreal.ca",
+      "nom": "Ménard",
+      "fonction": "Bibliothécaire",
+      "photo": "justine-menard.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=justine.menard.1@umontreal.ca",
-      "photo": "justine-menard.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
+      "telephone": "514 343-6111, poste 27731",
+      "courriel": "diane.moreau@umontreal.ca",
       "prenom": "Diane",
-      "nom": "Moreau",
-      "fonction": "Technicien(ne) en documentation",
-      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales",
       "bibliotheques": [
         "Bibliothèque des livres rares et collections spéciales"
       ],
-      "telephone": "514 343-6111, poste 27731",
-      "courriel": "diane.moreau@umontreal.ca",
+      "nom": "Moreau",
+      "fonction": "Technicien(ne) en documentation",
+      "photo": "diane-moreau.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=diane.moreau@umontreal.ca",
-      "photo": "diane-moreau.webp"
+      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales"
     },
     {
-      "prenom": "Mathieu",
-      "nom": "Murray-Samuel",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Monographies"
       ],
+      "telephone": "514 343-6111, poste 50810",
+      "courriel": "mathieu.murray-samuel@umontreal.ca",
+      "prenom": "Mathieu",
       "bibliotheques": [
         "Acquisitions"
       ],
-      "telephone": "514 343-6111, poste 50810",
-      "courriel": "mathieu.murray-samuel@umontreal.ca",
+      "nom": "Murray-Samuel",
+      "fonction": "Bibliothécaire",
+      "photo": "mathieu-murray-samuel.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=mathieu.murray-samuel@umontreal.ca",
-      "photo": "mathieu-murray-samuel.webp"
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
+      "telephone": "514 343-6111, poste 3256",
+      "courriel": "france.nadeau@umontreal.ca",
       "prenom": "France",
-      "nom": "Nadeau",
-      "fonction": "Directeur(trice)",
-      "direction": "Direction des bibliothèques Sociétés et création",
       "bibliotheques": [
         "Bibliothèque d’aménagement",
         "Bibliothèque de droit",
@@ -1547,26 +1546,27 @@
         "Bibliothèque du campus de l’UdeM à Laval",
         "Bibliothèque de musique"
       ],
-      "telephone": "514 343-6111, poste 3256",
-      "courriel": "france.nadeau@umontreal.ca",
+      "nom": "Nadeau",
+      "fonction": "Directeur(trice)",
+      "photo": "france-nadeau.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=france.nadeau@umontreal.ca",
       "orcid": "0000-0001-6399-9761",
-      "photo": "france-nadeau.webp"
+      "direction": "Direction des bibliothèques Sociétés et création"
     },
     {
-      "prenom": "Magdalena",
-      "nom": "Oriental",
-      "fonction": "Responsable",
       "expertises": [
         "Ressources humaines"
       ],
+      "telephone": "514 343-6111, poste 5577",
+      "courriel": "magdalena.oriental@umontreal.ca",
+      "prenom": "Magdalena",
       "bibliotheques": [
         "Direction des services administratifs"
       ],
-      "telephone": "514 343-6111, poste 5577",
-      "courriel": "magdalena.oriental@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=magdalena.oriental@umontreal.ca",
-      "photo": "magdalena-oriental.webp"
+      "nom": "Oriental",
+      "fonction": "Responsable",
+      "photo": "magdalena-oriental.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=magdalena.oriental@umontreal.ca"
     },
     {
       "prenom": "Fatima Zahra",
@@ -1578,18 +1578,18 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=fatima.zahra.ouadrhiri@umontreal.ca"
     },
     {
+      "telephone": "514 343-6111, poste 2616",
+      "courriel": "julie.ouellette@umontreal.ca",
       "prenom": "Julie",
-      "nom": "Ouellette",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines",
         "Service du prêt entre bibliothèques"
       ],
-      "telephone": "514 343-6111, poste 2616",
-      "courriel": "julie.ouellette@umontreal.ca",
+      "nom": "Ouellette",
+      "fonction": "Chef(fe) de service",
+      "photo": "julie-ouellette.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=julie.ouellette@umontreal.ca",
-      "photo": "julie-ouellette.webp"
+      "direction": "Direction de la Bibliothèque des lettres et sciences humaines et Livres rares et collections spéciales"
     },
     {
       "prenom": "François-Xavier",
@@ -1602,30 +1602,26 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=francois-xavier.panaccio@umontreal.ca"
     },
     {
-      "prenom": "Caroline",
-      "nom": "Patenaude",
-      "fonction": "Bibliothécaire disciplinaire",
+      "expertises": [
+        "Données statistiques"
+      ],
       "disciplines": [
         "Sociologie",
         "Anthropologie",
         "Études autochtones"
       ],
-      "expertises": [
-        "Données statistiques"
-      ],
+      "telephone": "514 343-6111, poste 5239",
+      "courriel": "caroline.patenaude@umontreal.ca",
+      "prenom": "Caroline",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 5239",
-      "courriel": "caroline.patenaude@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=caroline.patenaude@umontreal.ca",
-      "photo": "caroline-patenaude.webp"
-    },
-    {
-      "prenom": "David",
       "nom": "Patenaude",
       "fonction": "Bibliothécaire disciplinaire",
-      "direction": "Bibliothèque des lettres et sciences humaines",
+      "photo": "caroline-patenaude.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=caroline.patenaude@umontreal.ca"
+    },
+    {
       "disciplines": [
         "Criminologie",
         "Démographie et sciences de la population",
@@ -1634,59 +1630,63 @@
         "Victimologie",
         "Sexualité : enjeux de société et pratiques d’intervention"
       ],
+      "telephone": "514 343-6111, poste 2624",
+      "courriel": "david.patenaude.1@umontreal.ca",
+      "prenom": "David",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2624",
-      "courriel": "david.patenaude.1@umontreal.ca",
+      "nom": "Patenaude",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "david-patenaude.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=david.patenaude.1@umontreal.ca",
       "orcid": "0000-0001-6036-682X",
-      "photo": "david-patenaude.webp"
+      "direction": "Bibliothèque des lettres et sciences humaines"
     },
     {
-      "prenom": "Stéphanie",
-      "nom": "Pham-Dang",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Droit"
       ],
+      "telephone": "514 343-6111, poste 4308",
+      "courriel": "stephanie.pham-dang@umontreal.ca",
+      "prenom": "Stéphanie",
       "bibliotheques": [
         "Bibliothèque de droit"
       ],
-      "telephone": "514 343-6111, poste 4308",
-      "courriel": "stephanie.pham-dang@umontreal.ca",
-      "orcid": "0009-0009-1398-281X",
+      "nom": "Pham-Dang",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "stephanie-pham-dang.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=stephanie.pham-dang@umontreal.ca",
-      "photo": "stephanie-pham-dang.webp"
+      "orcid": "0009-0009-1398-281X"
     },
     {
-      "prenom": "Mathieu",
-      "nom": "Pigeon",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "expertises": [
         "Édition savante et libre accès"
       ],
       "courriel": "mathieu.pigeon@umontreal.ca",
+      "prenom": "Mathieu",
+      "nom": "Pigeon",
+      "fonction": "Bibliothécaire",
+      "photo": "mathieu-pigeon.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=mathieu.pigeon@umontreal.ca",
       "orcid": "0000-0003-0190-0863",
-      "photo": "mathieu-pigeon.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
-      "prenom": "Marie-Claude",
-      "nom": "Poirier",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Médecine vétérinaire"
       ],
+      "telephone": "450 773-8521, poste 8258",
+      "courriel": "refmede@bib.umontreal.ca",
+      "prenom": "Marie-Claude",
       "bibliotheques": [
         "Bibliothèque de médecine vétérinaire"
       ],
-      "telephone": "450 773-8521, poste 8258",
-      "courriel": "refmede@bib.umontreal.ca",
+      "nom": "Poirier",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "marie-claude-poirier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=refmede@bib.umontreal.ca",
-      "orcid": "0000-0002-2769-5370",
-      "photo": "marie-claude-poirier.webp"
+      "orcid": "0000-0002-2769-5370"
     },
     {
       "prenom": "Nathalie",
@@ -1748,9 +1748,6 @@
       "photo": "sarah-julie-richard.webp"
     },
     {
-      "prenom": "Valérie",
-      "nom": "Rioux",
-      "fonction": "Bibliothécaire disciplinaire",
       "disciplines": [
         "Histoire de l’art",
         "Cinéma",
@@ -1758,14 +1755,17 @@
         "Études télévisuelles",
         "Muséologie"
       ],
+      "telephone": "514 343-6111, poste 2622",
+      "courriel": "valerie.rioux.3@umontreal.ca",
+      "prenom": "Valérie",
       "bibliotheques": [
         "Bibliothèque des lettres et sciences humaines"
       ],
-      "telephone": "514 343-6111, poste 2622",
-      "courriel": "valerie.rioux.3@umontreal.ca",
-      "orcid": "0000-0001-6904-5811",
+      "nom": "Rioux",
+      "fonction": "Bibliothécaire disciplinaire",
+      "photo": "valerie-rioux.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=valerie.rioux.3@umontreal.ca",
-      "photo": "valerie-rioux.webp"
+      "orcid": "0000-0001-6904-5811"
     },
     {
       "prenom": "Éric",
@@ -1780,15 +1780,15 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=eric.romano@umontreal.ca"
     },
     {
+      "telephone": "514 343-2080",
+      "courriel": "m.sevigny@umontreal.ca",
       "prenom": "Martin",
       "nom": "Sévigny",
       "fonction": "Directeur(trice)",
-      "direction": "Direction de la recherche et des initiatives numériques",
-      "telephone": "514 343-2080",
-      "courriel": "m.sevigny@umontreal.ca",
+      "photo": "martin-sevigny.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=m.sevigny@umontreal.ca",
       "orcid": "0000-0003-4451-9982",
-      "photo": "martin-sevigny.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
       "prenom": "Chloé",
@@ -1816,19 +1816,19 @@
       "photo": "ann-mary-sotomayor.webp"
     },
     {
-      "prenom": "Viviane",
-      "nom": "St-Arnaud",
-      "fonction": "Bibliothécaire",
       "expertises": [
         "Prêt entre bibliothèques"
       ],
+      "telephone": "514 343-6111, poste 1008",
+      "courriel": "viviane.st-arnaud@umontreal.ca",
+      "prenom": "Viviane",
       "bibliotheques": [
         "Service du prêt entre bibliothèques"
       ],
-      "telephone": "514 343-6111, poste 1008",
-      "courriel": "viviane.st-arnaud@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=viviane.st-arnaud@umontreal.ca",
-      "photo": "viviane-st-arnaud.webp"
+      "nom": "St-Arnaud",
+      "fonction": "Bibliothécaire",
+      "photo": "viviane-st-arnaud.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=viviane.st-arnaud@umontreal.ca"
     },
     {
       "prenom": "Chantal",
@@ -1847,18 +1847,18 @@
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=chantal.taillon@umontreal.ca"
     },
     {
+      "telephone": "514 343-6111, poste 13424",
+      "courriel": "mathieu.nicolas.tardif@umontreal.ca",
       "prenom": "Mathieu Nicolas",
-      "nom": "Tardif",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction de la recherche et des initiatives numériques",
       "bibliotheques": [
         "Infrastructure de recherche"
       ],
-      "telephone": "514 343-6111, poste 13424",
-      "courriel": "mathieu.nicolas.tardif@umontreal.ca",
+      "nom": "Tardif",
+      "fonction": "Chef(fe) de service",
+      "photo": "mathieu-tardif.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=mathieu.nicolas.tardif@umontreal.ca",
       "orcid": "0009-0000-3035-027X",
-      "photo": "mathieu-tardif.webp"
+      "direction": "Direction de la recherche et des initiatives numériques"
     },
     {
       "prenom": "Nancy",
@@ -1885,14 +1885,13 @@
       "photo": "karine-theriault-dube.webp"
     },
     {
-      "prenom": "Mylène",
-      "nom": "Therrien",
-      "fonction": "Responsable",
-      "direction": "Direction des bibliothèques Sociétés et création",
       "expertises": [
         "Circulation",
         "Gestion des collections et des espaces"
       ],
+      "telephone": "514 343-6111, poste 1750",
+      "courriel": "mylene.therrien@umontreal.ca",
+      "prenom": "Mylène",
       "bibliotheques": [
         "Bibliothèque d’aménagement",
         "Bibliothèque de droit",
@@ -1900,26 +1899,27 @@
         "Bibliothèque du campus de l’UdeM à Laval",
         "Bibliothèque de musique"
       ],
-      "telephone": "514 343-6111, poste 1750",
-      "courriel": "mylene.therrien@umontreal.ca",
+      "nom": "Therrien",
+      "fonction": "Responsable",
+      "photo": "mylene-therrien.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=mylene.therrien@umontreal.ca",
-      "photo": "mylene-therrien.webp"
+      "direction": "Direction des bibliothèques Sociétés et création"
     },
     {
-      "prenom": "Mathieu",
-      "nom": "Thomas",
-      "fonction": "Bibliothécaire",
       "expertises": [
         "Livres rares et collections spéciales"
       ],
+      "telephone": "514 343-6111, poste 4093",
+      "courriel": "m.thomas@umontreal.ca",
+      "prenom": "Mathieu",
       "bibliotheques": [
         "Bibliothèque des livres rares et collections spéciales"
       ],
-      "telephone": "514 343-6111, poste 4093",
-      "courriel": "m.thomas@umontreal.ca",
+      "nom": "Thomas",
+      "fonction": "Bibliothécaire",
+      "photo": "mathieu-thomas.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=m.thomas@umontreal.ca",
-      "orcid": "0000-0001-9514-8371",
-      "photo": "mathieu-thomas.webp"
+      "orcid": "0000-0001-9514-8371"
     },
     {
       "prenom": "Ly Kieng",
@@ -1934,19 +1934,19 @@
       "photo": "ly-kieng-tir.webp"
     },
     {
-      "prenom": "Juliette",
-      "nom": "Tirard-Collet",
-      "fonction": "Bibliothécaire",
       "expertises": [
         "Communication et image de marque"
       ],
+      "telephone": "514 343-6111, poste 0900",
+      "courriel": "juliette.tirard-collet@umontreal.ca",
+      "prenom": "Juliette",
       "bibliotheques": [
         "Direction de l’engagement et de l’innovation sociale"
       ],
-      "telephone": "514 343-6111, poste 0900",
-      "courriel": "juliette.tirard-collet@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=juliette.tirard-collet@umontreal.ca",
-      "photo": "juliette-tirard-collet.webp"
+      "nom": "Tirard-Collet",
+      "fonction": "Bibliothécaire",
+      "photo": "juliette-tirard-collet.webp",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=juliette.tirard-collet@umontreal.ca"
     },
     {
       "prenom": "Anne-Julie",
@@ -1972,22 +1972,22 @@
       "photo": "frederic-tremblay.webp"
     },
     {
-      "prenom": "Julie",
-      "nom": "Trépanier",
-      "fonction": "Chef(fe) de service",
-      "direction": "Direction des bibliothèques Sociétés et création",
       "expertises": [
         "Référence et offre pédagogique de première ligne"
       ],
+      "telephone": "514 343-6111, poste 4310",
+      "courriel": "j.trepanier@umontreal.ca",
+      "prenom": "Julie",
       "bibliotheques": [
         "Bibliothèque d’aménagement",
         "Bibliothèque Thérèse-Gouin-Décarie",
         "Bibliothèque du campus de l’UdeM à Laval"
       ],
-      "telephone": "514 343-6111, poste 4310",
-      "courriel": "j.trepanier@umontreal.ca",
+      "nom": "Trépanier",
+      "fonction": "Chef(fe) de service",
+      "photo": "julie-trepanier.webp",
       "teams": "https://teams.microsoft.com/l/chat/0/0?users=j.trepanier@umontreal.ca",
-      "photo": "julie-trepanier.webp"
+      "direction": "Direction des bibliothèques Sociétés et création"
     },
     {
       "prenom": "Nancy",
@@ -2049,19 +2049,19 @@
       "photo": "josee-viel.webp"
     },
     {
-      "prenom": "Émilie",
-      "nom": "Walsh",
-      "fonction": "Bibliothécaire",
-      "direction": "Direction des collections, du traitement documentaire et des métadonnées",
       "expertises": [
         "Ressources électroniques et licences"
       ],
+      "telephone": "514 343-6111, poste 8741",
+      "courriel": "emilie.walsh@umontreal.ca",
+      "prenom": "Émilie",
       "bibliotheques": [
         "Acquisitions"
       ],
-      "telephone": "514 343-6111, poste 8741",
-      "courriel": "emilie.walsh@umontreal.ca",
-      "teams": "https://teams.microsoft.com/l/chat/0/0?users=emilie.walsh@umontreal.ca"
+      "nom": "Walsh",
+      "fonction": "Bibliothécaire",
+      "teams": "https://teams.microsoft.com/l/chat/0/0?users=emilie.walsh@umontreal.ca",
+      "direction": "Direction des collections, du traitement documentaire et des métadonnées"
     },
     {
       "prenom": "Sosthène",
