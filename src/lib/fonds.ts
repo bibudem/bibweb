@@ -20,6 +20,7 @@ export const FONDS = {
   bleu600: { couleur: 'var(--bleu-principal-fonce)', ton: 'fonce' },
   vertFonce: { couleur: 'var(--vert-fonce)', ton: 'fonce' },
   rougeOrange: { couleur: 'var(--rouge-orange)', ton: 'moyen' },
+  orange: { couleur: 'var(--orange)', ton: 'moyen' },
   violetFonce: { couleur: 'var(--violet-fonce)', ton: 'moyen' },
   vertPale: { couleur: 'var(--vert-pale)', ton: 'moyen' },
   jaune: { couleur: 'var(--jaune)', ton: 'moyen' },

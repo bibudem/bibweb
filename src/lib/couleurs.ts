@@ -19,6 +19,7 @@ const JETONS = new Set([
   'rose-300',
   'rose-500',
   'rouge-orange',
+  'orange',
   'vert-fonce',
   'vert-pale',
   'violet-fonce',
