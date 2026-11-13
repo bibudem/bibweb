@@ -16,7 +16,8 @@
  * bandes (Section) : blanc sur un fond foncé, bleu foncé sur un fond clair ou
  * moyen. Le bouton est toujours secondaire (à contour), pour que les quatre
  * cartes pèsent autant l'une que l'autre ; variante claire (`light`) sur un
- * fond foncé.
+ * fond foncé. Sur un fond clair ou moyen, le bouton est blanc : son contour
+ * seul se perdait dans le bleu pâle de la carte.
  */
 import { Picture } from 'astro:assets'
 import Bouton from '@/components/primitives/Bouton.astro'
@@ -233,6 +234,12 @@ const idPiste = idUnique('cartes-sections')
   .pied {
     margin-top: auto;
     padding-top: var(--espace-3);
+  }
+
+  /* Bouton blanc sur les cartes claires ou moyennes : il se détache du fond */
+  .carte:not(.ton-fonce) .pied :global(.bouton.variante-outlined) {
+    --bouton-fond: var(--blanc);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-texte) 6%, var(--blanc));
   }
 
   @media (forced-colors: active) {
