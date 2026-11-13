@@ -185,6 +185,16 @@ const titreLong = titreReduit || (typeof title === 'string' && title.length > TI
     }
   }
 
+  /* Très grands écrans : à hauteur fixe, la bannière devenait une mince
+     bande (photo 3:2 en cover, un cinquième de sa hauteur visible à
+     3840 px), et coupait les têtes (/recherche/). Elle suit la largeur
+     (le quart) au-delà de 34rem. */
+  @media (width >= 1920px) {
+    .super-hero-2:not(.taille-small) {
+      --hauteur: max(34rem, 25vw);
+    }
+  }
+
   @media (width >= 1200px) {
     /* Glissée sous l'en-tête : le texte reste sous ses 5rem */
     .super-hero-2 {
