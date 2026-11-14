@@ -1,0 +1,33 @@
+# Enrichissez vos cours avec nos formations sur mesure!
+
+Découvrez des exemples de formations prêtes à intégrer à vos cours, adaptées aux besoins de vos étudiants et étudiantes et aux thématiques de vos cours.
+
+Vous avez une idée ou un sujet en tête? Votre [bibliothécaire disciplinaire](https://bib.umontreal.ca/nous-joindre/notre-equipe/) est là pour collaborer avec vous et créer une expérience d’apprentissage sur mesure!
+
+## Initiation à la recherche documentaire et aux services des bibliothèques
+
+- Présentation des services et ressources des bibliothèques
+- Initiation à l’outil de recherche Sofia
+- Bases de données spécialisées dans votre domaine
+- Méthodologie de recherche documentaire
+
+## Évaluation de l’information et bonnes pratiques de citation
+
+- Distinction entre les revues scientifiques et professionnelles
+- Critères pour évaluer la qualité des sources
+- Sensibilisation au plagiat
+- Citation des sources selon les standards de votre discipline
+- Introduction aux outils de gestion bibliographique (EndNote, Zotero, BibTeX)
+
+## Découverte des outils et pratiques de la publication scientifique
+
+- Introduction au libre accès
+- Gestion des données de recherche
+- Notions de droit d’auteur
+- Processus de publication scientifique et révision par les pairs
+- Compréhension des mesures d’impact
+- Initiation à l’intelligence artificielle dans le contexte académique
+
+---
+
+Page HTML : https://bib.umontreal.ca/enseignement/formations-cours/

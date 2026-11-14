@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Sitemap: https://bib.umontreal.ca/sitemap-index.xml
+Host: https://bib.umontreal.ca

@@ -1,0 +1,1 @@
+import{t as e}from"./focus.D1drnsRx.js";document.addEventListener(`click`,t=>{if(!t.target?.closest?.(`.lien-evitement`))return;let n=document.getElementById(`contenu-principal`);n&&e(n,{preventScroll:!0})});

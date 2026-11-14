@@ -1,0 +1,64 @@
+# Nous soutenir
+
+## Cultiver la curiosité
+
+Véritable milieu de vie où se rencontre et se rassemble la communauté universitaire, les bibliothèques de l’Université de Montréal sont des partenaires essentiels au rayonnement des savoirs. Lieux où on cultive la curiosité, elles comptent parmi les grandes bibliothèques de recherche de langue française.
+
+En soutenant les bibliothèques de l’Université de Montréal, vous contribuez directement à multiplier les occasions d’apprentissage et de recherche pour les générations futures.
+
+Que ce soit en contribuant à la modernisation des espaces offerts ou à la démocratisation des savoirs, chaque don représente un pas de plus vers une science accessible et ouverte, à la communauté UdeM et aux jeunes de demain.
+
+[Faire un don maintenant](https://formulairereseau.umontreal.ca/site/Donation2?df_id=1560&1560.donation=form1\&mfc_pref=T\&s_locale=fr_CA)
+
+## [Fonds des livres rares de l’UdeM](https://bib.umontreal.ca/nous-soutenir/fonds-livres-rares/)
+
+## Des services pour la communauté de l’UdeM+, même après le diplôme!
+
+Après la fin de vos études à l’UdeM, HEC Montréal et Polytechnique Montréal, les bibliothèques continuent de vous accueillir!
+
+- Emprunt gratuit de la collection imprimée
+- Accès sur place aux ressources électroniques
+
+## Remerciements
+
+Un immense merci à toutes les personnes qui ont contribué à la réussite de la mission des bibliothèques de l’Université de Montréal
+
+En particulier, nous souhaitons remercier chaleureusement les généreux donateurs et donatrices, dont le soutien financier a été essentiel à la concrétisation de projets novateurs et à la création d’occasions exceptionnelles pour la communauté universitaire.
+
+La confiance des étudiantes et étudiants de l’Université de Montréal, exprimée à travers le Fonds de l’amélioration de la vie étudiante et les frais d’amélioration des services technologiques et informatiques et des collections des bibliothèques (STIC), est une source inépuisable de motivation. Leur engagement a permis la mise en œuvre de nombreuses initiatives stimulantes, adaptées aux besoins évolutifs de la communauté. Entre autres projets réalisés grâce à leur soutien, on compte la création d’ateliers de fabrication numérique, l’enrichissement des collections des bibliothèques, l’achat d’équipement de travail actif et de cabines insonorisées pour le travail individuel et d’équipe, et le renouvellement de plusieurs places de travail à travers le réseau.
+
+Merci pour votre collaboration précieuse et votre engagement continu. Votre soutien joue un rôle fondamental dans la construction d’un environnement universitaire enrichissant pour tous et toutes.
+
+## Aperçu des réalisations
+
+### Cabines insonorisées
+
+- Bibliothèque d’aménagement
+- Bibliothèque du campus de l’UdeM à Laval
+- Bibliothèque de droit
+- Bibliothèque Marguerite-d’Youville
+- Bibliothèque de médecine vétérinaire
+- Bibliothèque Thérèse-Gouin-Décarie
+- Bibliothèque de la santé
+
+### Achats de licence Adobe Creative Cloud
+
+Profitez d’un accès complet aux outils Adobe Creative Cloud pour tous vos projets graphiques, vidéo et audio.
+
+### Postes de travail actif
+
+Des postes de travail actifs équipés de vélos stationnaires, de ballons d’assise ou de surfaces modulables, pour bouger tout en étudiant.
+
+### Ateliers de fabrication
+
+Des espaces inspirants pour expérimenter, apprendre et créer avec des outils technologiques.
+
+## Don de livres
+
+Les Bibliothèques accueillent avec intérêt les propositions de don de collections spéciales ou d’ouvrages ayant une valeur unique pour enrichir nos collections. Pour assurer une intégration harmonieuse aux ressources existantes, nous vous invitons à consulter notre politique de don avant de soumettre votre offre.
+
+[Politique de dons 2025](https://bib.umontreal.ca/nous-soutenir/politique-dons-2025-adoptee.pdf)
+
+---
+
+Page HTML : https://bib.umontreal.ca/nous-soutenir/

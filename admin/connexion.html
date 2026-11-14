@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Connexion | Les bibliothèques UdeM</title>
+</head>
+<body>
+<p id="etat">Connexion en cours…</p>
+<script>
+  (function () {
+    var etat = document.getElementById('etat');
+    var message = decodeURIComponent(location.hash.slice(1));
+    if (!message) {
+      var relais = "https://ordo.bib.umontreal.ca/webhook/decap/auth";
+      if (relais) location.replace(relais + location.search);
+      else etat.textContent = 'Relais de connexion non configuré (DECAP_AUTH_URL).';
+      return;
+    }
+    // Le jeton ne reste ni dans l'adresse ni dans l'historique de la fenêtre
+    history.replaceState(null, '', location.pathname);
+    if (!window.opener || message.indexOf('authorization:github:') !== 0) {
+      etat.textContent = 'Fenêtre ouverte hors de l’interface de rédaction. Fermez-la et recommencez.';
+      return;
+    }
+    window.addEventListener('message', function (e) {
+      if (e.origin !== location.origin || e.source !== window.opener) return;
+      window.opener.postMessage(message, location.origin);
+      window.close();
+    }, false);
+    window.opener.postMessage('authorizing:github', location.origin);
+  })();
+</script>
+</body>
+</html>

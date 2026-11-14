@@ -1,0 +1,33 @@
+/* ---------- CTA : fond bleu foncé ---------- */
+@layer components {
+  .cta {
+    background: var(--cta-bg); color: #fff;
+    --cta-pad: clamp(36px, 7vw, 80px);
+    padding: var(--cta-pad);
+    position: relative; overflow: hidden; isolation: isolate;
+  }
+  .cta { --sq: clamp(56px, 8vw, 104px); }
+  /* Carré orange derrière le logo des bibliothèques */
+  .cta::before {
+    content: ""; position: absolute; z-index: -1; bottom: 0; right: 0;
+    width: calc(var(--sq) * 3); height: calc(var(--sq) * 3); background: var(--udem-orange);
+  }
+  .cta-mark {
+    position: absolute; z-index: -1; right: 0; bottom: 0;
+    width: calc(var(--sq) * 2); height: calc(var(--sq) * 2); display: block;
+  }
+  @media (max-width: 640px) { .cta { padding-bottom: calc(var(--sq) * 3 + 28px); } }
+  .cta .kicker { color: var(--cta-kicker); }
+  .cta h2 { color: #fff; max-width: 16ch; }
+  .cta h2 em { color: var(--udem-jaune); }
+  .cta p { color: rgba(255,255,255,.8); max-width: 520px; margin: 20px 0 0; }
+  .cta .hero-actions .btn { background: #fff; color: var(--udem-bleu-fonce); border-color: #fff; }
+  .cta .hero-actions .btn.ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.5); }
+  /* Survol : les règles ci-dessus sont plus précises que .btn:hover (hero.css) et l’annulaient. */
+  @media (hover: hover) and (pointer: fine) {
+    .cta .hero-actions .btn:hover { background: var(--udem-bleu-10); border-color: var(--udem-bleu-10); }
+    .cta .hero-actions .btn.ghost:hover { background: rgba(255,255,255,.14); border-color: #fff; }
+  }
+
+  #contact { padding-top: 0; }
+}

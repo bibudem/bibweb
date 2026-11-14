@@ -1,0 +1,41 @@
+/* ---------- Barre de sections (mobile) ----------
+   Matériau translucide en bas de l’écran, à portée de pouce, toujours affichée. */
+@layer components {
+  .dock { display: none; }
+
+  @media (max-width: 720px) {
+    .dock {
+      position: fixed; z-index: 45; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom));
+      display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 6px;
+      border-radius: 18px; border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px);
+      box-shadow: 0 12px 32px -14px rgba(11, 17, 58, 0.45);
+      transform: translateY(calc(100% + 24px)); visibility: hidden;
+      transition: transform 420ms var(--ease-drawer), visibility 0s linear 420ms;
+    }
+    html:not(.js) .dock, .dock.visible { transform: none; visibility: visible; transition: transform 420ms var(--ease-drawer), visibility 0s; }
+    .dock a {
+      display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; border-radius: 12px;
+      font-size: 12px; font-weight: 600; color: var(--ink-2); text-decoration: none;
+      user-select: none; -webkit-user-select: none; touch-action: manipulation;
+      transition: background-color 150ms ease, color 150ms ease, transform 160ms var(--ease-out);
+    }
+    .dock a:active { transform: scale(0.95); }
+    .dock a.active { color: var(--accent); background: var(--accent-soft); }
+    /* Laisser la place à la barre : sous le dernier contenu et sous les contrôles du haut de page */
+    /* Le focus clavier ne doit jamais finir caché sous la barre (WCAG 2.4.11) */
+    html { scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+    .scroll-hint, .motion-toggle { bottom: calc(96px + env(safe-area-inset-bottom)); }
+    .hero { padding-bottom: calc(150px + env(safe-area-inset-bottom)); }
+    .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock, .dock.visible { transform: none; transition: opacity 200ms ease, visibility 0s linear 200ms; opacity: 0; }
+    .dock.visible { opacity: 1; transition: opacity 200ms ease, visibility 0s; }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .dock { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  }
+}

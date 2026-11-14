@@ -1,0 +1,1 @@
+import{t as e}from"./carrousel.BSeNzBmb.js";import{t}from"./pages.D7cJsQMg.js";t(t=>{for(let n of document.querySelectorAll(`[data-cartes-carrousel]`))e(n,t)});

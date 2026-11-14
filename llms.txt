@@ -1,0 +1,132 @@
+# Les bibliothèques de l'Université de Montréal
+
+> Site Web officiel des bibliothèques de l'Université de Montréal (Montréal, Québec, Canada) : bibliothèques et espaces d’étude, horaires, emprunt et prêt entre bibliothèques, collections, aide à la recherche, formations, science ouverte et services aux étudiants, au personnel enseignant et aux chercheurs.
+
+Le site est en français. Chaque lien ci-dessous mène à la version Markdown d’une page ; la version HTML est à la même adresse sans « index.md ». Chaque fichier Markdown se termine par l’adresse de sa page HTML.
+
+Les horaires du jour, les événements et les formations sont chargés en direct depuis d’autres services : leur version Markdown peut ne pas les contenir. Pour ces informations, renvoyer vers la page HTML ou le service concerné.
+
+La recherche documentaire (livres, articles, bases de données) ne se fait pas sur ce site, mais dans Sofia et la Boîte à outils (voir « Sites associés »).
+
+## Accueil et informations pratiques
+
+- [Accueil](https://bib.umontreal.ca/index.md): Les 14 bibliothèques de l’Université de Montréal : espaces d’étude, collections, Sofia, aide à la recherche et formations, sur tous les campus.
+- [Horaires et lieux](https://bib.umontreal.ca/horaires/index.md): Horaires et adresses des bibliothèques de l’UdeM sur tous les campus : horaire de la semaine, itinéraire, coordonnées et réservation de salles.
+- [Répertoire du personnel](https://bib.umontreal.ca/personnel/index.md): Coordonnées des bibliothécaires et du personnel des bibliothèques de l’UdeM, avec leurs fonctions, leurs disciplines et leur bibliothèque.
+- [Service Accessibilité](https://bib.umontreal.ca/service-accessibilite/index.md): Les bibliothèques de l’Université de Montréal ont à cœur de fournir des services, des espaces et des collections inclusifs et accessibles à tous…
+
+## Espaces
+
+- [Espaces](https://bib.umontreal.ca/espaces/index.md): Étudier en solo ou en équipe, créer, se détendre : les espaces de nos 14 bibliothèques, sur tous les campus.
+- [Bibliothèque des livres rares et collections spéciales](https://bib.umontreal.ca/espaces/blrcs/index.md): Près de 175 000 documents anciens, rares ou précieux à explorer, consulter sur place et utiliser pour la recherche, l’enseignement et la création.
+- [Nos fonds et collections](https://bib.umontreal.ca/espaces/blrcs/fonds-collections/index.md): Répertoire des fonds et collections spéciales de la Bibliothèque des livres rares et collections spéciales, avec leurs liens vers Sofia et vers les documents numérisés.
+
+## Études
+
+- [Études](https://bib.umontreal.ca/etudes/index.md): Pour les étudiantes et étudiants de tous les cycles : aide, guides, soutien informatique, formations et accessibilité.
+
+## Recherche
+
+- [Recherche](https://bib.umontreal.ca/recherche/index.md): Pour les chercheuses, les chercheurs et les équipes de recherche : accompagnement, données, publication, impact et science ouverte.
+- [Diffuser vos savoirs](https://bib.umontreal.ca/recherche/diffuser/index.md): Faire rayonner sa recherche dans un monde de surabondance d’information et de mésinformation, c’est possible en choisissant soigneusement les…
+- [Financement de monographies savantes d’auteurs et d’autrices UdeM](https://bib.umontreal.ca/recherche/diffuser/financement-monographie/index.md): La Direction des bibliothèques consacre annuellement 36 000 $ au financement de la publication en accès libre de monographies savantes rédigées par…
+- [Bibliographies créées à l’UdeM et diffusées sur Kerko](https://bib.umontreal.ca/recherche/diffuser/kerko/index.md): Découvrez un répertoire évolutif de bibliographies thématiques créées par la communauté de l’Université de Montréal avec le soutien des bibliothèques…
+
+## Enseignement
+
+- [Enseignement](https://bib.umontreal.ca/enseignement/index.md): Pour le personnel enseignant : réserve de cours, droit d’auteur, formations en classe, salles, technologies et ressources éducatives libres.
+- [Formations intégrées au cursus](https://bib.umontreal.ca/enseignement/formations-cours/index.md): Découvrez des exemples de formations prêtes à intégrer à vos cours, adaptées aux besoins de vos étudiants et étudiantes et aux thématiques de vos cours.
+- [Formulaire de réserve de cours](https://bib.umontreal.ca/enseignement/formulaire-reserve/index.md): Mettre des documents à la réserve
+- [Réserve de cours](https://bib.umontreal.ca/enseignement/reserve/index.md): Si vous donnez un cours, vous pouvez demander la mise en réserve de certains documents en complétant le formulaire de réserve de cours, ou en…
+
+## Engagements
+
+- [Engagements](https://bib.umontreal.ca/engagements/index.md): Science ouverte, équité et inclusion, Premiers Peuples, environnement, IA et langue française : ce que les bibliothèques défendent et font.
+- [Ateliers Wikipédia aux bibliothèques](https://bib.umontreal.ca/engagements/ateliers-wiki/index.md): Wikipédia, c’est une encyclopédie universelle, gratuite, accessible. Les pages peuvent être créées par tout le monde, dans toutes les langues, bien…
+- [Bibliothèques vivantes](https://bib.umontreal.ca/engagements/bibliotheques-vivantes/index.md): Venez vivre et faire vivre la plus ancienne forme de transmission des savoirs : la conversation, de personne à personne.
+- [Vers une empreinte écologique réduite](https://bib.umontreal.ca/engagements/empreinte-ecologique/index.md): À l’heure où chaque geste compte pour préserver notre planète, nous nous engageons à explorer et adopter des pratiques pour réduire notre…
+- [L’équité, la diversité, l’inclusion et l’accessibilité au cœur de nos actions](https://bib.umontreal.ca/engagements/equite-diversite-inclusion/index.md): L’accès aux savoirs dans leur diversité est au cœur de notre mission en tant que bibliothèque universitaire.
+- [Intelligence artificielle, une intégration éthique](https://bib.umontreal.ca/engagements/intelligence-artificielle/index.md): Nous nous engageons à soutenir et à encourager un usage éthique et innovant de l’intelligence artificielle dans un contexte de recherche, d’enseignement…
+- [La lecture en cadeau](https://bib.umontreal.ca/engagements/lecture-cadeau/index.md): En 2026, la collecte a lieu du 1er au 28 février. Le programme La lecture en cadeau, organisé par la Fondation pour l’alphabétisation, remettra les…
+- [Soutien et valorisation des savoirs des Premiers Peuples](https://bib.umontreal.ca/engagements/premiers-peuples/index.md): Nous nous engageons à contribuer au soutien et à la valorisation des savoirs des Premiers Peuples. Ces actions s’inscrivent dans une volonté…
+- [La science en français, notre singularité](https://bib.umontreal.ca/engagements/science-en-francais/index.md): Nous mettons la langue française au cœur de nos actions, en soutien à la vision institutionnelle : être la plus influente université de langue…
+
+## Obtenir
+
+- [Obtenir](https://bib.umontreal.ca/obtenir/index.md): Sur les tablettes ou en ligne, notre collection a été créée pour soutenir la recherche et l’apprentissage.
+- [Frais et avis de retard](https://bib.umontreal.ca/obtenir/frais-avis/index.md): Vous pouvez continuer à emprunter malgré la présence de frais inscrits à votre dossier, et ce, jusqu’à une limite de 50 $.
+- [Demande de numérisation](https://bib.umontreal.ca/obtenir/numerisation/index.md): À la demande, nos équipes se chargent de vous faire parvenir la copie numérisée d’un article ou d’un chapitre de livre imprimé.
+- [Prêt entre bibliothèques](https://bib.umontreal.ca/obtenir/peb/index.md): Il est à noter qu’en raison des licences ou embargos des fournisseurs, les livres numériques entiers ne peuvent être demandés par PEB.
+- [ILL Service for External Libraries](https://bib.umontreal.ca/obtenir/peb/ill-external-libraries/index.md): We currently use OCLC WorldShare Tipasa. If your ILL system is not compatible, you can send an ILL request for loan or copy by filling out the form below.
+- [Prêts aux institutions externes](https://bib.umontreal.ca/obtenir/peb/peb-institutions-externes/index.md): See English version Les bibliothèques UdeM utilisent le système WorldShare ILL Tipasa d’OCLC. Si le système de votre établissement n’est pas…
+- [Prêt, renouvellement, retour](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/index.md): Vous pouvez automatiquement emprunter des documents si vous êtes membre de la communauté UdeM ou de celle de l’un des 17 autres…
+- [Ententes avec BAnQ et les universités canadiennes](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/banq-universites-canadiennes/index.md): La consultation des ressources électroniques est possible sur les ordinateurs publics des bibliothèques grâce à un compte d’accès provisoire…
+- [Emprunter à l’UdeM depuis un cégep](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/cegeps/index.md): Pour vous inscrire, vous devez vous présenter à la bibliothèque de votre cégep pour obtenir le formulaire d’autorisation d’emprunt direct et suivre…
+- [Communauté UdeM](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/communaute-udem/index.md): L’inscription est automatique pour les personnes de cette catégorie. En tant que membre de la communauté UdeM, vous avez accès aux ressources…
+- [Carte PBUQ](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/communaute-udem/carte-pbuq/index.md): La carte PBUQ permet d’emprunter directement dans les bibliothèques d’établissements universitaires canadiens qui ne font pas partie du Partenariat…
+- [Emprunter dans un cégep](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/communaute-udem/ententes-cegeps/index.md): Ce privilège est réservé à la communauté étudiante (sauf étudiants et étudiantes libres), à la communauté enseignante et aux membres du personnel de…
+- [Diplômées et diplômés UdeM, HEC Montréal, Polytechnique Montréal](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/diplomes/index.md): Cette catégorie inclut les diplômés et diplômées de l’Université de Montréal, de HEC Montréal et de Polytechnique Montréal.
+- [Personnes inscrites par droit accordé](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/droit-accorde/index.md): Cette catégorie inclut les personnes pour lesquelles une faculté ou un département souhaite faire une demande d’inscription aux bibliothèques.
+- [Grand public](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/grand-public/index.md): Cette catégorie inclut les personnes qui souhaitent s’abonner à titre personnel. On peut, sans inscription, consulter la documentation en bibliothèque.
+- [Entente du Partenariat des bibliothèques universitaires du Québec (PBUQ)](https://bib.umontreal.ca/obtenir/pret-renouvellement-retour/pbuq/index.md): L’inscription est automatique pour les personnes de cette catégorie. La consultation des ressources électroniques est possible sur les ordinateurs…
+- [Reproduction de thèses et mémoires UdeM](https://bib.umontreal.ca/obtenir/reproduction-theses-memoires/index.md): Le Centre de conservation Lionel-Groulx offre dans certaines circonstances la reproduction des thèses et des mémoires déposés par les étudiants…
+
+## Nous joindre
+
+- [Nous joindre](https://bib.umontreal.ca/nous-joindre/index.md): Posez votre question par formulaire, notre équipe vous répond. Discutez en direct avec un membre de l’équipe, selon l’horaire du service.
+- [Clavarder avec un membre de l’équipe](https://bib.umontreal.ca/nous-joindre/clavarder/index.md): Horaire spécial pour la référence virtuelle concernant les prochains congés Lundi 7 septembre : fermé Mercredi 30 septembre : ouvert de 9 h à 17 h Lundi…
+- [Notre équipe](https://bib.umontreal.ca/nous-joindre/notre-equipe/index.md): Trouvez la bonne personne à joindre : bibliothécaires disciplinaires et personnel des bibliothèques de l’UdeM, avec leurs coordonnées.
+- [Nous écrire](https://bib.umontreal.ca/nous-joindre/nous-ecrire/index.md): Posez votre question aux bibliothèques de l’UdeM par formulaire : notre équipe vous répond.
+- [Suggestion d’achat](https://bib.umontreal.ca/nous-joindre/suggestion-achat/index.md): Proposez l’achat d’un livre, d’un document ou d’une ressource électronique qui manque aux collections des bibliothèques de l’UdeM.
+
+## À propos
+
+- [À propos](https://bib.umontreal.ca/a-propos/index.md): Découvrez les différentes directions des bibliothèques de l’UdeM. Découvrez nos collections en chiffres et notre démarche d’évaluation.
+- [Carrière](https://bib.umontreal.ca/a-propos/carriere/index.md): Aucun poste n’est affiché pour le moment. Pour les postes de commis étudiant ou étudiante (à temps partiel), de technicien ou technicienne…
+- [Affichage destiné aux étudiants et étudiantes issues des Premiers Peuples](https://bib.umontreal.ca/a-propos/carriere/affichage-premiers-peuples/index.md): Un stage rémunéré offert pour une durée de 2 ans. Offre d’emploi détaillée. Les bibliothèques et la Division des archives et de la gestion de…
+- [Mission, vision, valeurs et objectifs](https://bib.umontreal.ca/a-propos/mission-vision-valeur/index.md): La planification stratégique 2023-2028 des bibliothèques de l’UdeM présente des objectifs ambitieux, ainsi que des moyens concrets pour y arriver.
+- [Nos collections](https://bib.umontreal.ca/a-propos/nos-collections/index.md): Les bibliothèques développent et maintiennent d’importantes collections, afin de répondre aux besoins de l’enseignement et de la recherche de la…
+- [Notre organisation](https://bib.umontreal.ca/a-propos/notre-organisation/index.md): Plus de 250 personnes aux bibliothèques de l’UdeM : direction, bibliothèques, collections, recherche et initiatives numériques, engagement, administration.
+- [Stéphanie Gagnon : directrice générale](https://bib.umontreal.ca/a-propos/notre-organisation/stephanie-gagnon/index.md): Stéphanie Gagnon est directrice générale des bibliothèques de l’Université de Montréal depuis 2019. Elle a occupé le poste de directrice des…
+- [Politiques et règlement](https://bib.umontreal.ca/a-propos/politiques-reglement/index.md): Règlement des bibliothèques, modalités de prêt, grille des tarifs, politiques d’acquisition, de dons et d’exposition, et code de conduite des usagers.
+- [Rapports annuels](https://bib.umontreal.ca/a-propos/rapports-annuels/index.md): Rapports annuels de la Direction des bibliothèques de l’UdeM, depuis 2019-2020 : version web accessible et version PDF.
+
+## Nous soutenir
+
+- [Nous soutenir](https://bib.umontreal.ca/nous-soutenir/index.md): Véritable milieu de vie où se rencontre et se rassemble la communauté universitaire, les bibliothèques de l’Université de Montréal sont des…
+- [Soutenez le Fonds des livres rares de l’Université de Montréal](https://bib.umontreal.ca/nous-soutenir/fonds-livres-rares/index.md): Près de 175 000 documents anciens, rares ou précieux forment les collections spéciales de l’Université de Montréal.
+
+## Sites associés
+
+- [Sofia](https://umontreal.on.worldcat.org/discovery?lang=fr): catalogue des collections des bibliothèques (livres, articles, revues, documents numériques)
+- [Mon dossier Sofia](https://umontreal.account.worldcat.org/account): prêts en cours, renouvellements, réservations
+- [Boîte à outils](https://boite-outils.bib.umontreal.ca/): guides de recherche par discipline, citation, droit d’auteur, IA générative
+- [Bases de données de A à Z](https://boite-outils.bib.umontreal.ca/az.php): bases de données et ressources électroniques par sujet
+- [Studio·bib](https://studio.bib.umontreal.ca/): soutien informatique, accès hors campus, technologies créatives, studios
+- [Réserver une salle](https://calendrier.bib.umontreal.ca/r): réservation de salles de travail en équipe
+- [Papyrus](https://umontreal.scholaris.ca/): dépôt institutionnel : thèses, mémoires et publications de l’UdeM
+- [Collections spéciales](https://collections-speciales.bib.umontreal.ca/): livres rares et objets numérisés
+
+## Optional
+
+- [Accessibilité web](https://bib.umontreal.ca/accessibilite-web/index.md): Cette page concerne l’accessibilité technique du site web. Pour plus d’informations concernant les services d’accessibilité offerts par les…
+- [Conditions d’utilisation des contenus](https://bib.umontreal.ca/conditions-utilisation/index.md): Les contenus du site web des bibliothèques de l’Université de Montréal et de ses deux plateformes, la Boîte à outils et le Studio·bib (ci-après…
+- [Nouvelles](https://bib.umontreal.ca/nouvelles/index.md): Nouvelles des bibliothèques de l’UdeM : services, travaux, horaires, bourses, collections et activités.
+- [Travaux bruyants à la Bibliothèque des lettres et sciences humaines à partir du 21 février 2026.](https://bib.umontreal.ca/nouvelles/2026/travaux-bibliotheque-LSH/index.md): Des travaux bruyants mais nécessaires seront menés à la Bibliothèque des lettres et sciences humaines durant les prochains mois.
+- [Vers une recherche documentaire augmentée](https://bib.umontreal.ca/nouvelles/2026/recherche-doc-augmentee/index.md): L’intelligence artificielle générative redéfinit les paradigmes de la recherche d’information. Afin de répondre aux besoins de la communauté UdeM,…
+- [Créer votre identifiant ORCID : accompagnement offert par les bibliothèques](https://bib.umontreal.ca/nouvelles/2026/orcid-accompagnement/index.md): Tel qu’annoncé par le Vice-rectorat à la recherche et à l’innovation, le Répertoire des professeurs et professeures sera abandonné au profit d’ORCID…
+- [Changement au proxy des bibliothèques](https://bib.umontreal.ca/nouvelles/2026/changement-proxy/index.md): Lundi 13 juillet : le service proxy sera instable en matinée, le temps de procéder à une mise à jour importante.
+- [Remise des bourses Geneviève-Bazin et Charles S. N.-Parent](https://bib.umontreal.ca/nouvelles/2026/bourses-GBazin-CSN/index.md): Voici les noms des personnes lauréates pour l’édition 2025-2026 des bourses Geneviève-Bazin et Charles S.
+- [Trois bourses offertes par la Bibliothèque des livres rares et collections spéciales](https://bib.umontreal.ca/nouvelles/2026/bourses-blrcs/index.md): La Bibliothèque des livres rares et collections spéciales (BLRCS) de l’Université de Montréal offre trois bourses cette année, deux de 2 000 $ et une de…
+- [Travaux à la Bibliothèque des lettres et sciences humaines](https://bib.umontreal.ca/nouvelles/2026/annonce-travaux-bibliotheque-LSH/index.md): Des travaux de relampage au Pavillon Samuel‑Bronfman débuteront la semaine du 2 février 2026 et s’étendront jusqu’à la fin du mois de mars 2026.
+- [Début des travaux de mise à niveau du système d’incendie à la Bibliothèque des lettres et sciences humaines](https://bib.umontreal.ca/nouvelles/2026/annonce-travaux-bibliotheque-LSH-suite/index.md): Des travaux de mise à jour du système d’incendie auront lieu à la Bibliothèque des lettres et sciences humaines du 3 mars au 31 août 2026.
+- [Dans l’univers de Claude Gingras](https://bib.umontreal.ca/nouvelles/2025/univers-Claude-Gingras/index.md): L’ancien critique musical de La Presse Claude Gingras était un être complexe et pluriel. Il y avait l’érudit, le passionné, le comique (il était…
+- [Travaux à la Bibliothèque de la santé à partir du 3 novembre : comment accéder aux services](https://bib.umontreal.ca/nouvelles/2025/travaux-bibliotheque-sante/index.md): À compter du 3 novembre, les 7e et 8e étages de la Bibliothèque de la santé seront fermés pour procéder au remplacement des tapis.
+- [Remise de la bourse Geneviève-Bazin de la Bibliothèque des livres rares et collections spéciales](https://bib.umontreal.ca/nouvelles/2025/remise-bourse-genevieve-bazin-bibliotheque-des-livres-rares-et-collections-speciales/index.md): La Bibliothèque des livres rares et collections spéciales est heureuse d’annoncer que le lauréat pour l’édition 2024-2025 de la bourse Geneviève-Bazin…
+- [Papyrus rejoint le service de dépôt institutionnel canadien Scholaris](https://bib.umontreal.ca/nouvelles/2025/papyrus-rejoint-service-de-depot-institutionnel-canadien-scholaris/index.md): À compter du 17 février 2025, Papyrus sera hébergé dans le service de dépôt institutionnel canadien Scholaris.
+- [Ouverture du concours des bourses de la Bibliothèque des livres rares et collections spéciales](https://bib.umontreal.ca/nouvelles/2025/ouverture-concours-bourses-blrcs/index.md): La Bibliothèque des livres rares et collections spéciales (BLRCS) de l’Université de Montréal offre trois bourses cette année.
+- [Incursion dans la bibliothèque de magie et sorcellerie de l’UdeM](https://bib.umontreal.ca/nouvelles/2025/magie-sorcellerie/index.md): Vous êtes aux prises avec un écoulement purulent des oreilles? Il suffit d’y verser l’urine chaude d’un enfant pour guérir en un clin d’œil.
+- [La Bibliothèque des lettres et sciences humaines ouvre jusqu’à 1 h du matin du 14 octobre au 3 novembre](https://bib.umontreal.ca/nouvelles/2025/heures-ouverture-blsh/index.md): Consultez les horaires des bibliothèques pour en savoir plus! L’horaire prolongé de la Bibliothèque des lettres et sciences humaines est possible grâce…
+- [Une vitrine pour découvrir l’univers de Claude Gingras](https://bib.umontreal.ca/nouvelles/2025/decouvrir-univers-claude-gingras/index.md): Entrevue avec notre bibliothécaire Christiane Melançon diffusée à l’émission Tout terrain sur les ondes de Radio-Canada le dimanche 16 novembre 2025.
+- [À vos micros! Un nouveau studio pour donner vie à vos balados](https://bib.umontreal.ca/nouvelles/2025/a-vos-micros/index.md): Éclairage tamisé, néons bleus pour l’ambiance : les deux animatrices des Lucioles découvrent le nouveau studio des bibliothèques de l’UdeM où…
+- [Fil RSS des nouvelles](https://bib.umontreal.ca/nouvelles/rss.xml)

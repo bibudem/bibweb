@@ -1,0 +1,1 @@
+function e(e=location.hash){try{return decodeURIComponent(e.slice(1))}catch{return``}}export{e as t};
