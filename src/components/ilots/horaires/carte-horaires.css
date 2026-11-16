@@ -310,6 +310,25 @@
   }
 }
 
+/* « Réinitialiser les filtres » : au bout des puces, et sous « Aucun lieu
+   ne correspond… » */
+.ch-reinitialiser {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 40px;
+  margin-inline-start: var(--espace-1);
+  font-weight: var(--graisse-moyenne);
+}
+
+.ch-aucun-reinitialiser {
+  margin: 0 0 var(--espace-3);
+}
+
+.ch-aucun-reinitialiser .ch-reinitialiser {
+  margin-inline-start: 0;
+}
+
 /* ---- Carte ---- */
 .ch-zone-carte {
   margin-bottom: var(--espace-4);
