@@ -18,6 +18,8 @@
  */
 
 import { aChaquePage } from './pages'
+import { idDeLAncre } from './ancre-url'
+import { REQUETE_MOUVEMENT_REDUIT } from './mouvement'
 
 const ZONE = '[data-revelation="zone"]'
 const GROUPE = '[data-revelation="groupe"]'
@@ -53,7 +55,7 @@ function unites(): HTMLElement[] {
 let pageSuivante = false
 
 function demarrer(signal: AbortSignal) {
-  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const reduit = window.matchMedia(REQUETE_MOUVEMENT_REDUIT)
   const impression = window.matchMedia('print')
   if (reduit.matches || impression.matches || !('IntersectionObserver' in window)) return
   // Rechargement ou retour : le navigateur restaure la position de
@@ -178,7 +180,9 @@ function demarrer(signal: AbortSignal) {
 }
 
 function ancre(hash: string): HTMLElement | null {
-  const id = decodeURIComponent(hash.slice(1))
+  // idDeLAncre tolère une ancre mal encodée (#100%) : decodeURIComponent
+  // levait une exception
+  const id = idDeLAncre(hash)
   return id ? document.getElementById(id) : null
 }
 

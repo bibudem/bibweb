@@ -15,6 +15,7 @@
  * interface. Courbe : --courbe-emphase-deceleree, appliquée aussi aux
  * nombres par une animation Web vide dont on lit la progression.
  */
+import { mouvementReduit } from '@/lib/mouvement'
 
 const nombre = new Intl.NumberFormat('fr-CA')
 /** Décalage maximal entre unités d'un bloc (en pas de --duree-courte-1) */
@@ -68,7 +69,7 @@ let pageSuivante = false
 export function animerChiffres(signal?: AbortSignal) {
   const suivante = pageSuivante
   pageSuivante = true
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('print').matches) return
+  if (mouvementReduit() || window.matchMedia('print').matches) return
   if (!('IntersectionObserver' in window) || typeof KeyframeEffect === 'undefined') return
   // Rechargement ou retour : pas d'animation au premier chargement ; une
   // page atteinte par un lien (navigation côté client) est une nouvelle visite

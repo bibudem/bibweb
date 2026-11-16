@@ -55,6 +55,7 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
 
 <script>
   import { aChaquePage, auDepart } from '@/lib/pages'
+  import { REQUETE_MOUVEMENT_REDUIT } from '@/lib/mouvement'
 
   aChaquePage((signal) => {
   for (const racine of document.querySelectorAll<HTMLElement>('[data-quoi-de-neuf]')) {
@@ -69,7 +70,7 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
     })
 
     const grille = racine.querySelector<HTMLElement>('.grille')!
-    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const reduit = window.matchMedia(REQUETE_MOUVEMENT_REDUIT)
     const enOnglets = () => !mq.matches
     const carrousel = () => grille.classList.contains('carrousel')
     // Position de défilement de chaque panneau (ils sont côte à côte)

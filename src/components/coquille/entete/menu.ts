@@ -88,10 +88,12 @@ export function brancherMenu(entete: HTMLElement, surChangement: () => void, sig
   // menu ») : la feuille s'allonge et le reste du menu apparaît en
   // descendant, en léger décalage. La poignée, collée au bas de la
   // feuille, suit. Sans animation si le mouvement réduit est demandé.
-  const COURBE_ENTREE = 'cubic-bezier(0.05, 0.7, 0.1, 1)'
-  const COURBE_SORTIE = 'cubic-bezier(0.3, 0, 1, 1)'
+  // Courbes du thème (tokens.css), lues plutôt que recopiées
+  const jeton = (nom: string) => getComputedStyle(document.documentElement).getPropertyValue(nom).trim()
+  const COURBE_ENTREE = jeton('--courbe-emphase-deceleree') || 'ease-out'
+  const COURBE_SORTIE = jeton('--courbe-standard-acceleree') || 'ease-in'
   let animation = false
-  const reduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduit = mouvementReduit
   const feuille = () => panneau?.querySelector<HTMLElement>('.feuille')
   const autresGroupes = () => [...(feuille()?.querySelectorAll<HTMLElement>('.grille > :not(.sofia, .deplier)') ?? [])].filter((e) => e.offsetParent)
 

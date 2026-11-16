@@ -20,6 +20,7 @@ import './carte-leaflet.css'
 import './fiche-lieu.css'
 import './horaire-semaine.css'
 import { idDeLAncre } from '@/lib/ancre-url'
+import { mouvementReduit } from '@/lib/mouvement'
 
 // La pastille reprend la couleur des marqueurs de la carte : les filtres
 // servent aussi de légende.
@@ -51,7 +52,6 @@ const estOuvert = (s: Statut | null) => s?.etat === 'open' || s?.etat === 'closi
 const SURLIGNAGE_MS = 1600
 const HORLOGE_MS = 30 * 1000
 
-const mouvementReduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Props {
   lieux: Lieu[]

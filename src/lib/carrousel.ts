@@ -22,7 +22,8 @@
  * (fondu du bord droit, au choix du composant). Sans JavaScript, la rangée se
  * parcourt au doigt, au trackpad ou à la barre de défilement.
  */
-const reduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+import { mouvementReduit } from './mouvement'
+const reduit = mouvementReduit
 
 /** `signal` (lib/pages.ts) débranche l'observateur quand la page est quittée */
 export function brancherCarrousel(racine: HTMLElement, signal?: AbortSignal) {

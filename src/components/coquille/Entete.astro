@@ -102,6 +102,7 @@ const chemin = sansBase(Astro.url.pathname)
 <script>
   import { brancherMenu } from './entete/menu'
   import { aChaquePage, auDepart } from '@/lib/pages'
+  import { infobullesFermablesAvecEchap } from '@/lib/infobulle'
 
   aChaquePage((signal) => {
     const entete = document.querySelector<HTMLElement>('[data-entete]')
@@ -120,14 +121,7 @@ const chemin = sansBase(Astro.url.pathname)
 
     // Échap ferme l'infobulle du logo ou du nom ; elle revient au prochain
     // survol ou focus (WCAG 1.4.13)
-    const avecInfobulle = [...entete.querySelectorAll<HTMLElement>('[data-infobulle]')]
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape') return
-      for (const lien of avecInfobulle) if (lien.matches(':hover, :focus-visible')) lien.setAttribute('data-infobulle-fermee', '')
-    }, { signal })
-    for (const lien of avecInfobulle) {
-      for (const evenement of ['pointerleave', 'blur']) lien.addEventListener(evenement, () => lien.removeAttribute('data-infobulle-fermee'))
-    }
+    infobullesFermablesAvecEchap([...entete.querySelectorAll<HTMLElement>('[data-infobulle]')], signal)
 
     // --hauteur-entete (marge de défilement des ancres et du focus, WCAG
     // 2.4.11) suit la hauteur réelle : avec le texte agrandi ou espacé, la
