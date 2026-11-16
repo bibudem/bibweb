@@ -6,6 +6,7 @@ slug: travaux-bibliotheque-LSH
 date: '2026-02-21'
 newsImage:
   src: ./images/lsh-35.webp
+  alt: 'Intérieur de la Bibliothèque des lettres et sciences humaines : plusieurs étages ouverts en béton, où des personnes étudient à des tables.'
 source: Bibliothèques
 ---
 Des travaux bruyants mais nécessaires seront menés à la Bibliothèque des lettres et sciences humaines durant les prochains mois.

@@ -5,6 +5,7 @@ slug: annonce-travaux-bibliotheque-LSH
 date: '2026-01-30'
 newsImage:
   src: ./images/lsh-35.webp
+  alt: 'Intérieur de la Bibliothèque des lettres et sciences humaines : plusieurs étages ouverts en béton, où des personnes étudient à des tables.'
 source: Bibliothèques
 ---
 Des travaux de relampage au Pavillon Samuel‑Bronfman débuteront la semaine du 2 février 2026 et s’étendront jusqu’à la fin du mois de mars 2026. Les travaux auront lieu entre 5 h et 13 h. Le chantier s’échelonnera sur 8 semaines et progressera d’un étage à l’autre en commençant par le 7e. La durée des travaux sur chaque étage devrait être d’une semaine.

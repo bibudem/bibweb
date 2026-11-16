@@ -72,6 +72,9 @@ export default defineConfig({
   base: process.env.BASE_PATH || '/',
   // Toutes les URL de coquille-web finissent par une barre oblique
   trailingSlash: 'always',
+  // Deux nouvelles au même slug la même année : le build échoue au lieu d'en
+  // publier une seule (le défaut, 'warn', l'écrasait en silence)
+  prerenderConflictBehavior: 'error',
   build: { format: 'directory' },
   // Garde les espaces entre éléments en ligne (liens, icônes), comme en v6
   compressHTML: true,

@@ -87,8 +87,23 @@ export async function toutesLesPages(): Promise<Page[]> {
   return cachePages
 }
 
+// Date du jour à Montréal (AAAA-MM-JJ), comparée à celle des nouvelles
+const aujourdhuiMontreal = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Montreal' }).format(new Date())
+
+/**
+ * Nouvelles publiées, de la plus récente à la plus ancienne. En production,
+ * une nouvelle datée d'un jour à venir attend : elle paraît au premier build
+ * à partir de sa date (déploiement suivant). En préproduction, elle est
+ * visible, pour la relire.
+ */
 export async function toutesLesNouvelles() {
-  cacheNouvelles ??= (await getCollection('nouvelles')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  if (!cacheNouvelles) {
+    const jour = aujourdhuiMontreal()
+    const toutes = await getCollection('nouvelles')
+    cacheNouvelles = toutes
+      .filter((n) => !EN_PRODUCTION || n.data.date.toISOString().slice(0, 10) <= jour)
+      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  }
   return cacheNouvelles
 }
 

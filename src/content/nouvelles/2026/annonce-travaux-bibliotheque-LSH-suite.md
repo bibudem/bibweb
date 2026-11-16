@@ -5,6 +5,7 @@ slug: annonce-travaux-bibliotheque-LSH-suite
 date: '2026-02-27'
 newsImage:
   src: ./images/lsh-35.webp
+  alt: 'Intérieur de la Bibliothèque des lettres et sciences humaines : plusieurs étages ouverts en béton, où des personnes étudient à des tables.'
 source: Bibliothèques
 ---
 Des travaux de mise à jour du système d’incendie auront lieu à la Bibliothèque des lettres et sciences humaines du 3 mars au 31 août 2026. Les travaux débuteront au 2e étage et le chantier se déplacera par zones sur les 3e, 4e et 5e étages par la suite.
