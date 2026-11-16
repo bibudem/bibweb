@@ -2,7 +2,7 @@
 // Lancer avec `npm test` (node --test, sans dépendance).
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { analyserHoraires, ajouterJours, lundiDe, statutDe, type ReponseApi } from './horaires.ts'
+import { analyserHoraires, ajouterJours, lundiDe, normaliser, statutDe, type ReponseApi } from './horaires.ts'
 import type { Lieu } from './lieux.ts'
 
 const lieu = { codeBib: 'ss' } as Lieu
@@ -39,4 +39,31 @@ test('dimanche soir, lundi fermé : on cherche le prochain jour ouvert', () => {
   const dates = ['2026-11-01', '2026-11-02', '2026-11-03']
   assert.equal(statut(h, '2026-11-01', 20, dates), 'Fermé, ouvre mardi à 8 h')
   assert.equal(statut(h, '2026-11-01', 9, dates), 'Fermé, ouvre à 10 h')
+})
+
+test('congé des Fêtes : au-delà de six jours, la date de réouverture est donnée', () => {
+  const dates = Array.from({ length: 14 }, (_, i) => ajouterJours('2026-12-23', i))
+  const h = horaires(jour('2026-12-23', '08:00', '17:00'), ...dates.slice(1, 13).map((d) => jour(d)), jour('2027-01-05', '08:00', '17:00'))
+  assert.equal(statut(h, '2026-12-23', 20, dates), 'Fermé, ouvre le mardi 5 janvier à 8 h')
+})
+
+test('bibliothèque absente de la réponse : horaire inconnu, pas « Fermé »', () => {
+  assert.equal(statutDe(lieu, analyserHoraires({ evenements: [] } as unknown as ReponseApi), { date: '2026-11-02', minutes: 600 }, ['2026-11-02']).etat, 'unknown')
+})
+
+test('réponse ou heures malformées : ignorées sans erreur', () => {
+  assert.doesNotThrow(() => analyserHoraires({ evenements: 'x' } as unknown as ReponseApi))
+  const h = horaires(jour('2026-11-02', '8h00', '17h00'))
+  assert.equal(statut(h, '2026-11-02', 10, ['2026-11-02']), 'Fermé')
+})
+
+test('recherche : tirets, apostrophes courbes et espaces multiples', () => {
+  assert.equal(normaliser('Hubert-Reeves'), normaliser('hubert   reeves'))
+  assert.equal(normaliser('Marguerite-d’Youville'), normaliser("marguerite d'youville"))
+})
+
+test('plage de la veille qui passe minuit : encore ouvert à 0 h 30', () => {
+  const h = horaires(jour('2026-11-02', '08:00', '01:00'), jour('2026-11-03', '08:00', '17:00'))
+  assert.equal(statut(h, '2026-11-03', 0.5, ['2026-11-03']), 'Ferme bientôt, à 1 h')
+  assert.equal(statut(h, '2026-11-03', 2, ['2026-11-03']), 'Fermé, ouvre à 8 h')
 })

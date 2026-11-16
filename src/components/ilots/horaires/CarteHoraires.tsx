@@ -145,10 +145,19 @@ export default function CarteHoraires({ lieux, images }: Props) {
 
   // « Ouvert maintenant » n'est utilisable qu'une fois les statuts connus.
   const statutsPrets = Boolean(maintenant && horaires)
-  const garder = useCallback((l: Lieu) => dansFiltre(l, filtre) && (!ouvertsSeulement || estOuvert(statutDu(l))), [filtre, ouvertsSeulement, statutDu])
+  // Statuts inconnus le temps d'un rechargement (nouvelle semaine à minuit
+  // le lundi) : le filtre attend au lieu de vider la liste
+  const garder = useCallback(
+    (l: Lieu) => dansFiltre(l, filtre) && (!ouvertsSeulement || !statutsPrets || estOuvert(statutDu(l))),
+    [filtre, ouvertsSeulement, statutsPrets, statutDu]
+  )
 
   const filtres = useMemo(() => physiques.filter(garder), [physiques, garder])
-  const idsVisibles = useMemo(() => new Set(filtres.map((l) => l.id)), [filtres])
+  // Identité stable tant que la liste ne change pas : `maintenant` change
+  // toutes les 30 s (horloge), ce qui recréait `filtres` et faisait recadrer
+  // la carte, annulant le zoom de la personne
+  const cleVisibles = filtres.map((l) => l.id).join('|')
+  const idsVisibles = useMemo(() => new Set(cleVisibles ? cleVisibles.split('|') : []), [cleVisibles])
   const q = normaliser(requete.trim())
 
   const liste = useMemo(() => {
@@ -160,7 +169,7 @@ export default function CarteHoraires({ lieux, images }: Props) {
 
   // Le service (PEB) suit la recherche et « Ouvert maintenant », mais pas les
   // filtres de lieux.
-  const autresServices = services.filter((l) => filtre === 'all' && correspond(l, q) && (!ouvertsSeulement || estOuvert(statutDu(l))))
+  const autresServices = services.filter((l) => filtre === 'all' && correspond(l, q) && (!ouvertsSeulement || !statutsPrets || estOuvert(statutDu(l))))
 
   const parDistance = useMemo(() => {
     if (!position) return []

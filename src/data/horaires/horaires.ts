@@ -123,9 +123,13 @@ function plage(debut: string, fin: string): Plage {
 // Les quatre champs de l'API ne sont pas deux plages indépendantes :
 // debut1 → [pause : fin1 → debut2] → fin2. Une plage continue n'a que
 // debut1 et fin2, fin1 et debut2 restant vides.
+// Heure « HH:MM » de l'API ; un autre format (« 8h00 ») donnait « NaN h »
+const HEURE = /^\d{1,2}:\d{2}$/
+const heureValide = (h: string | null | undefined): h is string => typeof h === 'string' && HEURE.test(h)
+
 function plagesDe(evt: EvenementApi): Plage[] {
-  if (!evt.debut1 || !evt.fin2) return []
-  if (evt.fin1 && evt.debut2) return [plage(evt.debut1, evt.fin1), plage(evt.debut2, evt.fin2)]
+  if (!heureValide(evt.debut1) || !heureValide(evt.fin2)) return []
+  if (heureValide(evt.fin1) && heureValide(evt.debut2)) return [plage(evt.debut1, evt.fin1), plage(evt.debut2, evt.fin2)]
   return [plage(evt.debut1, evt.fin2)]
 }
 
@@ -157,7 +161,9 @@ export function urlHoraires(debut: string, jours: number) {
 /** Regroupe les événements de l'API par bibliothèque, puis par service, puis par date */
 export function analyserHoraires(donnees: ReponseApi): Horaires {
   const parBib: Horaires['parBib'] = {}
-  for (const evt of donnees?.evenements ?? []) {
+  for (const evt of Array.isArray(donnees?.evenements) ? donnees.evenements : []) {
+    // Événement incomplet : ignoré plutôt que de faire échouer tout l'îlot
+    if (typeof evt?.date !== 'string' || !evt.bibliotheque || !evt.service) continue
     // L'API encode minuit heure locale : le préfixe est déjà la bonne date.
     const date = evt.date.slice(0, 10)
     parBib[evt.bibliotheque] ??= {}
@@ -184,8 +190,22 @@ export function statutDe(lieu: Lieu, horaires: Horaires | null, maintenant: Main
   if (!lieu.codeBib) return { etat: 'unknown', texte: 'Horaire non publié en ligne, vérifiez sur place' }
   if (!horaires) return { etat: 'unknown', texte: 'Horaire indisponible pour le moment' }
 
-  const parDate = horaires.parBib[lieu.codeBib]?.regulier ?? {}
+  // Bibliothèque absente de la réponse (maintenance de l'API, réponse vide) :
+  // on ne sait pas, ce qui n'est pas « Fermé »
+  const parDate = horaires.parBib[lieu.codeBib]?.regulier
+  if (!parDate) return { etat: 'unknown', texte: 'Horaire indisponible pour le moment' }
   const aujourdhui = parDate[maintenant.date] ?? []
+
+  // Plage de la veille qui passe minuit (8 h à 1 h) : à 0 h 30, le lieu est
+  // encore ouvert, alors que les plages du jour ne commencent qu'à 8 h
+  const veille = ajouterJours(maintenant.date, -1)
+  for (const [, fin] of parDate[veille] ?? []) {
+    const reste = fin - JOUR - maintenant.minutes
+    if (reste <= 0) continue
+    const heure = formaterHeure(fin)
+    if (reste <= FERME_BIENTOT_MIN) return { etat: 'closing-soon', texte: `Ferme bientôt, à ${heure}` }
+    return { etat: 'open', texte: `Ouvert jusqu'à ${heure}` }
+  }
 
   for (const [debut, fin] of aujourdhui) {
     if (maintenant.minutes >= debut && maintenant.minutes < fin) {
@@ -214,7 +234,9 @@ export function statutDe(lieu: Lieu, horaires: Horaires | null, maintenant: Main
   for (let i = 0; i < aVenir.length; i++) {
     const plages = parDate[aVenir[i]] ?? []
     if (plages.length) {
-      const jour = i === 0 ? 'demain' : formaterDate(aVenir[i], { weekday: 'long' })
+      // Au-delà de six jours (congé des Fêtes), le jour seul tromperait :
+      // « ouvre mardi » pour une réouverture dans deux semaines
+      const jour = i === 0 ? 'demain' : i <= 5 ? formaterDate(aVenir[i], { weekday: 'long' }) : `le ${formaterDate(aVenir[i], { weekday: 'long', day: 'numeric', month: 'long' })}`
       return { etat: 'closed', texte: `Fermé, ouvre ${jour} à ${formaterHeure(plages[0][0])}` }
     }
   }
@@ -246,8 +268,15 @@ export function formaterDistance(km: number) {
   return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1).replace('.', ',')} km`
 }
 
+// Tirets, apostrophes (droites ou courbes, celles du clavier d'un téléphone)
+// et espaces multiples comptent pour une espace : « hubert reeves » trouve
+// Hubert-Reeves, « marguerite d’youville » trouve Marguerite-d'Youville
 export function normaliser(texte: string) {
-  return sansAccents(texte).toLowerCase()
+  return sansAccents(texte)
+    .toLowerCase()
+    .replace(/[-‐‑–—'’‘ʼ`]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 // Texte dans lequel la recherche fouille : nom, adresse, pavillon, alias
@@ -266,7 +295,8 @@ export const correspond = (lieu: Lieu, requete: string) => !requete || texteRech
 
 // « Studios et ateliers » chevauche « Bibliothèques » : on le déduit des
 // espaces plutôt que d'une liste à maintenir à part.
-export const aStudio = (lieu: Lieu) => Boolean(lieu.spaces?.some(({ label }) => /atelier|studio/i.test(label)))
+export const studiosDe = (lieu: Lieu) => (lieu.spaces ?? []).filter(({ label }) => /atelier|studio/i.test(label))
+export const aStudio = (lieu: Lieu) => studiosDe(lieu).length > 0
 
 export function dansFiltre(lieu: Lieu, filtre: string) {
   if (filtre === 'all') return true

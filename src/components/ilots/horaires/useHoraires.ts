@@ -11,10 +11,18 @@ const JOURS_PAR_TRANCHE = 14
 const SEMAINES = 8
 const TRANCHES_MAX = Math.ceil((SEMAINES * 7) / JOURS_PAR_TRANCHE)
 
+// Une API qui ne répond pas laissait « Chargement… » pour toujours : au-delà
+// de ce délai, la requête échoue et « Réessayer » s'affiche
+const DELAI_MS = 10_000
+
 async function charger(url: string): Promise<ReponseApi> {
-  const reponse = await fetch(url)
+  const reponse = await fetch(url, { signal: AbortSignal.timeout?.(DELAI_MS) })
   if (!reponse.ok) throw new Error(`API horaires : HTTP ${reponse.status}`)
-  return reponse.json()
+  const donnees = await reponse.json()
+  // Réponse d'une autre forme : refusée ici, où l'échec mène à « Réessayer »,
+  // plutôt qu'au rendu, où il faisait planter l'îlot
+  if (!Array.isArray(donnees?.evenements)) throw new Error('API horaires : réponse inattendue')
+  return donnees
 }
 
 // `aujourdhui` vaut null au rendu serveur et au premier rendu client : la
