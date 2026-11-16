@@ -36,6 +36,10 @@ const LIBELLES_FONDS: Record<(typeof NOMS_FONDS)[number], string> = {
 const MOTIF_LIEN = ['^(/|#|https?://|mailto:|tel:)', 'Un lien commence par / (page du site), # (ancre), https://, mailto: ou tel:']
 const MOTIF_ANCRE = ['^[a-z0-9]+(-[a-z0-9]+)*$', 'En minuscules, sans accents ni espaces (ex. droit-auteur)']
 const MOTIF_CADRAGE = ['^(100|[1-9]?\\d)%$', 'Un pourcentage, par exemple 20%']
+// Mêmes règles que les schémas Zod : sans elles, une saisie refusée au build
+// (« mailto:x@umontreal.ca », « EN ») n'était signalée qu'après publication
+export const MOTIF_COURRIEL = ['^\\s*[^\\s@:/]+@[^\\s@]+\\.[a-zA-Z]{2,}\\s*$', 'L’adresse seule, sans « mailto: » (ex. nom@umontreal.ca)']
+export const MOTIF_LANGUE = ['^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$', 'Code de langue en minuscules (ex. en, es, en-CA)']
 
 // ---- Champs de base ----
 
@@ -119,6 +123,10 @@ const champsBouton = [
   caseACocher('Bouton à contour', 'contour', 'Pilule bordée, sans fond.'),
 ]
 const bouton = (label = 'Bouton'): Champ => facultatif(objet(label, 'bouton', champsBouton))
+// Cartes-sections : le bouton est toujours à contour, pour que les cartes
+// pèsent autant l'une que l'autre (BlocCartesSections) ; les cases
+// « secondaire » et « contour » n'y auraient aucun effet
+const boutonCarteSection: Champ = facultatif(objet('Bouton', 'bouton', champsBouton.slice(0, 2), { hint: 'Toujours à contour, comme sur les autres cartes.' }))
 const boutons = (): Champ => facultatif(liste('Boutons', 'boutons', champsBouton, { summary: '{{fields.texte}}', min: 1 }))
 
 const lienTout = (): Champ =>
@@ -157,7 +165,7 @@ const volet: Champ[] = [
   texteFacultatif(),
   facultatif(
     objet('Coordonnées', 'coordonnees', [
-      facultatif(texte('Courriel', 'courriel')),
+      facultatif({ ...texte('Courriel', 'courriel'), pattern: MOTIF_COURRIEL }),
       facultatif({ label: 'Téléphone', name: 'telephone', widget: 'string', pattern: ['^[0-9 -]+$', 'Chiffres, espaces et tirets (ex. 514 343-2135)'] }),
       facultatif(listeTextes('Adresse', 'adresse', 'Une ligne par élément.')),
       facultatif(lien('Itinéraire', 'itineraire')),
@@ -203,7 +211,7 @@ const blocs: Champ[] = [
   ]),
   bloc('cartes-sections', 'Cartes-sections (2 à 4)', [
     ...communs(),
-    liste('Cartes', 'cartes', [titre(), facultatif({ label: 'Ancre', name: 'id', widget: 'string', pattern: MOTIF_ANCRE }), markdown('Texte', 'texte'), image(), facultatif(couleur()), bouton()], {
+    liste('Cartes', 'cartes', [titre(), facultatif({ label: 'Ancre', name: 'id', widget: 'string', pattern: MOTIF_ANCRE }), markdown('Texte', 'texte'), image(), facultatif(couleur()), boutonCarteSection], {
       min: 2,
       max: 4,
     }),
@@ -274,7 +282,7 @@ const blocs: Champ[] = [
     { ...titre(false), hint: 'Sans titre, les titres des liens deviennent les intertitres de la page.' },
     texteFacultatif(),
     facultatif(choix('Présentation', 'presentation', [{ label: 'Liste', value: 'liste' }, { label: 'Cartes à icône, deux par rangée', value: 'cartes' }], 'Par défaut : liste.')),
-    liste('Liens', 'liens', [texte('Titre', 'titre'), facultatif(texte('Description', 'description')), lien(), facultatif(texte('Appel', 'appel')), facultatif({ ...icone(), hint: 'Facultative : icône à gauche du titre.' })], { min: 1 }),
+    liste('Liens', 'liens', [texte('Titre', 'titre'), facultatif(texte('Description', 'description')), lien(), facultatif(texte('Appel', 'appel')), facultatif({ ...icone(), hint: 'Facultative : icône à gauche du titre, seulement avec la présentation « Cartes » (sinon le build échoue).' })], { min: 1 }),
   ]),
   bloc('accordeons', 'Accordéons', [...communs(), titre(), texteFacultatif(), accordeonsCouleur('couleur'), liste('Volets', 'volets', volet, { min: 1 })]),
   bloc('video', 'Vidéo YouTube', [
@@ -329,7 +337,7 @@ export function champsVitrine(bannieres: string[]): Champ[] {
       ]),
     ),
     caseACocher('Exclure des moteurs de recherche', 'noindex'),
-    facultatif(texte('Langue', 'lang', 'Seulement si la page n’est pas en français (ex. en).')),
+    facultatif({ ...texte('Langue', 'lang', 'Seulement si la page n’est pas en français (ex. en).'), pattern: MOTIF_LANGUE }),
     facultatif(
       objet('Bannière', 'banniere', [
         titre(),
