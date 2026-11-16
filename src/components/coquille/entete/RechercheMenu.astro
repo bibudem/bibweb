@@ -78,6 +78,15 @@ const { id } = Astro.props
   import { avecBase } from '@/lib/chemin'
   import { PLACEHOLDER_SOFIA } from '@/lib/sofia'
   import { aChaquePage, auDepart } from '@/lib/pages'
+  import { navigate } from 'astro:transitions/client'
+
+  // Page du site : navigation du ClientRouter, sans rechargement (la
+  // conversation du clavardage et l'index de recherche restent) ; adresse
+  // externe : navigation ordinaire
+  const aller = (url: string) => {
+    if (new URL(url, location.href).origin === location.origin) navigate(url)
+    else window.location.href = url
+  }
 
   // Source affichée devant la page ; les sections de l'index du site (Pages,
   // Nouvelles, Bibliothèques, Personnel) sont toutes « Site des bibliothèques »
@@ -239,11 +248,7 @@ const { id } = Astro.props
     function suivre(element: HTMLElement) {
       const requete = champ.value.trim()
       fermer()
-      if (element.dataset.url) {
-        window.location.href = element.dataset.url
-        return
-      }
-      window.location.href = urlResultats(requete)
+      aller(element.dataset.url || urlResultats(requete))
     }
 
     for (const c of choix) c.addEventListener('change', () => majPortee())
@@ -307,7 +312,7 @@ const { id } = Astro.props
         const requete = champ.value.trim()
         if (!requete) return
         fermer()
-        window.location.href = urlResultats(requete)
+        aller(urlResultats(requete))
       },
       { capture: true },
     )

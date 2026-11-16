@@ -810,8 +810,8 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
 }
 
 /* Passage d'une page à l'autre sur mobile, comme les écrans d'une
-   application (transitions de vue entre documents, sans routeur JS : chaque
-   page reste une vraie page). La nouvelle page glisse depuis la droite et
+   application (transitions de vue entre documents : navigations complètes,
+   le ClientRouter de Base.astro animant les autres). La nouvelle page glisse depuis la droite et
    recouvre l'ancienne ; au retour (bouton Précédent, page plus haute dans
    l'arborescence : type « retour », posé dans Base.astro), le mouvement
    s'inverse. L'en-tête et la barre des liens rapides restent en place.
