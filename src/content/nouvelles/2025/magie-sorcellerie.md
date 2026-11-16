@@ -6,6 +6,7 @@ date: '2025-11-12'
 slug: magie-sorcellerie
 newsImage:
   src: ./images/2025-11-12-magie-sorcellerie.avif
+  alt: 'Livre ancien ouvert sur une gravure de la « main de gloire » : une main fermée qui tient une chandelle allumée, en regard d’une page du Petit Albert.'
 newsUrl: 'https://www.24heures.ca/2025/10/31/incursion-dans-la-bibliotheque-de-magie-et-sorcellerie-de-ludem'
 source: 24 heures
 ---

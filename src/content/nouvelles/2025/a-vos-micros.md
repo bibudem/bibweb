@@ -5,6 +5,7 @@ date: '2025-10-27'
 slug: a-vos-micros
 newsImage:
   src: ./images/2025-10-27-a-vos-micros.webp
+  alt: 'Logo du Studio·bib : le mot « Studio·bib » en lettres blanches dans un cercle noir, avec un point jaune.'
 newsUrl: 'https://nouvelles.umontreal.ca/annonce/2025/10/27/a-vos-micros-un-nouveau-studio-pour-donner-vie-a-vos-balados'
 source: Quoi de neuf
 ---

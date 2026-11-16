@@ -9,8 +9,10 @@
  * bibliothèque (son titre, son nom complet, son sigle ou son ancre) ; la
  * colonne « direction », partagée avec d'autres bibliothèques, n'est pas lue.
  * `ordre` (noms complets) place ces personnes en tête, dans cet ordre ; les
- * autres suivent par ordre alphabétique. Un nom absent de l'équipe fait
- * échouer le build : une faute de frappe ne passe pas inaperçue.
+ * autres suivent par ordre alphabétique. Un nom absent de l'équipe est
+ * signalé au build (avertissement) puis ignoré : un départ ou un changement
+ * de nom saisi dans /admin/ ne doit pas casser la page d'une bibliothèque.
+ * Une équipe vide n'affiche rien.
  *
  * Un seul lien par vignette, sur le nom : son ::after couvre la vignette.
  * La photo est décorative (alt vide), le nom est juste dessous.
@@ -35,15 +37,16 @@ const bib = bibliotheques.find((b) => b.id === bibliotheque)
 if (!bib) throw new Error(`EquipeBibliotheque : aucune bibliothèque « ${bibliotheque} » dans src/data/horaires/lieux.ts`)
 const noms = new Set([bib.id, bib.titre, bib.autreTitre, ...bib.alias].map(cle))
 const equipe = personnel().filter((p) => p.bibliotheques.some((b) => noms.has(cle(b))))
-const rangs = ordre.map((nom) => {
-  const i = equipe.findIndex((p) => cle(p.nomComplet) === cle(nom))
-  if (i < 0) throw new Error(`EquipeBibliotheque : « ${nom} » n'est pas dans l'équipe de ${bib.autreTitre} (${equipe.map((p) => p.nomComplet).join(', ')})`)
-  return equipe[i]
+const rangs = ordre.flatMap((nom) => {
+  const membre = equipe.find((p) => cle(p.nomComplet) === cle(nom))
+  if (!membre) console.warn(`EquipeBibliotheque : « ${nom} » n'est pas dans l'équipe de ${bib.autreTitre} ; nom ignoré (${Astro.url.pathname})`)
+  return membre ? [membre] : []
 })
 const membres = [...rangs, ...equipe.filter((p) => !rangs.includes(p))]
 const Titre = `h${niveauTitre}` as 'h3'
 ---
 
+{membres.length > 0 && (
 <ul class="equipe" aria-label={`Équipe : ${bib.autreTitre}`}>
   {
     membres.map((p) => {
@@ -60,6 +63,7 @@ const Titre = `h${niveauTitre}` as 'h3'
     })
   }
 </ul>
+)}
 
 <style>
   /* Deux par rangée sur un téléphone : une seule colonne allongeait la page

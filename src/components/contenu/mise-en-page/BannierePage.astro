@@ -188,8 +188,9 @@ const titreLong = titreReduit || (typeof title === 'string' && title.length > TI
   /* Très grands écrans : à hauteur fixe, la bannière devenait une mince
      bande (photo 3:2 en cover, un cinquième de sa hauteur visible à
      3840 px), et coupait les têtes (/recherche/). Elle suit la largeur
-     (le quart) au-delà de 34rem. */
-  @media (width >= 1920px) {
+     (le quart) au-delà de 34rem. Seuil du thème (1536 px) : max() garde
+     34rem jusqu'à 2176 px, le rendu est le même qu'à partir de 1920 px. */
+  @media (width >= 1536px) {
     .super-hero-2:not(.taille-small) {
       --hauteur: max(34rem, 25vw);
     }

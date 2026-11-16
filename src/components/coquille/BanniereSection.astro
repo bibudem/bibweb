@@ -34,9 +34,12 @@ interface Props {
 
 const { imageName, titre, alt = '', cadrage = cadrageSection(imageName), class: classe, style } = Astro.props
 const image = imageBanniere(imageName)
+// Hors de <main> : avec un titre, la bannière est une région nommée, sinon
+// son texte n'appartenait à aucun repère de page (axe : « region »)
+const Balise = titre ? 'section' : 'div'
 ---
 
-<div class:list={['banniere', 'fond-photo', 'vague', classe]} style={[cadrage && `--cadrage: ${cadrage}`, style].filter(Boolean).join('; ') || undefined}>
+<Balise class:list={['banniere', 'fond-photo', 'vague', classe]} style={[cadrage && `--cadrage: ${cadrage}`, style].filter(Boolean).join('; ') || undefined} aria-label={titre}>
   <Picture
     src={image}
     formats={['avif', 'webp']} fallbackFormat="webp"
@@ -56,7 +59,7 @@ const image = imageBanniere(imageName)
       </div>
     )
   }
-</div>
+</Balise>
 
 <style>
   .banniere {

@@ -6,6 +6,7 @@ date: '2025-11-12'
 slug: univers-Claude-Gingras
 newsImage:
   src: ./images/2025-11-12-univers-Claude-Gingras.webp
+  alt: 'Claude Gingras à son bureau, derrière un ordinateur portable et des piles de papiers, devant des rayonnages de disques et une fenêtre.'
 newsUrl: 'https://www.lapresse.ca/arts/chroniques/2025-11-12/vitrine-virtuelle-a-l-udem/dans-l-univers-de-claude-gingras.php'
 source: La Presse
 ---

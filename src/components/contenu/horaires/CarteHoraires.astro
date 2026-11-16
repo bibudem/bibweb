@@ -45,7 +45,10 @@ const graphe = lieux
     }
   })
 const donnees = jsonLd({ '@context': 'https://schema.org', '@graph': graphe })
+// `fiche` (texte des pages de bibliothèque, ~17 Ko) ne sert pas à l'îlot :
+// ses props sont sérialisées dans le HTML de /horaires/
+const lieuxIlot = lieux.map(({ fiche: _fiche, ...lieu }) => lieu)
 ---
 
-<CarteHorairesIlot client:visible lieux={lieux} images={images} />
+<CarteHorairesIlot client:visible lieux={lieuxIlot} images={images} />
 <script type="application/ld+json" set:html={donnees} is:inline />

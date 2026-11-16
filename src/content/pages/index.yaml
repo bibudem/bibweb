@@ -21,17 +21,17 @@ banniere:
     - image: ./images/portraits-accueil/indiana-1.webp
       titre: Puissant moteur de recherche
       nom: Indiana Delsart
-      fonction: Bibliothécaire Mathématiques / Informatique
+      fonction: Bibliothécaire Mathématiques / Informatique / Physique
       cadrage: 42%
     - image: ./images/portraits-accueil/indiana-2.webp
       titre: Puissant moteur de recherche
       nom: Indiana Delsart
-      fonction: Bibliothécaire Mathématiques / Informatique
+      fonction: Bibliothécaire Mathématiques / Informatique / Physique
       cadrage: 26%
     - image: ./images/portraits-accueil/indiana-3.webp
       titre: Puissant moteur de recherche
       nom: Indiana Delsart
-      fonction: Bibliothécaire Mathématiques / Informatique
+      fonction: Bibliothécaire Mathématiques / Informatique / Physique
       cadrage: 40%
     - image: ./images/portraits-accueil/jason.webp
       titre: Puissant moteur de recherche

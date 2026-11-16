@@ -34,7 +34,7 @@ export async function remplirHorairesAujourdhui() {
   const { date } = maintenantMontreal()
   let horaires
   try {
-    const reponse = await fetch(urlHoraires(date, 1))
+    const reponse = await fetch(urlHoraires(date, 1), { signal: AbortSignal.timeout?.(10_000) })
     if (!reponse.ok) throw new Error(`API horaires : HTTP ${reponse.status}`)
     horaires = analyserHoraires(await reponse.json())
   } catch (erreur) {

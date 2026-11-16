@@ -12,7 +12,7 @@
  *
  * Corrections par rapport à la source : libellés visibles sur les champs,
  * nombre de résultats annoncé (role="status"), liens tel: valides, lien
- * Teams (récupéré mais jamais affiché), noms accessibles explicites sur les
+ * Teams (tiré du courriel ; jamais affiché dans la source), noms accessibles explicites sur les
  * liens, ancre mise à jour sans polluer l'historique ni remonter en haut de
  * la page, photos recadrées et optimisées au build.
  */
@@ -120,7 +120,7 @@ const fiches = personnes.map((p) => ({
   ...p,
   photoImage: photoDe(p),
   hrefTelephone: p.telephone ? lienTelephone(p.telephone) : undefined,
-  hrefTeams: p.teams && /^https:\/\//.test(p.teams) ? p.teams : undefined,
+  hrefTeams: p.teams,
   texte: normaliserMots([p.nom, p.prenom, p.fonction, p.disciplines.join(' '), p.expertises.join(' '), p.bibliotheques.join(' '), p.direction].join(' ')),
   // Comme la source : la première lettre en majuscule, la suite telle quelle
   disciplinesAffichees: p.disciplines.map((d, i) => (i === 0 ? majuscule(d) : d)).join(', '),

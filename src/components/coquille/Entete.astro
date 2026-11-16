@@ -5,7 +5,7 @@
  * Les deux barres sont rendues en HTML et basculées en CSS à 1200 px :
  * plus de saut à l'hydratation comme avec useMediaQuery.
  *
- * - Bureau : voile bleu foncé uni en haut de page, blanche et
+ * - Bureau : voile bleu foncé dégradé en haut de page, blanche et
  *   ombrée après 50 px de défilement (useScrollTrigger de la source).
  * - Compacte : fond clair, logo UdeM et « Les bibliothèques » en dessous.
  *
@@ -35,7 +35,7 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
 const chemin = sansBase(Astro.url.pathname)
 ---
 
-<header class="entete" data-entete>
+<header class="entete" data-entete data-accueil={chemin === '/' ? '' : undefined}>
   <span class="voile" aria-hidden="true" data-voile-menu></span>
 
   <div class="barre-bureau">
@@ -102,6 +102,7 @@ const chemin = sansBase(Astro.url.pathname)
 <script>
   import { brancherMenu } from './entete/menu'
   import { aChaquePage, auDepart } from '@/lib/pages'
+  import { infobullesFermablesAvecEchap } from '@/lib/infobulle'
 
   aChaquePage((signal) => {
     const entete = document.querySelector<HTMLElement>('[data-entete]')
@@ -120,14 +121,7 @@ const chemin = sansBase(Astro.url.pathname)
 
     // Échap ferme l'infobulle du logo ou du nom ; elle revient au prochain
     // survol ou focus (WCAG 1.4.13)
-    const avecInfobulle = [...entete.querySelectorAll<HTMLElement>('[data-infobulle]')]
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape') return
-      for (const lien of avecInfobulle) if (lien.matches(':hover, :focus-visible')) lien.setAttribute('data-infobulle-fermee', '')
-    }, { signal })
-    for (const lien of avecInfobulle) {
-      for (const evenement of ['pointerleave', 'blur']) lien.addEventListener(evenement, () => lien.removeAttribute('data-infobulle-fermee'))
-    }
+    infobullesFermablesAvecEchap([...entete.querySelectorAll<HTMLElement>('[data-infobulle]')], signal)
 
     // --hauteur-entete (marge de défilement des ancres et du focus, WCAG
     // 2.4.11) suit la hauteur réelle : avec le texte agrandi ou espacé, la
@@ -329,16 +323,17 @@ const chemin = sansBase(Astro.url.pathname)
       display: none;
     }
 
-    /* Teinte gris-bleu de la bande de la recherche Sofia de l'accueil
-       (RechercheSofiaAccueil), en aplat sur toute la barre, assombrie pour
-       le contraste (WCAG 1.4.3) : texte blanc à 7,13:1 même sur une photo
-       entièrement blanche (le mélange précédent, gris 700 à 45 % et 62 %
-       d'opacité, tombait à 1,98:1). */
+    /* Sur la photo de la bannière : pas d'aplat, mais un voile bleu foncé
+       dégradé, au-dessus du bandeau des horaires (bleu foncé plein,
+       BandeauHoraires). Jamais sous 70 % derrière le texte :
+       blanc à 6,6:1 environ même sur une photo entièrement blanche (AA : 4,5:1,
+       WCAG 1.4.3).
+       Couleurs de la palette, pas des rôles : la barre est la même dans les
+       deux thèmes. Le voile est un pseudo-élément pour s'effacer en fondu
+       quand la barre devient blanche (un dégradé ne se transitionne pas). */
     .barre-bureau {
       display: block;
-      /* Couleurs de la palette, pas des rôles : posée sur la photo de la
-         bannière, la barre est la même dans les deux thèmes */
-      background-color: color-mix(in srgb, color-mix(in srgb, var(--gris-700) 90%, var(--bleu-200)) 85%, transparent);
+      background-color: transparent;
       color: var(--blanc-casse);
       transition:
         background-color var(--duree-moyenne-4) var(--courbe-emphase-deceleree),
@@ -346,10 +341,54 @@ const chemin = sansBase(Astro.url.pathname)
         color var(--duree-courte-4) var(--courbe-emphase-deceleree);
     }
 
+    .barre-bureau::before {
+      content: '';
+      position: absolute;
+      z-index: var(--z-dessous);
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--bleu-fonce) 84%, transparent),
+        color-mix(in srgb, var(--bleu-fonce) 70%, transparent)
+      );
+      pointer-events: none;
+      transition: opacity var(--duree-moyenne-4) var(--courbe-emphase-deceleree);
+    }
+
     .entete[data-defile] .barre-bureau {
       background-color: var(--couleur-surface);
       box-shadow: var(--ombre-1);
       color: var(--couleur-neutre-700);
+    }
+
+    .entete[data-defile] .barre-bureau::before {
+      opacity: 0;
+    }
+
+    /* Filet entre la barre et le bandeau des horaires, sur la photo de la
+       page d'accueil seulement. Pseudo-élément plutôt que bordure : la hauteur de la barre
+       (5rem, reprise par les bannières) ne bouge pas. */
+    .entete[data-accueil] .barre-bureau::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 1px;
+      /* Discret : s'efface vers les bords, plus marqué au centre */
+      background-image: linear-gradient(
+        to right,
+        transparent,
+        color-mix(in srgb, var(--blanc-casse) 28%, transparent) 20%,
+        color-mix(in srgb, var(--blanc-casse) 28%, transparent) 80%,
+        transparent
+      );
+      pointer-events: none;
+      transition: opacity var(--duree-moyenne-4) var(--courbe-emphase-deceleree);
+    }
+
+    .entete[data-defile] .barre-bureau::after {
+      opacity: 0;
     }
   }
 
@@ -459,11 +498,14 @@ const chemin = sansBase(Astro.url.pathname)
   }
 
   .navigation-principale a {
+    /* Marge des liens ; la pastille du survol s'y loge (voir plus bas) */
+    --_marge: 22px;
     display: inline-flex;
     position: relative;
+    isolation: isolate;
     align-items: center;
     min-height: 56px;
-    padding-inline: 22px;
+    padding-inline: var(--_marge);
     color: inherit;
     font-size: var(--texte-courant);
     font-weight: var(--graisse-normale);
@@ -492,7 +534,7 @@ const chemin = sansBase(Astro.url.pathname)
     }
 
     .navigation-principale a {
-      padding-inline: clamp(8px, (100cqi - 1042px) / 10, 22px);
+      --_marge: clamp(8px, (100cqi - 1042px) / 10, 22px);
     }
 
     /* Sélecteurs plus précis : les règles de base de .je-donne viennent plus
@@ -507,27 +549,72 @@ const chemin = sansBase(Astro.url.pathname)
     }
   }
 
-  /* Soulignement animé de la source (::after en scaleX) */
-
-  .navigation-principale a::after {
+  /* Survol : une pastille arrondie derrière le libellé, en fondu avec un
+     léger grossissement. Teintée de currentColor, elle est blanche sur la
+     photo et bleutée sur la barre blanche, sans règle par état. Elle laisse
+     12 px de chaque côté du mot (moins quand la marge se resserre) et ne
+     prend pas toute la hauteur de la barre. La page courante la garde,
+     plus marquée. */
+  .navigation-principale a::before {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background-color: currentColor;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--duree-courte-4) var(--courbe-standard);
+    z-index: var(--z-dessous);
+    inset-block: 10px;
+    inset-inline: max(0px, calc(var(--_marge) - 12px));
+    border-radius: var(--rayon-plein);
+    background-color: color-mix(in srgb, currentColor 14%, transparent);
+    opacity: 0;
+    scale: 0.92;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-4) var(--courbe-emphase-deceleree);
   }
 
-  .navigation-principale a:hover::after {
-    transform: scaleX(1);
+  .navigation-principale a:hover::before,
+  .navigation-principale a:focus-visible::before,
+  .navigation-principale a[aria-current='page']::before {
+    opacity: 1;
+    scale: 1;
   }
 
   .navigation-principale a[aria-current='page'] {
     font-weight: var(--graisse-grasse);
+  }
+
+  .navigation-principale a[aria-current='page']::before {
+    background-color: color-mix(in srgb, currentColor 20%, transparent);
+  }
+
+  /* Barre blanche (page défilée) : la pastille passe au bleu pâle des
+     encadrés du site (--couleur-teinte) et le libellé au bleu des liens,
+     6,4:1 ; la page courante, un cran plus foncé. Rôles du thème : le
+     thème sombre suit. */
+  .navigation-principale a {
+    transition: color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .entete[data-defile] .navigation-principale a:is(:hover, :focus-visible) {
+    color: var(--couleur-lien);
+  }
+
+  .entete[data-defile] .navigation-principale a:is(:hover, :focus-visible)::before {
+    background-color: var(--couleur-teinte);
+  }
+
+  .entete[data-defile] .navigation-principale a[aria-current='page'] {
+    color: var(--couleur-lien-survol);
+  }
+
+  .entete[data-defile] .navigation-principale a[aria-current='page']::before {
+    background-color: var(--couleur-teinte-forte);
+  }
+
+  /* Couleurs forcées : le fond teinté disparaît, un contour le remplace */
+  @media (forced-colors: active) {
+    .navigation-principale a:hover::before,
+    .navigation-principale a[aria-current='page']::before {
+      border: 1px solid LinkText;
+    }
   }
 
   .je-donne {

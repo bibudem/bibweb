@@ -1,4 +1,5 @@
-# Construit le site (astro build) pour chaque pull request vers main ou
+# Vérifie (tests, points de rupture, types) puis construit le site (astro
+# build) pour chaque pull request vers main ou
 # production ouverte par une personne : une erreur de contenu (champ invalide,
 # directive mal écrite) fait échouer la vérification avant la fusion. Decap
 # CMS écrit directement dans main (vérifié par deployer-pages.yml), et la PR
@@ -39,6 +40,15 @@ jobs:
 
       - name: Tests unitaires
         run: npm test
+
+      # Points de rupture du thème (600, 900, 1200, 1536 px) : voir
+      # docs/CONVENTIONS.md, « Points de rupture »
+      - name: Points de rupture
+        run: npm run verifier:seuils
+
+      # Types (astro check) : props mal passées, valeur nulle non traitée
+      - name: Types
+        run: npm run verifier:types
 
       # Images optimisées du dernier déploiement (deployer-pages.yml), en
       # lecture seule : une PR ne remplace pas le cache de main

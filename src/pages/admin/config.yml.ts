@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro'
 import { toutesLesPages, estVitrine, type PageTexte } from '@/lib/contenu'
 import { SUJETS } from '@/data/sujets'
-import { champsVitrine } from './_vitrines'
+import { champsVitrine, MOTIF_COURRIEL, MOTIF_LANGUE } from './_vitrines'
+import { personnel } from '@/lib/personnel'
 import { NOMS_BANNIERES } from '@/lib/bannieres'
 
 /*
@@ -115,7 +116,7 @@ const champsPage = [
   // Faux par défaut : une page sans la clé s'affiche case décochée et garde son
   // sommaire, ce qui est bien son état (un défaut à vrai la montrait décochée)
   { label: 'Retirer le sommaire « Sur cette page »', name: 'sansSommaire', widget: 'boolean', required: false, default: false, hint: 'Cocher pour ne pas afficher le sommaire, même si la page a plusieurs sections.' },
-  { label: 'Langue', name: 'lang', widget: 'string', required: false, hint: 'Seulement si la page n’est pas en français (ex. en).' },
+  { label: 'Langue', name: 'lang', widget: 'string', required: false, hint: 'Seulement si la page n’est pas en français (ex. en).', pattern: MOTIF_LANGUE },
   corps,
 ]
 
@@ -124,10 +125,18 @@ const champsNouvelle = [
   { label: 'Titre affiché', name: 'titreAffiche', widget: 'string', required: false, hint: 'Seulement s’il diffère du titre.' },
   { label: 'Date', name: 'date', widget: 'datetime', format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false },
   { label: 'Type', name: 'type', widget: 'hidden', default: 'interne' },
-  { label: 'Adresse (slug)', name: 'slug', widget: 'string', required: false, hint: 'Fin de l’adresse de la nouvelle. Ne pas changer après publication.' },
+  {
+    label: 'Adresse (slug)',
+    name: 'slug',
+    widget: 'string',
+    required: false,
+    hint: 'Fin de l’adresse de la nouvelle, unique dans l’année. Ne pas changer après publication.',
+    pattern: ['^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$', 'Lettres sans accents, chiffres et tirets (ex. nouvel-horaire)'],
+  },
   { label: 'Source', name: 'source', widget: 'string', required: false, hint: 'Ex. Bibliothèques, Quoi de neuf.' },
   { label: 'Lien de la nouvelle d’origine', name: 'newsUrl', widget: 'string', required: false, pattern: ['^https?://', 'Une adresse complète (https://…)'] },
-  { label: 'Auteurs', name: 'authors', widget: 'list', required: false },
+  // `field` : sans lui, Decap découpe la liste aux virgules (« Tremblay, Ana » donnait deux auteurs)
+  { label: 'Auteurs', name: 'authors', widget: 'list', required: false, field: { label: 'Auteur', name: 'auteur', widget: 'string' } },
   {
     label: 'Image',
     name: 'newsImage',
@@ -137,8 +146,10 @@ const champsNouvelle = [
       { label: 'Fichier', name: 'src', widget: 'image', required: false },
       { label: 'Texte de remplacement', name: 'alt', widget: 'string', required: false, hint: 'Ce que montre l’image, pour les personnes qui ne la voient pas.' },
       { label: 'Légende', name: 'legend', widget: 'string', required: false },
-      { label: 'Crédit', name: 'caption', widget: 'string', required: false },
-      { label: 'Source', name: 'source', widget: 'string', required: false },
+      // `caption` sert de légende quand `legend` est vide (nouvelles reprises
+      // de coquille-web) ; le crédit est `source`, affiché « Photo : … »
+      { label: 'Légende (ancien champ)', name: 'caption', widget: 'string', required: false, hint: 'Affichée seulement si « Légende » est vide. Préférer « Légende ».' },
+      { label: 'Crédit photo', name: 'source', widget: 'string', required: false, hint: 'Affiché « Photo : … » sous l’image.' },
     ],
   },
   {
@@ -170,7 +181,7 @@ export const GET: APIRoute = async () => {
 
   // Premier niveau d'une section : modifiable et créable (dossier). Un titre
   // est exigé : il donne le nom du fichier, donc l'adresse de la page.
-  const champsPageCreable = champsPage.map((champ) => (champ.name === 'title' ? { ...champ, required: true, hint: 'Titre de l’onglet et des listes. À la création, il donne aussi l’adresse de la page.' } : champ))
+  const champsPageCreable = champsPage.map((champ) => (champ.name === 'title' ? { ...champ, required: true, hint: 'Titre de l’onglet et des listes. À la création, il donne aussi l’adresse de la page : il ne doit pas reprendre celle d’une page existante de la section.' } : champ))
   const collectionsPages = [...sections, 'general'].map((section) => ({
     name: `pages-${section}`,
     label: section === 'general' ? 'Pages générales' : `Pages : ${libelleSection(section, titres)}`,
@@ -234,6 +245,11 @@ export const GET: APIRoute = async () => {
   }
 
   // Répertoire du personnel : un seul fichier JSON (src/lib/personnel.ts le valide au build)
+  // Bibliothèques et unités du répertoire : celles déjà en usage. En texte
+  // libre, une coquille créait un filtre de plus et sortait la personne du
+  // sien (#sante)
+  const unites = [...new Set(personnel().flatMap((p) => p.bibliotheques))].sort((a, b) => a.localeCompare(b, 'fr'))
+
   const collectionPersonnel = {
     name: 'personnel',
     label: 'Répertoire du personnel',
@@ -257,18 +273,19 @@ export const GET: APIRoute = async () => {
               { label: 'Nom', name: 'nom', widget: 'string' },
               { label: 'Fonction', name: 'fonction', widget: 'string' },
               { label: 'Direction', name: 'direction', widget: 'string', required: false },
-              { label: 'Disciplines', name: 'disciplines', widget: 'list', required: false, hint: 'Domaines d’études seulement (ex. psychologie), surtout pour les bibliothécaires disciplinaires. Une discipline par élément.' },
-              { label: 'Expertises et services', name: 'expertises', widget: 'list', required: false, hint: 'Ce dont la personne s’occupe, hors discipline (ex. Ressources humaines, Papyrus, Prêt entre bibliothèques). Un élément par ligne.' },
+              { label: 'Disciplines', name: 'disciplines', widget: 'list', required: false, field: { label: 'Discipline', name: 'discipline', widget: 'string' }, hint: 'Domaines d’études seulement (ex. psychologie), surtout pour les bibliothécaires disciplinaires. Une discipline par élément.' },
+              { label: 'Expertises et services', name: 'expertises', widget: 'list', required: false, field: { label: 'Expertise ou service', name: 'expertise', widget: 'string' }, hint: 'Ce dont la personne s’occupe, hors discipline (ex. Ressources humaines, Papyrus, Prêt entre bibliothèques). Un élément par ligne.' },
               {
-                label: 'Bibliothèques',
+                label: 'Bibliothèques et unités',
                 name: 'bibliotheques',
-                widget: 'list',
+                widget: 'select',
+                multiple: true,
                 required: false,
-                hint: 'Une bibliothèque par élément, nommée comme sur la page Horaires (ex. Bibliothèque de la santé).',
+                options: unites,
+                hint: 'Les filtres du répertoire en sont tirés. Une nouvelle unité s’ajoute d’abord dans le fichier personnel.json.',
               },
               { label: 'Téléphone', name: 'telephone', widget: 'string', required: false, hint: 'Ex. 514 343-6111, poste 3585' },
-              { label: 'Courriel', name: 'courriel', widget: 'string', required: false, hint: 'L’adresse seule, sans « mailto: ».' },
-              { label: 'Lien Teams', name: 'teams', widget: 'string', required: false },
+              { label: 'Courriel', name: 'courriel', widget: 'string', required: false, pattern: MOTIF_COURRIEL, hint: 'L’adresse seule, sans « mailto: ». Le lien « Clavarder sur Teams » en est tiré automatiquement (pas pour une boîte partagée, sans point avant @).' },
               { label: 'Photo', name: 'photo', widget: 'image', required: false, hint: 'Carrée, 200 × 200 px, en WebP.' },
             ],
           },
@@ -301,7 +318,7 @@ export const GET: APIRoute = async () => {
               { label: 'Date', name: 'date', widget: 'datetime', format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false, hint: 'Date de publication de l’article.' },
               { label: 'Source', name: 'source', widget: 'string', hint: 'Nom du média (ex. Le Devoir, Radio-Canada, UdeMNouvelles).' },
               { label: 'Lien', name: 'url', widget: 'string', pattern: ['^https?://', 'Une adresse complète (https://…)'] },
-              { label: 'Langue', name: 'lang', widget: 'string', required: false, hint: 'Seulement si l’article n’est pas en français (ex. en).' },
+              { label: 'Langue', name: 'lang', widget: 'string', required: false, hint: 'Seulement si l’article n’est pas en français (ex. en).', pattern: MOTIF_LANGUE },
               {
                 label: 'Sujets',
                 name: 'sujets',
@@ -340,8 +357,9 @@ export const GET: APIRoute = async () => {
     },
     // Pas d'editorial_workflow : Decap écrit directement dans main
     ...(developpement ? { local_backend: true } : {}),
-    // Un champ facultatif laissé vide n'est pas écrit dans le fichier
-    omit_empty_optional_fields: true,
+    // Decap 3 écrit '' pour un champ facultatif vidé (l'option
+    // omit_empty_optional_fields n'existe pas dans cette version) : les
+    // schémas retirent ces valeurs avant de valider (lib/sans-vides.ts)
     // Images envoyées hors d'une page (rare) ; sinon, dossier images/ de la page
     media_folder: 'public/televersements',
     public_folder: '/televersements',

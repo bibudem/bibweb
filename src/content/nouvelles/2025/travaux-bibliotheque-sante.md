@@ -5,6 +5,7 @@ slug: travaux-bibliotheque-sante
 date: '2025-10-21'
 newsImage:
   src: ./images/IMG_9749.webp
+  alt: 'Grande salle de la Bibliothèque de la santé au tapis rouge, avec colonnes blanches, fauteuils à dossier jaune et postes de travail séparés par des cloisons bleues.'
 source: Bibliothèques
 ---
 À compter du 3 novembre, les 7e et 8e étages de la Bibliothèque de la santé seront fermés pour procéder au remplacement des tapis. Le 6e étage sera toujours accessible durant les travaux.

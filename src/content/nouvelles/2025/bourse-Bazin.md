@@ -6,7 +6,7 @@ slug: remise-bourse-genevieve-bazin-bibliotheque-des-livres-rares-et-collections
 date: 2025-03-03
 newsImage:
   src: ./images/bourse-Bazin-2025.webp
-  alt: Bourse Geneviève-Bazin
+  alt: 'Bourses – Bibliothèque des livres rares et collections spéciales. En fond, des liasses de documents anciens nouées de rubans blancs.'
   legend: Bourse Geneviève-Bazin
   source: Tom Le Photographe
 source: Bibliothèques

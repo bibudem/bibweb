@@ -6,6 +6,7 @@ slug: bourses-blrcs
 date: '2026-10-15'
 newsImage:
   src: ./images/bourses-blrcs.webp
+  alt: 'Rangée de livres anciens reliés en cuir, avec des étiquettes rondes manuscrites (Kent 1840, Kelly 1835) et un ruban blanc.'
 source: Bibliothèques
 ---
 La Bibliothèque des livres rares et collections spéciales (BLRCS) de l’Université de Montréal offre trois bourses cette année, deux de 2 000 $ et une de 3 500 $. Réservées aux étudiantes et aux étudiants des cycles supérieurs, ces bourses ont pour objectif de favoriser la recherche par l’utilisation des ressources documentaires de la BLRCS.

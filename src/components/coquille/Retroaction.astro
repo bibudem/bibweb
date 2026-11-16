@@ -10,7 +10,7 @@
  * complémentaire nommé ; le web component gère lui-même ses annonces
  * (formulaire aria-live).
  */
-import { CDN_BIBUDEM } from '@/lib/site'
+import { CDN_BIBUDEM, SRI_BIBUDEM } from '@/lib/site'
 
 interface Props {
   class?: string
@@ -21,7 +21,7 @@ interface Props {
 const { class: classe, style, lang } = Astro.props
 ---
 
-<script is:inline type="module" async src={`${CDN_BIBUDEM}/bib-retroaction-usager.js`}></script>
+<script is:inline type="module" async src={`${CDN_BIBUDEM}/bib-retroaction-usager.js`} integrity={SRI_BIBUDEM['bib-retroaction-usager.js']} crossorigin="anonymous"></script>
 <aside class:list={['retroaction', classe]} style={style} lang={lang} aria-label="Rétroaction sur la page">
   <bib-retroaction-usager data-retroaction></bib-retroaction-usager>
 </aside>

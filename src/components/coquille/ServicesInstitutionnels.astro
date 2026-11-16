@@ -25,7 +25,7 @@
  * composants se définissent eux-mêmes (Retroaction attend whenDefined).
  */
 import Consentement from './Consentement.astro'
-import { CDN_BIBUDEM } from '@/lib/site'
+import { CDN_BIBUDEM, SRI_BIBUDEM } from '@/lib/site'
 
 interface Props {
   position: 'haut' | 'avis' | 'bas'
@@ -35,15 +35,58 @@ interface Props {
 
 const { position, niveau = 0 } = Astro.props
 const CDN = CDN_BIBUDEM
+
+// Développement seulement : ?urgence-fictive dans l'adresse affiche un
+// message d'urgence d'exercice (?urgence-fictive=grand : grand format), pour
+// voir le bandeau sans attendre une vraie alerte. Le message est passé en
+// adresse data:, sans appeler urgence.umontreal.ca ; absent du build.
+const URGENCE_FICTIVE = {
+  title: 'EXERCICE – Message d’urgence fictif : test d’affichage du site des bibliothèques. Aucune action requise.',
+  hour: '10 h 15',
+  fullDay: '15 novembre 2026',
+  date: '2026-11-15T10:15:00-05:00',
+  url: 'https://urgence.umontreal.ca/',
+}
+
+// Même chose pour l'avis des bibliothèques : ?avis-fictif. Nouvel identifiant
+// à chaque chargement : un avis fermé reste masqué (le composant garde son
+// identifiant), celui-ci revient au rechargement.
+const AVIS_FICTIF = '<strong>EXERCICE</strong> – Avis fictif des bibliothèques : test d’affichage. <a href="/horaires/">Consulter les horaires</a>.'
 ---
 
 {
   position === 'haut' && (
     <>
-      <script is:inline type="module" async src={`${CDN}/udem-urgence.min.js`}></script>
-      <script is:inline type="module" async src={`${CDN}/bib-avis.min.js`}></script>
+      <script is:inline type="module" async src={`${CDN}/udem-urgence.min.js`} integrity={SRI_BIBUDEM['udem-urgence.min.js']} crossorigin="anonymous"></script>
+      {niveau < 2 && <script is:inline type="module" async src={`${CDN}/bib-avis.min.js`} integrity={SRI_BIBUDEM['bib-avis.min.js']} crossorigin="anonymous"></script>}
       <udem-urgence class="bandeau-institutionnel"></udem-urgence>
+      <script>
+        import { corrigerUrgence } from '@/lib/correctif-urgence'
+        import { aChaquePage } from '@/lib/pages'
+
+        aChaquePage(() => void corrigerUrgence())
+      </script>
+      {import.meta.env.DEV && (
+        <script is:inline define:vars={{ URGENCE_FICTIVE }}>
+          {
+            const valeur = new URLSearchParams(location.search).get('urgence-fictive')
+            const urgence = document.querySelector('udem-urgence')
+            if (valeur !== null && urgence) {
+              const message = { ...URGENCE_FICTIVE, bannerType: valeur === 'grand' ? 'large' : 'small' }
+              urgence.setAttribute('service', 'data:application/json,' + encodeURIComponent(JSON.stringify(message)))
+            }
+          }
+        </script>
+      )}
       {niveau < 2 && <bib-avis bouton-fermer class="bandeau-institutionnel avis-pleine-largeur"></bib-avis>}
+      {import.meta.env.DEV && (
+        <script is:inline define:vars={{ AVIS_FICTIF }}>
+          if (new URLSearchParams(location.search).has('avis-fictif')) {
+            const reponse = { success: true, data: { id: 'avis-fictif-' + Date.now(), message: AVIS_FICTIF } }
+            for (const avis of document.querySelectorAll('bib-avis')) avis.setAttribute('service', 'data:application/json,' + encodeURIComponent(JSON.stringify(reponse)))
+          }
+        </script>
+      )}
     </>
   )
 }
@@ -51,8 +94,16 @@ const CDN = CDN_BIBUDEM
 {
   position === 'avis' && niveau >= 2 && (
     <>
-      <script is:inline type="module" async src={`${CDN}/bib-avis.min.js`}></script>
+      <script is:inline type="module" async src={`${CDN}/bib-avis.min.js`} integrity={SRI_BIBUDEM['bib-avis.min.js']} crossorigin="anonymous"></script>
       <bib-avis bouton-fermer class="avis-contenu"></bib-avis>
+      {import.meta.env.DEV && (
+        <script is:inline define:vars={{ AVIS_FICTIF }}>
+          if (new URLSearchParams(location.search).has('avis-fictif')) {
+            const reponse = { success: true, data: { id: 'avis-fictif-' + Date.now(), message: AVIS_FICTIF } }
+            for (const avis of document.querySelectorAll('bib-avis')) avis.setAttribute('service', 'data:application/json,' + encodeURIComponent(JSON.stringify(reponse)))
+          }
+        </script>
+      )}
     </>
   )
 }

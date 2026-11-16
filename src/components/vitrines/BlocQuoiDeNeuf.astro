@@ -11,20 +11,25 @@ import ListeNouvellesAccueil from '@/components/contenu/dynamiques/ListeNouvelle
 import ListeFormationsAccueil from '@/components/contenu/dynamiques/ListeFormationsAccueil.astro'
 import Titre from './Titre.astro'
 import type { BlocDe } from './types'
+import { rangDansLaPage } from '@/lib/ids'
 
 type Props = { bloc: BlocDe<'quoi-de-neuf'> }
 
 const { bloc } = Astro.props
+// Le premier bloc de la page garde les ancres habituelles (#nouvelles) ; un
+// deuxième prend un suffixe, sinon ses identifiants seraient en double
+const rang = rangDansLaPage(Astro.locals, 'quoi-de-neuf')
+const suffixe = rang > 1 ? `-${rang}` : ''
 const onglets = [
-  { id: 'evenements', label: 'Événements' },
-  { id: 'nouvelles', label: 'Nouvelles' },
-  { id: 'formations', label: 'Formations' },
+  { id: `evenements${suffixe}`, label: 'Événements' },
+  { id: `nouvelles${suffixe}`, label: 'Nouvelles' },
+  { id: `formations${suffixe}`, label: 'Formations' },
 ]
 ---
 
 <Titre texte={bloc.titre} id={bloc.id} />
 <QuoiDeNeuf onglets={onglets}>
-  <ListeEvenements id="evenements" limit={bloc.nombre} />
-  <ListeNouvellesAccueil title="Nouvelles" id="nouvelles" limit={bloc.nombre} />
-  <ListeFormationsAccueil id="formations" limit={bloc.nombre} />
+  <ListeEvenements id={onglets[0].id} limit={bloc.nombre} />
+  <ListeNouvellesAccueil title="Nouvelles" id={onglets[1].id} limit={bloc.nombre} />
+  <ListeFormationsAccueil id={onglets[2].id} limit={bloc.nombre} />
 </QuoiDeNeuf>

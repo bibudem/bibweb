@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { elevation = 1, variant = 'elevation', square = false, component = 'div', class: classe, style, ...reste } = Astro.props
-const Balise = typeof component === 'string' ? component : 'div'
+const Balise = (typeof component === 'string' ? component : 'div') as 'div' | 'section' | 'article' | 'aside' | 'li' | 'nav' | 'header' | 'footer'
 ---
 
 <Balise

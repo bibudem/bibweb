@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import 'leaflet/dist/leaflet.css'
 import type { CircleMarker, Map as CarteL } from 'leaflet'
+import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
-import { aStudio, haversine } from '@/data/horaires/horaires'
+import { aStudio, haversine, studiosDe } from '@/data/horaires/horaires'
 import type { Lieu } from '@/data/horaires/lieux'
+import { avecBase } from '@/lib/chemin'
 
 // Cadrage automatique, pour ne pas imposer un dézoom :
 // - « Tous les lieux » : Montréal et Laval seulement (île de Montréal et île
@@ -67,6 +69,19 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
   const groupeDe = useMemo(() => Object.fromEntries(groupes.flatMap((g) => g.lieux.map((l) => [l.id, g]))), [groupes])
   const carteRef = useRef<CarteL | null>(null)
   const [prete, setPrete] = useState(false)
+  // Lieu hors de la vue où l'encadré a mené : l'encadré propose alors le retour.
+  const [ailleurs, setAilleurs] = useState<string | null>(null)
+  const retourRef = useRef<HTMLButtonElement>(null)
+  const horsVueRef = useRef<HTMLDivElement>(null)
+  // Le bouton cliqué dans l'encadré disparaît : le focus passe au retour.
+  const focusRetour = useRef(false)
+  useEffect(() => {
+    if (ailleurs && focusRetour.current) retourRef.current?.focus({ preventScroll: true })
+    // Retour à la vue habituelle : le bouton qui avait le focus disparaît ;
+    // on le donne au premier lieu hors de la vue, sinon à la carte
+    if (!ailleurs && focusRetour.current) (horsVueRef.current?.querySelector('button') ?? conteneurRef.current)?.focus({ preventScroll: true })
+    focusRetour.current = false
+  }, [ailleurs])
   const marqueursRef = useRef<Record<string, CircleMarker>>({})
   const marqueurPositionRef = useRef<CircleMarker | null>(null)
   const choisirRef = useRef(choisir)
@@ -147,16 +162,44 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
       })
       return b
     }
+    // Filtre « Studios et ateliers » : la bulle nomme les studios et ateliers
+    // du lieu, avec un lien direct vers leur page (site du Studio, nouvel onglet).
+    const studios = (lieu: Lieu) => {
+      if (filtreRef.current !== 'studios') return []
+      // Seulement ceux qui ont une page : la bulle sert de raccourci.
+      const espaces = studiosDe(lieu).filter((s) => s.url)
+      if (!espaces.length) return []
+      const liste = document.createElement('ul')
+      liste.className = 'ch-bulle-studios'
+      for (const { label, url } of espaces) {
+        const item = document.createElement('li')
+        const a = document.createElement('a')
+        a.className = 'ch-bulle-studio'
+        a.href = avecBase(url!)
+        if (/^https?:/.test(url!)) {
+          a.target = '_blank'
+          a.rel = 'noopener noreferrer'
+        }
+        a.textContent = label
+        const contexte = document.createElement('span')
+        contexte.className = 'visuellement-masque'
+        contexte.textContent = ` – ${lieu.name}${a.target ? ' (nouvel onglet)' : ''}`
+        a.append(contexte)
+        item.append(a)
+        liste.append(item)
+      }
+      return [liste]
+    }
     if (montres.length === 1) {
       titre.textContent = montres[0].name
-      contenu.append(titre, document.createElement('br'), bouton('Voir la fiche', montres[0]))
+      contenu.append(titre, ...studios(montres[0]), document.createElement('br'), bouton('Voir la fiche', montres[0]))
     } else {
       titre.textContent = groupe.pavillon ?? ''
       const liste = document.createElement('ul')
       liste.className = 'ch-bulle-liste'
       montres.forEach((lieu) => {
         const item = document.createElement('li')
-        item.append(bouton(lieu.name, lieu))
+        item.append(bouton(lieu.name, lieu), ...studios(lieu))
         liste.append(item)
       })
       contenu.append(titre, liste)
@@ -196,7 +239,7 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
           el?.querySelector('.leaflet-popup-close-button')?.setAttribute('aria-label', 'Fermer la bulle')
           // Ouverte depuis le marqueur focalisé, la bulle reçoit le focus ; il
           // revient au marqueur à la fermeture.
-          if (marqueur.getElement() === document.activeElement) el?.querySelector<HTMLElement>('.ch-bulle-lien')?.focus()
+          if (marqueur.getElement() === document.activeElement) el?.querySelector<HTMLElement>('.ch-bulle-studio, .ch-bulle-lien')?.focus()
         })
         marqueur.on('popupclose', () => {
           const el = marqueur.getElement() as HTMLElement | undefined
@@ -211,6 +254,16 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
         if (e.key === 'Escape') carte?.closePopup()
       })
 
+      // Un marqueur hors de la vue (Saint-Hyacinthe) n'est pas un arrêt de
+      // tabulation : le focus y tombait sans rien montrer
+      const c = carte
+      c.on('moveend', () => {
+        const vue = c.getBounds()
+        for (const marqueur of Object.values(marqueursRef.current)) {
+          const el = marqueur.getElement() as SVGElement | undefined
+          if (el?.dataset.focalisable) el.setAttribute('tabindex', vue.contains(marqueur.getLatLng()) ? '0' : '-1')
+        }
+      })
       cadrer(carte, groupes)
       carteRef.current = carte
       setPrete(true)
@@ -255,6 +308,7 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
       visibles.push(groupe)
     }
     cadrer(carte, visibles, position ? [[position.lat, position.lng]] : [], filtre === 'all')
+    setAilleurs(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prete, groupes, idsVisibles, filtre, position])
 
@@ -297,24 +351,49 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
     if (!carte || !marqueur) return
     carte.setView(marqueur.getLatLng(), 13)
     marqueur.openPopup()
+    focusRetour.current = true
+    setAilleurs(groupe.cle)
   }
+  const revenir = () => {
+    const carte = carteRef.current
+    if (!carte) return
+    carte.closePopup()
+    cadrer(carte, retenus, position ? [[position.lat, position.lng]] : [], filtre === 'all')
+    focusRetour.current = true
+    setAilleurs(null)
+  }
+  const autresHorsVue = horsVue.filter((g) => g.cle !== ailleurs)
 
   return (
     <div class="ch-carte-cadre">
+      {/* Une vingtaine de marqueurs précèdent la liste au clavier */}
+      <a class="ch-passer-carte" href="#liste-lieux">
+        Passer la carte
+      </a>
       <div ref={conteneurRef} class="ch-carte" role="region" aria-label="Carte des bibliothèques. La liste qui suit donne les mêmes renseignements." />
       {prete && horsVue.length > 0 && (
-        <div class="ch-hors-vue">
-          <p id="ch-hors-vue-titre">Hors de cette vue :</p>
-          <ul aria-labelledby="ch-hors-vue-titre">
-            {horsVue.map((groupe) => (
-              <li key={groupe.cle}>
-                <button type="button" onClick={() => allerA(groupe)}>
-                  <span>{groupe.lieux.map(nomAvecVille).join(', ')}</span>
-                  <ArrowRightIcon size={18} aria-hidden="true" />
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div ref={horsVueRef} class="ch-hors-vue">
+          {ailleurs && (
+            <button ref={retourRef} type="button" class="ch-hors-vue-retour" onClick={revenir}>
+              <ArrowLeftIcon size={18} aria-hidden="true" />
+              <span>Revenir à Montréal et Laval</span>
+            </button>
+          )}
+          {autresHorsVue.length > 0 && (
+            <>
+              <p id="ch-hors-vue-titre">{ailleurs ? 'Aussi hors de la vue habituelle :' : 'Hors de cette vue :'}</p>
+              <ul aria-labelledby="ch-hors-vue-titre">
+                {autresHorsVue.map((groupe) => (
+                  <li key={groupe.cle}>
+                    <button type="button" onClick={() => allerA(groupe)}>
+                      <span>{groupe.lieux.map(nomAvecVille).join(', ')}</span>
+                      <ArrowRightIcon size={18} aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
     </div>

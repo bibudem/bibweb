@@ -6,6 +6,7 @@ slug: ouverture-concours-bourses-blrcs
 date: '2025-10-17'
 newsImage:
   src: ./images/2017-cs-boucles-2.webp
+  alt: 'Liasses de documents anciens rangées sur une tablette, chacune nouée d’un ruban blanc.'
 source: Bibliothèques
 ---
 La Bibliothèque des livres rares et collections spéciales (BLRCS) de l’Université de Montréal offre trois bourses cette année. Réservées aux étudiantes et aux étudiants des cycles supérieurs, ces bourses ont pour objectif de favoriser la recherche par l’utilisation des ressources documentaires de la BLRCS.

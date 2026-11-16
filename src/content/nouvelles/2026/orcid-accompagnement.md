@@ -5,6 +5,7 @@ slug: orcid-accompagnement
 date: '2026-04-24'
 newsImage:
   src: ./images/orcid-accompagnement.webp
+  alt: 'Un étudiant travaille sur un ordinateur portable à une table de bibliothèque, près d’une grande fenêtre et de plantes vertes.'
 source: Bibliothèques
 ---
 Tel qu’annoncé par le Vice-rectorat à la recherche et à l’innovation, le Répertoire des professeurs et professeures sera abandonné au profit d’ORCID pour ce qui est de l’alimentation des pages web facultaires mettant en valeur le corps professoral. 

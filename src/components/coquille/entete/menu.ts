@@ -16,7 +16,11 @@
  * - La poignée du bas de la feuille (sous 1200 px) ferme d'un tapotement, ou
  *   d'un glissé vers le haut : la feuille suit le doigt.
  * - Le rideau se referme quand le focus le quitte, ou au clic sur le voile.
+ * - Ouvert, il couvre la fenêtre : le reste de la page devient inerte
+ *   (inert), sinon la tabulation passait sous le rideau, sur des éléments
+ *   cachés (liste du bandeau d'horaires ; WCAG 2.4.11).
  */
+import { mouvementReduit } from '@/lib/mouvement'
 
 type Mode = 'recherche' | 'complet'
 
@@ -33,6 +37,27 @@ export function brancherMenu(entete: HTMLElement, surChangement: () => void, sig
   // Bouton qui a ouvert le rideau (il reprend le focus à la fermeture)
   let ouvert: HTMLButtonElement | null = null
   let mode: Mode = 'complet'
+  // Éléments rendus inertes à l'ouverture, libérés à la fermeture
+  let inertes: HTMLElement[] = []
+
+  // Tout ce qui n'est pas l'en-tête ni l'un de ses ancêtres : les frères de
+  // l'en-tête et ceux de chaque ancêtre jusqu'à <html> (le clavardage
+  // LibraryH3lp se place hors de <body>)
+  const IGNORES = new Set(['HEAD', 'SCRIPT', 'STYLE', 'LINK', 'TEMPLATE'])
+  function rendreInerte() {
+    for (let el: HTMLElement | null = entete; el && el !== document.documentElement; el = el.parentElement) {
+      for (const frere of el.parentElement?.children ?? []) {
+        if (frere === el || !(frere instanceof HTMLElement) || frere.inert || IGNORES.has(frere.tagName)) continue
+        frere.inert = true
+        inertes.push(frere)
+      }
+    }
+  }
+  function liberer() {
+    for (const el of inertes) el.inert = false
+    inertes = []
+  }
+  signal.addEventListener('abort', liberer)
 
   // État des boutons : la loupe est « ouverte » en mode recherche, le
   // bouton Menu en mode complet ; chacun montre alors un X
@@ -56,6 +81,7 @@ export function brancherMenu(entete: HTMLElement, surChangement: () => void, sig
     panneau?.setAttribute('hidden', '')
     entete.removeAttribute('data-menu-ouvert')
     ouvert = null
+    liberer()
     majBoutons()
     surChangement()
     if (rendreFocus) bouton.focus()
@@ -78,6 +104,7 @@ export function brancherMenu(entete: HTMLElement, surChangement: () => void, sig
     changerMode(nouveau)
     panneau?.removeAttribute('hidden')
     entete.setAttribute('data-menu-ouvert', '')
+    rendreInerte()
     surChangement()
     if (nouveau === 'recherche') panneau?.querySelector<HTMLInputElement>('input[type=search]')?.focus({ preventScroll: true })
   }
@@ -88,10 +115,12 @@ export function brancherMenu(entete: HTMLElement, surChangement: () => void, sig
   // menu ») : la feuille s'allonge et le reste du menu apparaît en
   // descendant, en léger décalage. La poignée, collée au bas de la
   // feuille, suit. Sans animation si le mouvement réduit est demandé.
-  const COURBE_ENTREE = 'cubic-bezier(0.05, 0.7, 0.1, 1)'
-  const COURBE_SORTIE = 'cubic-bezier(0.3, 0, 1, 1)'
+  // Courbes du thème (tokens.css), lues plutôt que recopiées
+  const jeton = (nom: string) => getComputedStyle(document.documentElement).getPropertyValue(nom).trim()
+  const COURBE_ENTREE = jeton('--courbe-emphase-deceleree') || 'ease-out'
+  const COURBE_SORTIE = jeton('--courbe-standard-acceleree') || 'ease-in'
   let animation = false
-  const reduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduit = mouvementReduit
   const feuille = () => panneau?.querySelector<HTMLElement>('.feuille')
   const autresGroupes = () => [...(feuille()?.querySelectorAll<HTMLElement>('.grille > :not(.sofia, .deplier)') ?? [])].filter((e) => e.offsetParent)
 

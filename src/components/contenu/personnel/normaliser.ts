@@ -27,7 +27,7 @@ export function cle(texte = '') {
     .replace(/[^a-z0-9 ]+/g, ' ')
     .split(' ')
     .filter(Boolean)
-    .map((mot) => (mot.length > 3 ? mot.replace(/s$/, '') : mot))
+    .map((mot: string) => (mot.length > 3 ? mot.replace(/s$/, '') : mot))
     .join('')
 }
 

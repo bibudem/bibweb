@@ -7,6 +7,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { schemaVitrine } from '@/lib/schema-vitrines'
 import { IDS_SUJETS } from '@/data/sujets'
+import { sansChampsVides } from '@/lib/sans-vides'
 
 /*
  * Collections de contenu.
@@ -95,19 +96,21 @@ const pages = defineCollection({
     pattern: '**/*.{md,mdx}',
     generateId: ({ entry }) => idUnique(entry),
   }),
-  schema: z.object({
-    title: z.string().trim().optional(),
-    description: z.string().optional(),
-    crumbLabel: z.string().trim().optional(),
-    secondaryNav,
-    superHero,
-    noindex: z.boolean().optional(),
-    /** true : pas de sommaire « Sur cette page », même avec assez de sections.
-     *  Absent ou false : le sommaire suit la règle habituelle (3 sections et plus). */
-    sansSommaire: z.boolean().optional(),
-    lvl: z.number().optional(),
-    lang,
-  }),
+  schema: sansChampsVides(
+    z.object({
+      title: z.string().trim().optional(),
+      description: z.string().optional(),
+      crumbLabel: z.string().trim().optional(),
+      secondaryNav,
+      superHero,
+      noindex: z.boolean().optional(),
+      /** true : pas de sommaire « Sur cette page », même avec assez de sections.
+       *  Absent ou false : le sommaire suit la règle habituelle (3 sections et plus). */
+      sansSommaire: z.boolean().optional(),
+      lvl: z.number().optional(),
+      lang,
+    }),
+  ),
 })
 
 // Sujets d'une nouvelle ou d'un article de presse (src/data/sujets.ts)
@@ -125,28 +128,30 @@ const nouvelles = defineCollection({
     },
   }),
   schema: ({ image }) =>
-    z.object({
-      title: z.string().trim(),
-      /** Titre affiché (h1) quand il diffère du `title` (onglet, listes), comme dans la source */
-      titreAffiche: z.string().trim().optional(),
-      slug: z.string().optional(),
-      date: z.coerce.date(),
-      type: z.literal('interne').default('interne'),
-      source: z.string().optional(),
-      newsUrl: z.string().url().optional(),
-      authors: z.array(z.string()).optional(),
-      crumbLabel: z.string().optional(),
-      newsImage: z
-        .object({
-          src: image().optional(),
-          alt: z.string().nullish(),
-          legend: z.string().nullish(),
-          caption: z.string().nullish(),
-          source: z.string().nullish(),
-        })
-        .optional(),
-      sujets,
-    }),
+    sansChampsVides(
+      z.object({
+        title: z.string().trim(),
+        /** Titre affiché (h1) quand il diffère du `title` (onglet, listes), comme dans la source */
+        titreAffiche: z.string().trim().optional(),
+        slug: z.string().optional(),
+        date: z.coerce.date(),
+        type: z.literal('interne').default('interne'),
+        source: z.string().optional(),
+        newsUrl: z.url().optional(),
+        authors: z.array(z.string()).optional(),
+        crumbLabel: z.string().optional(),
+        newsImage: z
+          .object({
+            src: image().optional(),
+            alt: z.string().nullish(),
+            legend: z.string().nullish(),
+            caption: z.string().nullish(),
+            source: z.string().nullish(),
+          })
+          .optional(),
+        sujets,
+      }),
+    ),
 })
 
 // Revue de presse : un seul fichier JSON, modifiable dans Decap (« Revue de
@@ -155,14 +160,16 @@ const revueDePresse = defineCollection({
   loader: file('src/content/revue-de-presse/articles.json', {
     parser: (texte) => JSON.parse(texte).articles.map((article: { url: string }) => ({ id: article.url, ...article })),
   }),
-  schema: z.object({
-    title: z.string().trim(),
-    date: z.coerce.date(),
-    source: z.string().trim(),
-    url: z.string().url(),
-    lang: z.string().default('fr'),
-    sujets,
-  }),
+  schema: sansChampsVides(
+    z.object({
+      title: z.string().trim(),
+      date: z.coerce.date(),
+      source: z.string().trim(),
+      url: z.url(),
+      lang: z.string().default('fr'),
+      sujets,
+    }),
+  ),
 })
 
 // Vitrines : pages d'accueil et de section en données YAML, rendues par
@@ -173,7 +180,7 @@ const vitrines = defineCollection({
     pattern: '**/*.yaml',
     generateId: ({ entry }) => idUnique(entry),
   }),
-  schema: ({ image }) => schemaVitrine(image, { secondaryNav, lang }),
+  schema: ({ image }) => sansChampsVides(schemaVitrine(image, { secondaryNav, lang })),
 })
 
 export const collections = { pages, vitrines, nouvelles, revueDePresse }

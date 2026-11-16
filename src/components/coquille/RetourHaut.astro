@@ -40,6 +40,7 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
 
 <script>
   import { aChaquePage, auDepart } from '@/lib/pages'
+  import { infobullesFermablesAvecEchap } from '@/lib/infobulle'
 
   aChaquePage((signal) => {
     const bouton = document.querySelector<HTMLButtonElement>('[data-retour-haut]')
@@ -83,12 +84,7 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
     window.addEventListener('resize', mettreAJour, { passive: true, signal })
 
     // Échap ferme l'infobulle ; elle revient au prochain survol ou focus
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && bouton.matches(':hover, :focus-visible')) bouton.setAttribute('data-infobulle-fermee', '')
-    }, { signal })
-    for (const evenement of ['pointerleave', 'blur']) {
-      bouton.addEventListener(evenement, () => bouton.removeAttribute('data-infobulle-fermee'))
-    }
+    infobullesFermablesAvecEchap([bouton], signal)
     mettreAJour()
 
     bouton.addEventListener('click', () => {

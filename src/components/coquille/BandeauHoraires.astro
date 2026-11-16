@@ -45,6 +45,11 @@ const bibliotheques = lieux
   .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
 ---
 
+{/* Bloc ordinaire, sans position : sur une page à bannière, le bandeau y
+    est en position absolue et garde ainsi sa place, juste sous l'en-tête.
+    Directement dans le <body> (en colonne flexible, global.css), il serait
+    remonté en haut de la page, sous l'en-tête. */}
+<div class="place-bandeau">
 <section class="bandeau theme-clair" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
   <div class="rangee">
     <div class="choix">
@@ -73,6 +78,7 @@ const bibliotheques = lieux
     </a>
   </div>
 </section>
+</div>
 
 <script>
   import { analyserHoraires, ajouterJours, maintenantMontreal, statutDe, urlHoraires, type Horaires } from '@/data/horaires/horaires'
@@ -80,6 +86,7 @@ const bibliotheques = lieux
   import { aChaquePage, auDepart } from '@/lib/pages'
 
   const MEMOIRE = 'bandeauHoraires:bibliotheque'
+  let cacheBandeau: { date: string; horaires: Horaires } | undefined
 
   aChaquePage((signal) => {
     const bandeau = document.querySelector<HTMLElement>('[data-bandeau-horaires]')
@@ -117,8 +124,12 @@ const bibliotheques = lieux
     const texte = bandeau.querySelector<HTMLElement>('[data-texte]')!
     const pastille = bandeau.querySelector<HTMLElement>('[data-pastille]')!
     // Jour des horaires chargés : la page peut rester ouverte toute la nuit
-    let jourCharge = ''
-    let horaires: Horaires | null | undefined
+    // Horaires du jour gardés d'une page à l'autre (le module survit aux
+    // navigations du ClientRouter) : une seule requête par jour, et non une
+    // par page vue
+    let jourCharge = cacheBandeau?.date ?? ''
+    let horaires: Horaires | null | undefined = cacheBandeau?.horaires
+    let echecA = 0
 
     try {
       const garde = window.localStorage.getItem(MEMOIRE)
@@ -133,6 +144,8 @@ const bibliotheques = lieux
       if (horaires === undefined) return
       const maintenant = maintenantMontreal()
       if (maintenant.date !== jourCharge) return charger(maintenant.date)
+      // Échec : nouvel essai après cinq minutes (il n'en partait plus aucun)
+      if (horaires === null && Date.now() - echecA > 5 * 60 * 1000) return charger(maintenant.date)
       const dates = [maintenant.date, ajouterJours(maintenant.date, 1)]
       const statut = statutDe({ codeBib: choix.value } as Lieu, horaires, maintenant, dates)
       // Même texte : on n'y touche pas, la région d'annonce resterait muette
@@ -152,10 +165,16 @@ const bibliotheques = lieux
 
     const charger = (date: string) => {
       jourCharge = date
-      fetch(urlHoraires(date, 2))
+      fetch(urlHoraires(date, 2), { signal: AbortSignal.timeout?.(10_000) })
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`API horaires : HTTP ${r.status}`))))
-        .then((donnees) => (horaires = analyserHoraires(donnees)))
-        .catch(() => (horaires = null))
+        .then((donnees) => {
+          horaires = analyserHoraires(donnees)
+          cacheBandeau = { date, horaires }
+        })
+        .catch(() => {
+          horaires = null
+          echecA = Date.now()
+        })
         .finally(() => {
           afficher()
           // Région d'annonce seulement après le premier remplissage
@@ -163,7 +182,10 @@ const bibliotheques = lieux
         })
     }
 
-    charger(maintenantMontreal().date)
+    if (horaires) {
+      afficher()
+      bandeau.querySelector('[data-statut]')!.setAttribute('role', 'status')
+    } else charger(maintenantMontreal().date)
     const minute = setInterval(afficher, 60 * 1000)
     auDepart(signal, () => clearInterval(minute))
   })
@@ -350,9 +372,9 @@ const bibliotheques = lieux
       flex: 0 1 auto;
     }
 
-    /* Rangée de 45 px (2.5rem, retrait des bannières plus bas) */
+    /* Rangée de 45 px (retrait des bannières plus bas) */
     .rangee {
-      min-height: 2.5rem;
+      min-height: var(--hauteur-bandeau-horaires);
       padding-block: 0;
     }
 
@@ -382,20 +404,19 @@ const bibliotheques = lieux
 
     /* Bannière photo sous l'en-tête transparent : le bandeau se pose sur le
        haut de la photo, à sa place normale, sans pousser la page. Les
-       bannières ajoutent sa hauteur (2.5rem) à leur retrait sous
+       bannières ajoutent sa hauteur à leur retrait sous
        l'en-tête : leur titre reste visible. */
 
     :global(body:has(.super-hero, .super-hero-2, .banniere)) .bandeau {
       position: absolute;
       right: 0;
       left: 0;
-      background-color: color-mix(in srgb, var(--bleu-fonce) 88%, transparent);
     }
 
     :global(body:has(.bandeau) .banniere),
     :global(body:has(.bandeau) .super-hero-2),
     :global(body:has(.bandeau) .super-hero) {
-      padding-top: calc(5rem + 2.5rem);
+      padding-top: calc(var(--hauteur-entete) + var(--hauteur-bandeau-horaires));
     }
   }
 

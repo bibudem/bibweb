@@ -155,6 +155,19 @@ body {
   font-variant-numeric: lining-nums tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Pied de page collé au bas de l'écran quand la page est courte
+     (recherche ou répertoire sans résultat, 404) : la page fait au moins
+     la hauteur de la fenêtre et le pied prend la place restante au-dessus
+     de lui (margin-top: auto, PiedDePage). Les enfants directs du body ne
+     rétrécissent pas. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body > * {
+  flex-shrink: 0;
 }
 
 /* ---- Titres (typographie du thème, variantes h1 à h6) ---- */
@@ -797,8 +810,8 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
 }
 
 /* Passage d'une page à l'autre sur mobile, comme les écrans d'une
-   application (transitions de vue entre documents, sans routeur JS : chaque
-   page reste une vraie page). La nouvelle page glisse depuis la droite et
+   application (transitions de vue entre documents : navigations complètes,
+   le ClientRouter de Base.astro animant les autres). La nouvelle page glisse depuis la droite et
    recouvre l'ancienne ; au retour (bouton Précédent, page plus haute dans
    l'arborescence : type « retour », posé dans Base.astro), le mouvement
    s'inverse. L'en-tête et la barre des liens rapides restent en place.

@@ -28,7 +28,7 @@ interface Props {
 }
 
 const { titre, Icon, couleur = 'bleuPrincipal', niveauTitre = 3 } = Astro.props
-const Titre = `h${niveauTitre}`
+const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
 <details class:list={['carte', 'volet-anime', `couleur-${couleur}`, { 'surface-claire': couleur === 'rose300' }]}>

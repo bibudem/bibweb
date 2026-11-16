@@ -15,6 +15,7 @@
  * couleurs passent par currentColor ou par des variables CSS.
  */
 import { symbolePhosphor, type Graisse } from '@/lib/sprite'
+import { fusionnerStyles, type Style } from '@/lib/styles'
 
 interface Props {
   /** Composant Phosphor ou icône maison */
@@ -29,15 +30,16 @@ interface Props {
   alt?: string
   class?: string
   className?: string
-  style?: string
-  role?: string
+  /** Chaîne ou objet (`{ color: … }`), comme ailleurs (lib/styles.ts) */
+  style?: Style
+  role?: astroHTML.JSX.AriaRole
   'aria-hidden'?: 'true' | 'false' | boolean
   'aria-label'?: string
-  focusable?: 'true' | 'false' | boolean
+  focusable?: 'true' | 'false'
 }
 
 const { icone, ...props } = Astro.props
-const { size = '1em', weight = 'regular', color = 'currentColor', mirrored = false, alt, class: classe, className, ...reste } = props
+const { size = '1em', weight = 'regular', color = 'currentColor', mirrored = false, alt, class: classe, className, style, ...reste } = props
 
 // Composant Phosphor : forwardRef (preact/compat) nommé « <Nom>Icon »
 const phosphor = icone?.$$typeof === Symbol.for('react.forward_ref') && /Icon$/.test(icone.displayName ?? '')
@@ -51,7 +53,7 @@ const id = phosphor ? symbolePhosphor(Astro.locals, icone, weight).id : ''
 
 {
   phosphor ? (
-    <svg width={size} height={size} fill={color} transform={mirrored ? 'scale(-1, 1)' : undefined} class:list={[classe, className]} {...reste}>{alt && <title>{alt}</title>}<use href={`#${id}`} /></svg>
+    <svg width={size} height={size} fill={color} transform={mirrored ? 'scale(-1, 1)' : undefined} class:list={[classe, className]} style={fusionnerStyles(style)} {...reste}>{alt && <title>{alt}</title>}<use href={`#${id}`} /></svg>
   ) : (
     Composant && <Composant {...props} />
   )

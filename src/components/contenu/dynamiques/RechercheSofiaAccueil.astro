@@ -86,6 +86,7 @@ const LIENS = [
 <script>
   import { brancherRechercheSofia } from '@/lib/sofia'
   import { aChaquePage } from '@/lib/pages'
+  import { infobullesFermablesAvecEchap } from '@/lib/infobulle'
 
   // Une seule fois par formulaire (data-branche), même appelée deux fois
   aChaquePage((signal) => {
@@ -94,12 +95,7 @@ const LIENS = [
     // prochain survol ou focus (même chose que RetourHaut)
     const aide = document.querySelector<HTMLElement>('[data-aide-sofia]')
     if (!aide) return
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && aide.matches(':hover, :focus-visible')) aide.setAttribute('data-infobulle-fermee', '')
-    }, { signal })
-    for (const evenement of ['pointerleave', 'blur']) {
-      aide.addEventListener(evenement, () => aide.removeAttribute('data-infobulle-fermee'), { signal })
-    }
+    infobullesFermablesAvecEchap([aide], signal)
   })
 </script>
 

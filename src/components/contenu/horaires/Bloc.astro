@@ -18,7 +18,7 @@ interface Props {
 }
 
 const { titre, Icon, niveauTitre = 4, flex = false, class: classe } = Astro.props
-const Titre = `h${niveauTitre}`
+const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
 <div class:list={['bloc', classe]}>

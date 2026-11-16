@@ -12,7 +12,7 @@
  */
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { analyserLien, annonceLien } from '@/lib/liens'
-import { fusionnerStyles } from '@/lib/styles'
+import { fusionnerStyles, type Style } from '@/lib/styles'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
 
 interface Props {
@@ -26,20 +26,23 @@ interface Props {
   rel?: string
   title?: string
   class?: string
-  style?: string | Record<string, string | number>
+  style?: Style
 }
 
 const { to, href, Icon, iconProps, target, rel, class: classe, style, ...reste } = Astro.props
-const adresse = to ?? href ?? '#'
-const { pdf } = analyserLien(adresse)
-const nouvelOnglet = target === '_blank'
+// Sans adresse, pas de lien : href="#" menait en haut de la page
+const adresse = to ?? href
+const { pdf } = analyserLien(adresse ?? '')
+// Un PDF s'ouvre dans un nouvel onglet, comme avec Bouton
+const cible = pdf ? '_blank' : target
+const nouvelOnglet = cible === '_blank'
 const relFinal = nouvelOnglet ? [...new Set([...(rel ?? '').split(/\s+/).filter(Boolean), 'noopener'])].join(' ') : rel
 const annonce = annonceLien({ pdf, nouvelOnglet })
 // Les icônes Phosphor sont des objets forwardRef, pas des fonctions
 const Icone = Icon === true ? ArrowRightIcon : Icon ? Icon : null
 ---
 
-<a href={adresse} target={target} rel={relFinal} class:list={['lien', { 'avec-icone': Icone }, classe]} style={fusionnerStyles(style)} {...reste}
+<a href={adresse} target={cible} rel={relFinal} class:list={['lien', { 'avec-icone': Icone }, classe]} style={fusionnerStyles(style)} {...reste}
   ><slot />{annonce && <span class="visuellement-masque">{annonce}</span>}{
     Icone && <IconeSprite icone={Icone} size="1.125rem" color="currentColor" {...iconProps} aria-hidden="true" focusable="false" />
   }</a

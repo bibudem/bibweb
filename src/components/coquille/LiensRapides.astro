@@ -153,6 +153,8 @@ const PAGE_CLAVARDER = avecBase('/nous-joindre/clavarder/')
 
 <script>
   import { aChaquePage, auDepart } from '@/lib/pages'
+  import { REQUETE_MOUVEMENT_REDUIT } from '@/lib/mouvement'
+  import { fermerInfobulle, rouvrirInfobulle } from '@/lib/infobulle'
 
   // Délégation sur le document : branchée une fois, vaut pour toutes les pages
   document.addEventListener('click', (e) => {
@@ -185,16 +187,14 @@ const PAGE_CLAVARDER = avecBase('/nous-joindre/clavarder/')
       // survol sans le focus (WCAG 1.4.13) ; elle revient au prochain
       // survol ou focus
       if (panneau.hasAttribute('data-replie')) {
-        if (poignee.matches(':hover, :focus-visible')) poignee.setAttribute('data-infobulle-fermee', '')
+        fermerInfobulle([poignee])
         return
       }
       if (!panneau.contains(document.activeElement)) return
       ouvrir(false)
       poignee.focus()
     }, { signal })
-    for (const evenement of ['pointerleave', 'blur']) {
-      poignee.addEventListener(evenement, () => poignee.removeAttribute('data-infobulle-fermee'))
-    }
+    rouvrirInfobulle(poignee, signal)
     document.addEventListener('click', (e) => {
       if (!panneau.contains(e.target as Node)) ouvrir(false)
     }, { signal })
@@ -219,7 +219,7 @@ const PAGE_CLAVARDER = avecBase('/nous-joindre/clavarder/')
   const OMBRE = 16
   const barre = document.querySelector<HTMLElement>('[data-liens-rapides-mobile]')
   if (barre) {
-    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const reduit = window.matchMedia(REQUETE_MOUVEMENT_REDUIT)
     let precedent = window.scrollY
     let decalage = 0
     let enAttente = false

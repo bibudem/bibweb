@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise'
+import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowCounterClockwise'
 import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
 import { ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock'
 import { CrosshairIcon } from '@phosphor-icons/react/dist/ssr/Crosshair'
@@ -20,6 +21,7 @@ import './carte-leaflet.css'
 import './fiche-lieu.css'
 import './horaire-semaine.css'
 import { idDeLAncre } from '@/lib/ancre-url'
+import { mouvementReduit } from '@/lib/mouvement'
 
 // La pastille reprend la couleur des marqueurs de la carte : les filtres
 // servent aussi de légende.
@@ -51,7 +53,6 @@ const estOuvert = (s: Statut | null) => s?.etat === 'open' || s?.etat === 'closi
 const SURLIGNAGE_MS = 1600
 const HORLOGE_MS = 30 * 1000
 
-const mouvementReduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Props {
   lieux: Lieu[]
@@ -81,6 +82,7 @@ export default function CarteHoraires({ lieux, images }: Props) {
   const [surlignee, setSurlignee] = useState<string | null>(null)
   const [cibleCarte, setCibleCarte] = useState<{ id: string } | null>(null)
   const sectionCarteRef = useRef<HTMLDivElement>(null)
+  const grilleRef = useRef<HTMLDivElement>(null)
   const minuterie = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
@@ -145,10 +147,19 @@ export default function CarteHoraires({ lieux, images }: Props) {
 
   // « Ouvert maintenant » n'est utilisable qu'une fois les statuts connus.
   const statutsPrets = Boolean(maintenant && horaires)
-  const garder = useCallback((l: Lieu) => dansFiltre(l, filtre) && (!ouvertsSeulement || estOuvert(statutDu(l))), [filtre, ouvertsSeulement, statutDu])
+  // Statuts inconnus le temps d'un rechargement (nouvelle semaine à minuit
+  // le lundi) : le filtre attend au lieu de vider la liste
+  const garder = useCallback(
+    (l: Lieu) => dansFiltre(l, filtre) && (!ouvertsSeulement || !statutsPrets || estOuvert(statutDu(l))),
+    [filtre, ouvertsSeulement, statutsPrets, statutDu]
+  )
 
   const filtres = useMemo(() => physiques.filter(garder), [physiques, garder])
-  const idsVisibles = useMemo(() => new Set(filtres.map((l) => l.id)), [filtres])
+  // Identité stable tant que la liste ne change pas : `maintenant` change
+  // toutes les 30 s (horloge), ce qui recréait `filtres` et faisait recadrer
+  // la carte, annulant le zoom de la personne
+  const cleVisibles = filtres.map((l) => l.id).join('|')
+  const idsVisibles = useMemo(() => new Set(cleVisibles ? cleVisibles.split('|') : []), [cleVisibles])
   const q = normaliser(requete.trim())
 
   const liste = useMemo(() => {
@@ -160,7 +171,7 @@ export default function CarteHoraires({ lieux, images }: Props) {
 
   // Le service (PEB) suit la recherche et « Ouvert maintenant », mais pas les
   // filtres de lieux.
-  const autresServices = services.filter((l) => filtre === 'all' && correspond(l, q) && (!ouvertsSeulement || estOuvert(statutDu(l))))
+  const autresServices = services.filter((l) => filtre === 'all' && correspond(l, q) && (!ouvertsSeulement || !statutsPrets || estOuvert(statutDu(l))))
 
   const parDistance = useMemo(() => {
     if (!position) return []
@@ -219,6 +230,17 @@ export default function CarteHoraires({ lieux, images }: Props) {
     setFiltre('all')
     setOuvertsSeulement(false)
     setTimeout(() => allerAFiche(lieu.id), 0)
+  }
+
+  // Filtres, « Ouvert maintenant » et recherche : tout revient à l'état
+  // d'arrivée. Le bouton disparaît alors ; `focus` dit où va le focus, une
+  // fois la liste mise à jour.
+  const filtresActifs = filtre !== 'all' || ouvertsSeulement || requete.trim() !== ''
+  function reinitialiser(focus: () => HTMLElement | null | undefined) {
+    setFiltre('all')
+    setOuvertsSeulement(false)
+    setRequete('')
+    setTimeout(() => focus()?.focus({ preventScroll: true }), 0)
   }
 
   const voirSurCarte = useCallback((id: string) => {
@@ -285,6 +307,20 @@ export default function CarteHoraires({ lieux, images }: Props) {
           {cle === 'all' ? `${libelle} (${physiques.length})` : libelle}
         </button>
       ))}
+      {filtresActifs && (
+        <button
+          type="button"
+          class="ch-bouton-texte ch-reinitialiser"
+          onClick={(e) => {
+            // Focus sur « Tous les lieux », de la même rangée de puces
+            const rangee = (e.currentTarget as HTMLElement).closest('.ch-filtres')
+            reinitialiser(() => rangee?.querySelector<HTMLElement>('.ch-puce[aria-pressed="true"]:not(.ch-puce-ouvert)'))
+          }}
+        >
+          <ArrowCounterClockwiseIcon size={18} aria-hidden="true" />
+          Réinitialiser les filtres
+        </button>
+      )}
     </div>
   )
 
@@ -380,7 +416,15 @@ export default function CarteHoraires({ lieux, images }: Props) {
               : 'Aucun lieu ne correspond à ces filtres.'
             : `${liste.length} ${liste.length > 1 ? 'lieux affichés' : 'lieu affiché'}`}
         </p>
-        <div class="ch-grille ch-grille-2">
+        {liste.length === 0 && filtresActifs && (
+          <p class="ch-aucun-reinitialiser">
+            <button type="button" class="ch-bouton-texte ch-reinitialiser" onClick={() => reinitialiser(() => grilleRef.current?.querySelector<HTMLElement>('.ch-fiche'))}>
+              <ArrowCounterClockwiseIcon size={18} aria-hidden="true" />
+              Réinitialiser les filtres
+            </button>
+          </p>
+        )}
+        <div ref={grilleRef} id="liste-lieux" tabIndex={-1} class="ch-grille ch-grille-2">
           {liste.map((lieu) => (
             <FicheLieu
               key={lieu.id}

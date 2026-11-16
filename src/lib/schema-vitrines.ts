@@ -214,7 +214,7 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       texte: markdown.optional(),
       coordonnees: z
         .object({
-          courriel: z.string().trim().email().optional(),
+          courriel: z.string().trim().pipe(z.email()).optional(),
           /** Écrit comme on l'affiche : 514 343-2135 */
           telephone: z.string().trim().regex(/^[0-9 -]+$/, 'Un numéro de téléphone s’écrit avec des chiffres, des espaces et des tirets').optional(),
           adresse: lignes.optional(),

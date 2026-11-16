@@ -172,6 +172,9 @@
   /* Hauteur de l'en-tête collant : sert à scroll-padding-top pour que la
      cible d'une ancre ou le focus ne passe pas dessous (WCAG 2.4.11). */
   --hauteur-entete: 100px;
+  /* Rangée du bandeau des horaires dès 900 px (BandeauHoraires) ; les
+     bannières l'ajoutent à leur retrait sous l'en-tête dès 1200 px */
+  --hauteur-bandeau-horaires: 2.5rem;
 }
 
 @media (width >= 900px) {

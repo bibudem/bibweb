@@ -143,17 +143,18 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'fonds et collections' : 'fonds o
       aucun.hidden = visibles > 0
     }
 
+    const trierPar = (cle: string, sens: 1 | -1) => [...lignes].sort((a, b) => sens * (a.dataset[cle] ?? '').localeCompare(b.dataset[cle] ?? '', 'fr'))
+
     // Premier clic : ordre croissant ; deuxième : décroissant ; troisième :
     // ordre d'origine (celui de la plateforme, par catégorie)
     function trier(cle: string) {
-      tri = tri?.cle !== cle ? { cle, sens: 1 } : tri.sens === 1 ? { cle, sens: -1 } : null
-      const ordre = tri
-        ? [...lignes].sort((a, b) => tri!.sens * (a.dataset[tri!.cle] ?? '').localeCompare(b.dataset[tri!.cle] ?? '', 'fr'))
-        : ordreInitial
+      const actuel: typeof tri = tri?.cle !== cle ? { cle, sens: 1 } : tri.sens === 1 ? { cle, sens: -1 } : null
+      tri = actuel
+      const ordre = actuel ? trierPar(actuel.cle, actuel.sens) : ordreInitial
       corps.append(...ordre)
       for (const bouton of boutonsTri) {
         const entete = bouton.closest('th')!
-        if (tri?.cle === bouton.dataset.tri) entete.setAttribute('aria-sort', tri.sens === 1 ? 'ascending' : 'descending')
+        if (actuel && actuel.cle === bouton.dataset.tri) entete.setAttribute('aria-sort', actuel.sens === 1 ? 'ascending' : 'descending')
         else entete.removeAttribute('aria-sort')
       }
     }

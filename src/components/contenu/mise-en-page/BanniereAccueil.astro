@@ -188,7 +188,18 @@ const aEnfants = Astro.slots.has('default')
         }
         placer()
         large.addEventListener('change', placer)
-        if (bandeau) new ResizeObserver(placer).observe(bandeau)
+        const observateur = new ResizeObserver(placer)
+        if (bandeau) observateur.observe(bandeau)
+        // Script rejoué à chaque retour à l'accueil (ClientRouter) : on
+        // débranche en partant, sinon écouteurs et observateurs s'empilaient
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            large.removeEventListener('change', placer)
+            observateur.disconnect()
+          },
+          { once: true },
+        )
       </script>
     )
   }
