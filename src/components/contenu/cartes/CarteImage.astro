@@ -43,7 +43,7 @@ if (typeof href !== 'string') throw new Error('CarteImage : la propriété `href
 
 const { interne, rel: relFinal, annonce } = lienCarte(href, target, rel)
 const idPlus = moreText ? idUnique('carte-plus') : undefined
-const Titre = `h${niveauTitre}`
+const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
 <div class:list={['carte', 'carte-lien', 'anneau-carte', 'surface-claire', classe]} style={fusionnerStyles(style)} {...reste}>
@@ -51,7 +51,7 @@ const Titre = `h${niveauTitre}`
     typeof Image === 'string' ? (
       <img class="photo" src={Image} alt={alt} loading="lazy" decoding="async" />
     ) : (
-      <ImageAstro class="photo" src={Image} alt={alt} widths={[330, 660]} sizes="330px" formats={['avif', 'webp']} loading="lazy" />
+      <ImageAstro class="photo" src={Image} alt={alt} widths={[330, 660]} sizes="330px" loading="lazy" />
     )
   }
   <div class="contenu">

@@ -45,7 +45,7 @@ const { title, subtitle, Image, alt = '', niveauTitre = 3, small: _small, class:
 if (!Image) throw new Error('CarteRevelationImage : la propriété `Image` est obligatoire.')
 
 const idTitre = idUnique('carte-titre')
-const Titre = `h${niveauTitre}`
+const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
 // En cover, une photo plus large que la carte (paysage dans une carte
 // portrait) s'affiche à la hauteur de la carte × son ratio : 37,5rem pour
@@ -63,7 +63,7 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
     typeof Image === 'string' ? (
       <img class="photo" src={Image} alt={alt} loading="lazy" decoding="async" />
     ) : (
-      <ImageAstro class="photo" src={Image} alt={alt} widths={largeurs} sizes={tailles} formats={['avif', 'webp']} loading="lazy" />
+      <ImageAstro class="photo" src={Image} alt={alt} widths={largeurs} sizes={tailles} loading="lazy" />
     )
   }
   <div class="degrade" aria-hidden="true"></div>

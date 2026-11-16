@@ -11,6 +11,7 @@
  * sens et devient role="img".
  */
 import { enregistrerSymbole } from '@/lib/sprite'
+import { fusionnerStyles, type Style } from '@/lib/styles'
 
 interface Props {
   viewBox: string
@@ -21,7 +22,7 @@ interface Props {
   'aria-label'?: string
   class?: string
   className?: string
-  style?: string | Record<string, string | number>
+  style?: Style
   /** Graisse des icônes Phosphor, que les cartes donnent à toute icône : sans effet ici */
   weight?: string
   /** Toujours posés ci-dessous : les reprendre du parent les doublerait dans le HTML */
@@ -34,9 +35,7 @@ interface Props {
 const { viewBox, size = '1.5rem', color, 'aria-label': libelle, class: classe, className, style, weight: _graisse, 'aria-hidden': _cache, focusable: _focusable, ...reste } = Astro.props
 
 const taille = typeof size === 'number' ? `${size}px` : String(size)
-const styles = [color ? `color:${color}` : '', typeof style === 'string' ? style : style ? Object.entries(style).map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}:${v}`).join(';') : '']
-  .filter(Boolean)
-  .join(';')
+const styles = fusionnerStyles({ color }, style)
 
 // Le dessin va dans la planche de la page (src/lib/sprite.ts) : une icône
 // répétée (Sofia des liens rapides, flèches des cartes) n'y est écrite qu'une fois

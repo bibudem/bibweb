@@ -19,7 +19,7 @@ import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
 import { analyserLien, annonceLien } from '@/lib/liens'
-import { fusionnerStyles } from '@/lib/styles'
+import { fusionnerStyles, type Style } from '@/lib/styles'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
 
 interface Props {
@@ -37,7 +37,7 @@ interface Props {
   rel?: string
   type?: 'button' | 'submit' | 'reset'
   class?: string
-  style?: string | Record<string, string | number>
+  style?: Style
 }
 
 const {

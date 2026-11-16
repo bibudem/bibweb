@@ -11,6 +11,8 @@
  */
 import { fusionnerStyles, type Style } from '@/lib/styles'
 import { couleurTheme } from '@/lib/couleurs'
+// Balises de texte (sans élément vide comme img ou br, qui n'ont pas d'enfants)
+type BaliseTexte = 'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'figcaption' | 'li' | 'label' | 'strong' | 'em' | 'small'
 
 interface Props {
   variant?: string
@@ -40,7 +42,7 @@ const BALISES: Record<string, string> = {
   body1: 'p',
   body2: 'p',
 }
-const Balise = component ?? (paragraph ? 'p' : BALISES[variante]) ?? 'span'
+const Balise = (component ?? (paragraph ? 'p' : BALISES[variante]) ?? 'span') as BaliseTexte
 const styleFinal = fusionnerStyles({ color: couleurTheme(color), textAlign: align && align !== 'inherit' ? align : undefined }, style)
 ---
 

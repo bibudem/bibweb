@@ -28,9 +28,9 @@ const { image, position, taille, alt } = Astro.props
       </div>
       <div class="petite-image">
         {sansConversion(image) ? (
-          <img src={image.src} width={image.width} height={image.height} alt={alt} loading="lazy" decoding="async" />
+          <img src={image.src} width={image.width} height={image.height} alt={alt ?? ''} loading="lazy" decoding="async" />
         ) : (
-          <Picture src={image} alt={alt} formats={['avif', 'webp']} fallbackFormat="webp" {...largeursHauteur(image, 200)} loading="lazy" decoding="async" />
+          <Picture src={image} alt={alt ?? ''} formats={['avif', 'webp']} fallbackFormat="webp" {...largeursHauteur(image, 200)} loading="lazy" decoding="async" />
         )}
       </div>
     </div>

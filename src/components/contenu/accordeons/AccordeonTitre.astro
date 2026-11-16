@@ -27,7 +27,7 @@ interface Props {
 
 // aria-controls n'a plus de cible : <details> relie lui-même titre et contenu
 const { niveauTitre = 3, class: classe, style, ...reste } = Astro.props
-const Titre = niveauTitre ? `h${niveauTitre}` : 'span'
+const Titre = (niveauTitre ? `h${niveauTitre}` : 'span') as 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'span'
 ---
 
 <summary class:list={['sommaire', classe]} style={fusionnerStyles(style)} {...reste}>

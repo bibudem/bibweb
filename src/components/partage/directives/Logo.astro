@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { image, alt, lien } = Astro.props
-const visuel = { src: image, alt, formats: ['avif', 'webp'], fallbackFormat: 'webp', ...largeursHauteur(image, 200), loading: 'lazy', decoding: 'async' } as const
+const visuel = { src: image, alt: alt ?? '', formats: ['avif', 'webp'] as ('avif' | 'webp')[], fallbackFormat: 'webp' as const, ...largeursHauteur(image, 200), loading: 'lazy' as const, decoding: 'async' as const }
 ---
 
 {/* Sur une ligne : un blanc autour du visuel s'afficherait dans le lien */}

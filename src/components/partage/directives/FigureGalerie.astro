@@ -16,7 +16,7 @@ const { image, alt } = Astro.props
 ---
 
 <figure class="galerie-figure">
-  <Picture src={image} alt={alt} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 800].filter((l) => l < image.width).concat(Math.min(image.width, 800))} sizes="(min-width: 900px) 30vw, 100vw" loading="lazy" decoding="async" />
+  <Picture src={image} alt={alt ?? ''} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 800].filter((l) => l < image.width).concat(Math.min(image.width, 800))} sizes="(min-width: 900px) 30vw, 100vw" loading="lazy" decoding="async" />
   <Typographie variant="body2" component="figcaption" class="galerie-legende">
     <slot />
   </Typographie>

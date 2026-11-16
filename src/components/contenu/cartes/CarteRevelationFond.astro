@@ -47,7 +47,7 @@ if (!Icon) throw new Error('CarteRevelationFond : la propriété `Icon` est obli
 if (!FONDS.includes(bg)) throw new Error(`CarteRevelationFond : valeur de bg invalide (${FONDS.join(', ')}).`)
 
 const idTitre = idUnique('carte-titre')
-const Titre = `h${niveauTitre}`
+const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
 <div
