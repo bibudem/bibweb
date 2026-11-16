@@ -56,6 +56,6 @@ Le site publie aussi `/llms.txt` et une version Markdown de chaque page (`…/in
 ## Qualité
 
 - **Accessibilité** : WCAG 2.2 AA.
-- **Sobriété** : HTML statique, peu de JavaScript, images AVIF et WebP, aucun service tiers avant le consentement.
+- **Sobriété** : HTML statique, peu de JavaScript, images AVIF et WebP, aucune mesure d’audience ni aucun suivi avant le consentement (seuls les composants institutionnels d’urgence, d’avis et de rétroaction viennent d’un tiers, jsDelivr, en version figée avec empreinte SRI).
 - **Robustesse** : une erreur de contenu (champ, icône, image introuvable) fait échouer le build avec le fichier fautif.
 
