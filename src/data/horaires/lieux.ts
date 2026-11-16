@@ -64,6 +64,8 @@ export interface Lieu {
   reservations?: { label: string; url: string }[]
   note?: string
   noteLink?: { label: string; url: string }
+  /** Page du site consacrée au lieu, liée depuis sa fiche dans /horaires/ */
+  page?: { label: string; url: string }
   fiche?: Fiche
 }
 
@@ -854,6 +856,10 @@ export const lieux: Lieu[] = [
       }
     ],
     staffFragment: "lrcs",
+    page: {
+      label: "Page de la bibliothèque",
+      url: "/espaces/blrcs/"
+    },
     fiche: {
       id: "lrcs",
       titre: "Livres rares et collections spéciales",

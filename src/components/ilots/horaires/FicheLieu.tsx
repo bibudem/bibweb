@@ -221,6 +221,13 @@ export default function FicheLieu(props: PropsFiche) {
                 <ArrowSquareOutIcon size={18} aria-hidden="true" />
               </a>
             )}
+            {!compact && lieu.page && (
+              <a class="ch-lien ch-lien-icone" href={avecBase(lieu.page.url)}>
+                {lieu.page.label}
+                <Contexte lieu={lieu} />
+                <ArrowRightIcon size={18} aria-hidden="true" />
+              </a>
+            )}
             {compact && (
               <a
                 class="ch-lien ch-lien-icone"
