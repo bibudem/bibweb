@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { z } from 'astro/zod'
 import { sansAccents } from './texte.mjs'
+import { sansVides } from './sans-vides'
 
 /*
  * Répertoire du personnel, lu au build depuis
@@ -30,6 +31,7 @@ export type Personne = {
   bibliotheques: string[]
   telephone?: string
   courriel?: string
+  /** Lien « Clavarder sur Teams », tiré du courriel personnel (pas d'une boîte partagée) */
   teams?: string
   /** Nom du fichier de la photo dans src/content/personnel/photos, ou undefined */
   photo?: string
@@ -59,14 +61,26 @@ const SCHEMA = z.object({
         expertises: z.array(texte).default([]),
         bibliotheques: z.array(texte).default([]),
         telephone: texte.optional(),
-        courriel: z.string().trim().email().optional(),
-        teams: z.string().trim().url().optional(),
+        courriel: z.string().trim().pipe(z.email()).optional(),
         /** Nom du fichier dans src/content/personnel/photos (l'extension est facultative) */
         photo: texte.optional(),
       })
       .strict(),
   ),
 })
+
+// Conversation Teams avec la personne : le lien ne dépend que de son
+// courriel UdeM, il n'est donc plus saisi à part (un lien collé à la main
+// contenait « mailto: » et ne s'ouvrait pas)
+// Boîte partagée (refdroi@, accessibilite@, 7077duParc@…) : pas de compte
+// Teams derrière, donc pas de lien. Les adresses personnelles UdeM sont de la
+// forme prenom.nom@
+export const estAdressePersonnelle = (courriel: string) => /^[^@]+\.[^@]+@/.test(courriel)
+
+export const lienTeams = (courriel: string) => `https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(courriel)}`
+
+// Formats lus par components/contenu/personnel/photos.ts (import.meta.glob)
+const PHOTO_ACCEPTEE = /\.(jpe?g|png|webp|avif)$/i
 
 let cache: Personne[] | undefined
 
@@ -75,21 +89,26 @@ export function personnel(): Personne[] {
   // (à la main ou dans /admin/) paraît sans redémarrer le serveur
   if (cache && !import.meta.env?.DEV) return cache
   const fichier = `${DOSSIER}personnel.json`
-  const resultat = SCHEMA.safeParse(JSON.parse(readFileSync(fichier, 'utf8')))
+  // Champs vidés dans /admin/ (`""`) : retirés avant la validation (lib/sans-vides.ts)
+  const resultat = SCHEMA.safeParse(sansVides(JSON.parse(readFileSync(fichier, 'utf8'))))
   if (!resultat.success) {
     const probleme = resultat.error.issues[0]
     throw new Error(`src/content/personnel/personnel.json, ${probleme.path.join('.')} : ${probleme.message}`)
   }
   // La photo est associée sans extension ni dossier (le CMS peut écrire un
   // chemin) : « myriam-boyer » trouve « myriam-boyer.webp »
-  const photos = new Map(readdirSync(`${DOSSIER}photos`).map((f) => [f.replace(/\.[^.]+$/, '').toLowerCase(), f]))
+  const photos = new Map(
+    readdirSync(`${DOSSIER}photos`)
+      .filter((f) => PHOTO_ACCEPTEE.test(f))
+      .map((f) => [f.replace(/\.[^.]+$/, '').toLowerCase(), f]),
+  )
 
   cache = resultat.data.personnes
     .map((p) => {
       const nomComplet = `${p.prenom} ${p.nom}`
       const cle = p.photo?.split('/').pop()!.replace(/\.[^.]+$/, '').toLowerCase()
       const photo = cle ? photos.get(cle) : undefined
-      if (cle && !photo) throw new Error(`src/content/personnel/personnel.json, ${nomComplet} : photo « ${p.photo} » introuvable dans src/content/personnel/photos/.`)
+      if (cle && !photo) throw new Error(`src/content/personnel/personnel.json, ${nomComplet} : photo « ${p.photo} » introuvable dans src/content/personnel/photos/ (formats : jpg, png, webp, avif).`)
       return {
         id: versId(nomComplet),
         prenom: p.prenom,
@@ -102,7 +121,7 @@ export function personnel(): Personne[] {
         bibliotheques: p.bibliotheques,
         telephone: p.telephone,
         courriel: p.courriel,
-        teams: p.teams,
+        teams: p.courriel && estAdressePersonnelle(p.courriel) ? lienTeams(p.courriel) : undefined,
         photo,
       }
     })

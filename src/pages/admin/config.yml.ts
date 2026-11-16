@@ -245,6 +245,11 @@ export const GET: APIRoute = async () => {
   }
 
   // Répertoire du personnel : un seul fichier JSON (src/lib/personnel.ts le valide au build)
+  // Bibliothèques et unités du répertoire : celles déjà en usage. En texte
+  // libre, une coquille créait un filtre de plus et sortait la personne du
+  // sien (#sante)
+  const unites = [...new Set(personnel().flatMap((p) => p.bibliotheques))].sort((a, b) => a.localeCompare(b, 'fr'))
+
   const collectionPersonnel = {
     name: 'personnel',
     label: 'Répertoire du personnel',
@@ -268,18 +273,19 @@ export const GET: APIRoute = async () => {
               { label: 'Nom', name: 'nom', widget: 'string' },
               { label: 'Fonction', name: 'fonction', widget: 'string' },
               { label: 'Direction', name: 'direction', widget: 'string', required: false },
-              { label: 'Disciplines', name: 'disciplines', widget: 'list', required: false, hint: 'Domaines d’études seulement (ex. psychologie), surtout pour les bibliothécaires disciplinaires. Une discipline par élément.' },
-              { label: 'Expertises et services', name: 'expertises', widget: 'list', required: false, hint: 'Ce dont la personne s’occupe, hors discipline (ex. Ressources humaines, Papyrus, Prêt entre bibliothèques). Un élément par ligne.' },
+              { label: 'Disciplines', name: 'disciplines', widget: 'list', required: false, field: { label: 'Discipline', name: 'discipline', widget: 'string' }, hint: 'Domaines d’études seulement (ex. psychologie), surtout pour les bibliothécaires disciplinaires. Une discipline par élément.' },
+              { label: 'Expertises et services', name: 'expertises', widget: 'list', required: false, field: { label: 'Expertise ou service', name: 'expertise', widget: 'string' }, hint: 'Ce dont la personne s’occupe, hors discipline (ex. Ressources humaines, Papyrus, Prêt entre bibliothèques). Un élément par ligne.' },
               {
-                label: 'Bibliothèques',
+                label: 'Bibliothèques et unités',
                 name: 'bibliotheques',
-                widget: 'list',
+                widget: 'select',
+                multiple: true,
                 required: false,
-                hint: 'Une bibliothèque par élément, nommée comme sur la page Horaires (ex. Bibliothèque de la santé).',
+                options: unites,
+                hint: 'Les filtres du répertoire en sont tirés. Une nouvelle unité s’ajoute d’abord dans le fichier personnel.json.',
               },
               { label: 'Téléphone', name: 'telephone', widget: 'string', required: false, hint: 'Ex. 514 343-6111, poste 3585' },
-              { label: 'Courriel', name: 'courriel', widget: 'string', required: false, hint: 'L’adresse seule, sans « mailto: ».' },
-              { label: 'Lien Teams', name: 'teams', widget: 'string', required: false },
+              { label: 'Courriel', name: 'courriel', widget: 'string', required: false, pattern: MOTIF_COURRIEL, hint: 'L’adresse seule, sans « mailto: ». Le lien « Clavarder sur Teams » en est tiré automatiquement (pas pour une boîte partagée, sans point avant @).' },
               { label: 'Photo', name: 'photo', widget: 'image', required: false, hint: 'Carrée, 200 × 200 px, en WebP.' },
             ],
           },
