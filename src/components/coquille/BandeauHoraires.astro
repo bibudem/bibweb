@@ -45,6 +45,11 @@ const bibliotheques = lieux
   .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
 ---
 
+{/* Bloc ordinaire, sans position : sur une page à bannière, le bandeau y
+    est en position absolue et garde ainsi sa place, juste sous l'en-tête.
+    Directement dans le <body> (en colonne flexible, global.css), il serait
+    remonté en haut de la page, sous l'en-tête. */}
+<div class="place-bandeau">
 <section class="bandeau theme-clair" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
   <div class="rangee">
     <div class="choix">
@@ -73,6 +78,7 @@ const bibliotheques = lieux
     </a>
   </div>
 </section>
+</div>
 
 <script>
   import { analyserHoraires, ajouterJours, maintenantMontreal, statutDe, urlHoraires, type Horaires } from '@/data/horaires/horaires'

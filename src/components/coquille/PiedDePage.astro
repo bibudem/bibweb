@@ -155,12 +155,14 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
         })
         titre.append(nouveau)
         liste.hidden = true
+        colonne.dataset.pret = ''
       } else if (!etroit.matches && bouton) {
         bouton.querySelector('.chevron')?.remove()
         titre.replaceChildren(...bouton.childNodes)
         delete liste.dataset.anime
         liste.hidden = false
       }
+      colonne.dataset.pret = ''
     }
   }
   // Le changement de largeur vaut pour toutes les pages : branché une fois
@@ -177,6 +179,9 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
 
 <style>
   .pied {
+    /* Poussé au bas de l'écran sur une page courte (body en colonne,
+       global.css) */
+    margin-top: auto;
     font-size: var(--texte-courant);
   }
 
@@ -473,6 +478,21 @@ import IconeSprite from '@/components/icones/IconeSprite.astro'
     /* display: flex de .liste l'emporterait sur l'attribut hidden */
     [data-pliable-pied] .liste[hidden] {
       display: none;
+    }
+
+    /* Avant le script (data-pret), les listes sont déjà repliées et le titre
+       a la hauteur du bouton qu'il deviendra : le pied ne saute plus au
+       chargement. Sans JavaScript, rien ne change. */
+    @media (scripting: enabled) {
+      [data-pliable-pied]:not([data-pret]) .liste {
+        display: none;
+      }
+
+      [data-pliable-pied]:not([data-pret]) .sous-titre {
+        display: flex;
+        align-items: center;
+        min-height: 3rem;
+      }
     }
 
     /* Ouverture en hauteur, comme les accordéons du contenu ; display en

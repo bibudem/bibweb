@@ -155,6 +155,19 @@ body {
   font-variant-numeric: lining-nums tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Pied de page collé au bas de l'écran quand la page est courte
+     (recherche ou répertoire sans résultat, 404) : la page fait au moins
+     la hauteur de la fenêtre et le pied prend la place restante au-dessus
+     de lui (margin-top: auto, PiedDePage). Les enfants directs du body ne
+     rétrécissent pas. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body > * {
+  flex-shrink: 0;
 }
 
 /* ---- Titres (typographie du thème, variantes h1 à h6) ---- */
