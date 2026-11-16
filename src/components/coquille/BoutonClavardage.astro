@@ -91,6 +91,9 @@ const SCRIPT = `https://unequestion.bib.umontreal.ca/load_chat.php?hash=${HASH}&
       const bloc = document.getElementById('s-lch-widget-9467')
       if (!bloc || !feuille) return false
       if (bloc.parentElement !== document.documentElement) document.documentElement.append(feuille, bloc)
+      // Hors du <body>, le bloc prenait la langue de <html>, celle de la page
+      // (en pour une page anglaise) : le clavardage est en français
+      bloc.lang = 'fr-CA'
       return true
     }
     if (!sortir()) {

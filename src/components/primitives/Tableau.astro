@@ -24,9 +24,38 @@ const { titre, style } = Astro.props
 const contenu = semantiqueTableau(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
 ---
 
-<div role="region" aria-label={titre ?? 'Tableau'} tabindex="0" class="conteneur-tableau surface">
+<div role="region" aria-label={titre ?? 'Tableau'} tabindex="0" class="conteneur-tableau surface" data-tableau-defilant>
   <table class="tableau" aria-label={titre} style={fusionnerStyles(style)} set:html={contenu}></table>
 </div>
+
+<script>
+  import { aChaquePage, auDepart } from '@/lib/pages'
+
+  // La zone n'est un arrêt de tabulation et une région nommée que si le
+  // tableau défile vraiment : sinon, un arrêt inutile, et le nom du tableau
+  // annoncé deux fois (zone, puis tableau). Sans JavaScript, elle le reste.
+  aChaquePage((signal) => {
+    const zones = [...document.querySelectorAll<HTMLElement>('[data-tableau-defilant]')]
+    if (!zones.length) return
+    const maj = () => {
+      for (const zone of zones) {
+        const defile = zone.scrollWidth > zone.clientWidth + 1
+        // aria-label n'est pas permis sur un <div> sans rôle : il part avec lui
+        zone.dataset.nom ??= zone.getAttribute('aria-label') ?? ''
+        if (defile) {
+          zone.setAttribute('tabindex', '0')
+          zone.setAttribute('role', 'region')
+          zone.setAttribute('aria-label', zone.dataset.nom)
+        } else {
+          for (const attribut of ['tabindex', 'role', 'aria-label']) zone.removeAttribute(attribut)
+        }
+      }
+    }
+    const observateur = new ResizeObserver(maj)
+    for (const zone of zones) observateur.observe(zone)
+    auDepart(signal, () => observateur.disconnect())
+  })
+</script>
 
 <style>
   /* position: relative : les éléments en position absolue du tableau (texte
