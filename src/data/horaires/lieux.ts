@@ -102,11 +102,11 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2137&gid=3972&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2137&gid=8641&c=0"
       }
     ],
     fiche: {
@@ -186,11 +186,11 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail individuelle",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2141&gid=4084&c=0"
       },
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2141&gid=3976&c=0"
       },
       {
         label: "Didacthèque pour les sciences de l'éducation",
@@ -198,7 +198,7 @@ export const lieux: Lieu[] = [
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2141&gid=7925&c=0"
       }
     ],
     fiche: {
@@ -426,11 +426,11 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2138&gid=3973&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2138&gid=7919&c=0"
       }
     ],
     fiche: {
@@ -534,7 +534,7 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2010&gid=3672&c=0"
       }
     ],
     fiche: {
@@ -636,7 +636,7 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2140&gid=3975&c=0"
       }
     ],
     fiche: {
@@ -735,15 +735,15 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2019&gid=3685&c=0"
       },
       {
         label: "Salle individuelle pour les étudiants des cycles supérieurs",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2019&gid=4960&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2019&gid=7932&c=0"
       }
     ],
     fiche: {
@@ -924,15 +924,15 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2144&gid=3979&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2144&gid=7934&c=0"
       },
       {
         label: "Salle nécessitant une approbation",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2144&gid=8252&c=0"
       }
     ],
     fiche: {
@@ -1021,15 +1021,15 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2020&gid=3697&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2020&gid=7940&c=0"
       },
       {
-        label: "Salle nécessitant une approbation",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        label: "Salles nécessitant une approbation",
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2020&gid=8172&c=0"
       }
     ],
     fiche: {
@@ -1120,15 +1120,15 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail individuelle",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2143&gid=3991&c=0"
       },
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2143&gid=3978&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2143&gid=7939&c=0"
       }
     ],
     fiche: {
@@ -1205,11 +1205,11 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2142&gid=3977&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2142&gid=7937&c=0"
       }
     ],
     fiche: {
@@ -1295,7 +1295,7 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2136&gid=3971&c=0"
       }
     ],
     fiche: {
@@ -1352,11 +1352,11 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail individuelle",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2145&gid=3993&c=0"
       },
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2145&gid=3980&c=0"
       }
     ],
     fiche: {
@@ -1456,11 +1456,11 @@ export const lieux: Lieu[] = [
     reservations: [
       {
         label: "Salle de travail en équipe",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2139&gid=3974&c=0"
       },
       {
         label: "Cabine",
-        url: "https://calendrier.bib.umontreal.ca/r"
+        url: "https://calendrier.bib.umontreal.ca/spaces?lid=2139&gid=7921&c=0"
       },
       {
         label: "Didacthèque",
