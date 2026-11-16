@@ -366,9 +366,9 @@ const bibliotheques = lieux
       flex: 0 1 auto;
     }
 
-    /* Rangée de 45 px (2.5rem, retrait des bannières plus bas) */
+    /* Rangée de 45 px (retrait des bannières plus bas) */
     .rangee {
-      min-height: 2.5rem;
+      min-height: var(--hauteur-bandeau-horaires);
       padding-block: 0;
     }
 
@@ -398,20 +398,19 @@ const bibliotheques = lieux
 
     /* Bannière photo sous l'en-tête transparent : le bandeau se pose sur le
        haut de la photo, à sa place normale, sans pousser la page. Les
-       bannières ajoutent sa hauteur (2.5rem) à leur retrait sous
+       bannières ajoutent sa hauteur à leur retrait sous
        l'en-tête : leur titre reste visible. */
 
     :global(body:has(.super-hero, .super-hero-2, .banniere)) .bandeau {
       position: absolute;
       right: 0;
       left: 0;
-      background-color: color-mix(in srgb, var(--bleu-fonce) 88%, transparent);
     }
 
     :global(body:has(.bandeau) .banniere),
     :global(body:has(.bandeau) .super-hero-2),
     :global(body:has(.bandeau) .super-hero) {
-      padding-top: calc(5rem + 2.5rem);
+      padding-top: calc(var(--hauteur-entete) + var(--hauteur-bandeau-horaires));
     }
   }
 
