@@ -11,12 +11,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>Rédaction | Les bibliothèques UdeM</title>
+    <!-- Thème Harmonium : polices du site (mêmes versions que package.json),
+         puis jetons du site et thème de Decap (src/pages/admin/theme.css.ts) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/figtree@5.3.0/index.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/lora@5.3.0/index.css" />
+    <link rel="stylesheet" href="./theme.css" />
     <!-- Logo de Decap que l'écran de connexion ajoute en bas à côté du nôtre
          (NetlifyCreditIcon). Classe propre à cette version de Decap : à
          revérifier si on change de version. -->
     <style>
       .exus10f2 {
         display: none !important;
+      }
+      /* Mise en page des listes : menu de gauche plus large (250 → 300 px)
+         et contenu jusqu'au bord droit du conteneur, aligné sur l'icône de
+         profil (Decap fixe les cartes à 682 px). Classes de Decap repérées
+         par leur nom de composant : à revérifier si on change de version. */
+      @media (min-width: 800px) {
+        aside[class*='SidebarContainer'] {
+          width: 300px !important;
+        }
+        main[class*='CollectionMain'] {
+          padding-left: 330px !important;
+        }
+        main[class*='CollectionMain'] > * {
+          width: auto !important;
+          max-width: none !important;
+        }
+        /* Vue liste (la vue grille garde ses cartes) */
+        main[class*='CollectionMain'] li[class*='ListCard'] {
+          width: 100% !important;
+          max-width: none !important;
+        }
       }
     </style>
   </head>
@@ -29,8 +55,19 @@
     <script type="module">
       import YAML from 'https://unpkg.com/yaml@2.8.1/browser/index.js'
       import { formatVitrine } from './format-vitrine.js'
+      import { preparerArborescence } from './arborescence.js'
+      import { installerMediatheque } from './medias.js'
+      import { installerBarreMarkdown } from './barre-markdown.js'
+
+      installerMediatheque()
+      installerBarreMarkdown()
+      // Texte de remplacement du logo (en-tête et connexion) : Decap écrit « Logo »
+      new MutationObserver(() => {
+        for (const img of document.querySelectorAll('img[alt="Logo"]')) img.alt = 'Les bibliothèques, Université de Montréal'
+      }).observe(document.body, { childList: true, subtree: true })
 
       CMS.registerCustomFormat('yaml-vitrine', 'yaml', formatVitrine(YAML))
+      await preparerArborescence(CMS, YAML)
       CMS.init()
     </script>
   </body>

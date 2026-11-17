@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
-import { toutesLesPages, estVitrine, type PageTexte } from '@/lib/contenu'
+import { toutesLesPages, estVitrine } from '@/lib/contenu'
+import { dossiersDePages } from './_arborescence'
 import { SUJETS } from '@/data/sujets'
 import { champsVitrine, MOTIF_COURRIEL, MOTIF_LANGUE } from './_vitrines'
 import { personnel } from '@/lib/personnel'
@@ -20,14 +21,20 @@ import { NOMS_BANNIERES } from '@/lib/bannieres'
  *   visuel réécrirait les directives (:::tableau, ::bouton…) à l'enregistrement.
  * - Les vitrines (.yaml) ont leurs champs dans _vitrines.ts. Les pages .mdx ne
  *   sont pas encore modifiables.
- * - Pages : une collection par section (dossier qui a une vitrine
- *   index.yaml), plus « Pages générales » (racine). Les pages du premier
- *   niveau de la section s'y modifient et s'y créent (collection de type
- *   dossier) : une nouvelle page /<section>/<titre>/ entre d'elle-même dans
- *   le menu de la section. Les sous-pages (dossiers imbriqués, que Decap
- *   gère mal) sont dans « Sous-pages : … », modifiables seulement. Pas de
- *   suppression depuis Decap : une page retirée peut casser des liens et
- *   la navigation (le build échoue alors) ; elle se fait dans le dépôt.
+ * - Pages : une seule collection « Pages », imbriquée (nested, subfolders:
+ *   false) : le menu de gauche montre l'arborescence des dossiers (sections,
+ *   puis leurs sous-dossiers), et chaque dossier liste ses pages .md. Une page
+ *   se crée dans le dossier ouvert, ou celui choisi dans « Emplacement »
+ *   (meta.path : sections, sous-dossiers, et toute page .md, dont le dossier
+ *   du même nom reçoit alors ses sous-pages, voir _arborescence.ts) ; une nouvelle page /<section>/<titre>/ entre d'elle-même dans
+ *   le menu de la section. Decap tire le nom du nouveau fichier du titre, en
+ *   gardant les accents (« réserve.md ») : sans effet sur l'adresse, que
+ *   id-de-page.mjs passe dans slugify. Le garde-fou de public/admin/index.html
+ *   (arborescence.json.ts) refuse une création qui reprendrait l'adresse
+ *   d'une page existante (Decap écraserait le fichier) et un changement
+ *   d'emplacement (déplacement). Pas de suppression depuis Decap non plus :
+ *   une page retirée ou déplacée peut casser des liens et la navigation (le
+ *   build échoue alors) ; cela se fait dans le dépôt.
  * - Decap réécrit l'en-tête (frontmatter) à l'enregistrement : ordre des champs
  *   de ce fichier, dates sans guillemets, listes à la ligne. Le corps n'est
  *   pas touché.
@@ -107,7 +114,9 @@ const champsPage = [
     required: false,
     collapsed: true,
     fields: [
-      { label: 'Image', name: 'imageName', widget: 'select', options: bannieres },
+      // Défaut : sans lui, une nouvelle page ne s'enregistrait pas (le bloc
+      // facultatif est quand même validé, et l'image y est obligatoire)
+      { label: 'Image', name: 'imageName', widget: 'select', options: bannieres, ...(bannieres.includes('default') ? { default: 'default' } : {}) },
       { label: 'Titre de la bannière', name: 'title', widget: 'string', required: false },
       { label: 'Cadrage', name: 'cadrage', widget: 'string', required: false, pattern: ['^(100|[1-9]?\\d)%$', 'Un pourcentage, par exemple 20%'] },
     ],
@@ -163,64 +172,37 @@ const champsNouvelle = [
   corps,
 ]
 
-// Libellé d'une section : titre de sa page d'accueil, sinon son nom de dossier
-function libelleSection(section: string, titres: Map<string, string>) {
-  return titres.get(section) ?? section.charAt(0).toUpperCase() + section.slice(1)
-}
-
 export const GET: APIRoute = async () => {
   const pages = await toutesLesPages()
-  const titres = new Map(pages.filter((page) => !page.id.includes('/')).map((page) => [page.id, page.data.title ?? page.id]))
-
-  // Sections : dossiers de premier niveau qui ont une vitrine (index.yaml),
-  // puis la racine (« general »)
-  const sections = pages
-    .filter((page) => estVitrine(page) && page.id !== 'index' && !page.id.includes('/'))
-    .map((page) => page.id)
-    .sort((a, b) => a.localeCompare(b, 'fr'))
 
   // Premier niveau d'une section : modifiable et créable (dossier). Un titre
   // est exigé : il donne le nom du fichier, donc l'adresse de la page.
-  const champsPageCreable = champsPage.map((champ) => (champ.name === 'title' ? { ...champ, required: true, hint: 'Titre de l’onglet et des listes. À la création, il donne aussi l’adresse de la page : il ne doit pas reprendre celle d’une page existante de la section.' } : champ))
-  const collectionsPages = [...sections, 'general'].map((section) => ({
-    name: `pages-${section}`,
-    label: section === 'general' ? 'Pages générales' : `Pages : ${libelleSection(section, titres)}`,
+  const champsPageCreable = champsPage.map((champ) => (champ.name === 'title' ? { ...champ, required: true, hint: 'Titre de l’onglet et des listes. À la création, il donne aussi l’adresse de la page : il ne doit pas reprendre celle d’une page existante du même dossier.' } : champ))
+  const collectionPages = {
+    name: 'pages',
+    label: 'Pages',
     label_singular: 'Page',
-    folder: section === 'general' ? 'src/content/pages' : `src/content/pages/${section}`,
+    folder: 'src/content/pages',
     extension: 'md',
     format: 'frontmatter',
     create: true,
     delete: false,
+    nested: { depth: 10, subfolders: false },
+    meta: {
+      path: {
+        label: 'Emplacement',
+        widget: 'select',
+        options: dossiersDePages(pages).map(({ chemin, libelle }) => ({ label: libelle, value: chemin })),
+        default: '/',
+        hint: 'Section ou page parente : la nouvelle page devient une de ses sous-pages (aussi sous une page qui n’en a pas encore). À choisir à la création ; une page existante ne se déplace pas depuis ici.',
+      },
+    },
     slug: '{{slug}}',
     summary: '{{title}}',
     sortable_fields: ['title'],
     ...imagesACote,
     fields: champsPageCreable,
-  }))
-
-  // Sous-pages (dossiers imbriqués) .md hors démonstrations, par section :
-  // modifiables seulement
-  const sousPages = new Map<string, PageTexte[]>()
-  for (const page of pages) {
-    if (estVitrine(page) || !page.filePath?.endsWith('.md') || page.id.startsWith('dev/')) continue
-    const dossier = page.filePath.replace(/^(\.\/)?src\/content\/pages\//, '').split('/').slice(0, -1)
-    if (dossier.length < 2) continue
-    sousPages.set(dossier[0], [...(sousPages.get(dossier[0]) ?? []), page])
   }
-  const collectionsSousPages = [...sousPages.entries()]
-    .sort(([a], [b]) => a.localeCompare(b, 'fr'))
-    .map(([section, liste]) => ({
-      name: `sous-pages-${section}`,
-      label: `Sous-pages : ${libelleSection(section, titres)}`,
-      label_singular: 'Sous-page',
-      files: liste.map((page) => ({
-        name: page.id.replaceAll('/', '--'),
-        label: page.data.crumbLabel ?? page.data.title ?? page.id,
-        file: page.filePath,
-        ...imagesACote,
-        fields: champsPage,
-      })),
-    }))
 
   // Vitrines (.yaml), l'accueil d'abord puis par titre
   const vitrines = pages
@@ -388,8 +370,7 @@ export const GET: APIRoute = async () => {
       collectionRevueDePresse,
       collectionVitrines,
       collectionPersonnel,
-      ...collectionsPages,
-      ...collectionsSousPages,
+      collectionPages,
     ],
   }
 
