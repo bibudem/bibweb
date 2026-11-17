@@ -58,6 +58,10 @@
       import { preparerArborescence } from './arborescence.js'
       import { installerMediatheque } from './medias.js'
       import { installerBarreMarkdown } from './barre-markdown.js'
+      import { installerAccueil } from './accueil.js'
+
+      // Avant CMS.init : l'adresse d'arrivée devient le tableau de bord
+      installerAccueil()
 
       installerMediatheque()
       installerBarreMarkdown()
