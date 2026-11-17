@@ -1,0 +1,196 @@
+/*
+ * Thème Harmonium de l'interface de rédaction (Decap CMS), servi avec les
+ * jetons du site par theme.css.ts. Couleurs, polices, rayons, ombres et focus
+ * viennent de src/styles/tokens.css (jetons d'Harmonium :
+ * https://bibudem.github.io/harmonium/) ; rien n'est recopié ici.
+ *
+ * Decap génère ses classes (emotion) avec le nom du composant :
+ * « css-1ff92bv-SidebarContainer-card-card ». Les règles visent ce nom
+ * ([class*='-SidebarContainer']) : propre à cette version de Decap, à
+ * revérifier si on en change. Elles doivent l'emporter sur les styles que
+ * Decap injecte après cette feuille, d'où le préfixe :root et, parfois,
+ * !important.
+ */
+
+/* ---- Base : police, texte, fond, focus ---- */
+:root body {
+  font-family: var(--police-sans);
+  font-feature-settings: 'lnum', 'tnum';
+  color: var(--couleur-texte);
+  background: var(--couleur-fond);
+}
+:root body :is(button, input, textarea, select) {
+  font-family: inherit;
+}
+:root :focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 2px;
+}
+:root a:where(:not([class])) {
+  color: var(--couleur-lien);
+}
+
+/* Boutons pleins Harmonium (bib-bouton--plein) : fond fort, pilule.
+   « Ajout rapide » est un menu déroulant dans les actions de l'en-tête. */
+:root :is([class*='-AppHeaderActions'] [class*='-StyledDropdownButton'], [class*='-CollectionTopNewButton'], [class*='-LoginButton']) {
+  background: var(--couleur-fond-fort) !important;
+  color: var(--couleur-sur-fonce) !important;
+  border-radius: var(--rayon-plein) !important;
+  font-weight: var(--graisse-forte);
+  box-shadow: none;
+  transition: background-color 0.15s;
+}
+/* Le menu « Ajout rapide » garde son rembourrage (place de la flèche) */
+:root [class*='-CollectionTopNewButton'] {
+  padding-inline: 20px;
+}
+:root :is([class*='-AppHeaderActions'] [class*='-StyledDropdownButton'], [class*='-CollectionTopNewButton'], [class*='-LoginButton']):hover {
+  background: var(--couleur-fond-fort-survol) !important;
+}
+
+/* ---- Connexion ---- */
+:root [class*='-StyledAuthenticationPage'] {
+  background: var(--couleur-fond);
+}
+:root [class*='-LoginButton'] {
+  height: 44px;
+  padding-inline: 28px;
+}
+
+/* ---- En-tête ---- */
+:root header[class*='-AppHeader'] {
+  background: var(--couleur-surface);
+  box-shadow: var(--ombre-1);
+}
+/* Logo des Bibliothèques (logo.show_in_header de config.yml) : Decap le
+   réduit à 40 px de large, illisible pour un logo horizontal. Hauteur de
+   40 px, aligné sur le bord du menu de gauche, séparé des onglets par un filet. */
+:root [class*='-AppHeaderLogo'] {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 56px;
+  margin: 0 12px 0 6px;
+  padding-right: 20px;
+  border-right: 1px solid var(--couleur-bordure);
+}
+:root [class*='-AppHeaderLogo'] img {
+  display: block;
+  width: auto !important;
+  height: 40px !important;
+  max-width: none !important;
+  /* Decap y met 12 × 20 px de rembourrage en border-box : le dessin rétrécissait */
+  padding: 0 !important;
+}
+/* Liens « Contenus » et « Media » (AppHeaderButton) : texte, souligné quand actif */
+:root header [class*='-AppHeaderButton'] {
+  background: none;
+  color: var(--couleur-texte-secondaire);
+  font-weight: var(--graisse-forte);
+  box-shadow: inset 0 -3px 0 transparent;
+}
+:root header [class*='-AppHeaderButton']:is(:hover, .header-link-active) {
+  color: var(--couleur-lien);
+}
+:root header [class*='-AppHeaderButton'].header-link-active {
+  box-shadow: inset 0 -3px 0 var(--couleur-accent);
+}
+:root header [class*='-AppHeaderButton'] [class*='-IconWrapper'] {
+  color: inherit;
+}
+
+/* ---- Cartes : rayon et ombre Harmonium ---- */
+:root :is([class*='-SidebarContainer'], [class*='-CollectionTopContainer'], [class*='-ListCard-card'], [class*='-SearchResultContainer']) {
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-1);
+}
+:root [class*='-CollectionTopHeading'] {
+  color: var(--couleur-texte);
+  font-weight: var(--graisse-forte);
+  letter-spacing: -0.01em;
+}
+:root [class*='-SidebarHeading'] {
+  color: var(--couleur-texte);
+  font-weight: var(--graisse-forte);
+}
+:root [class*='-ListCardTitle'] {
+  color: var(--couleur-texte);
+  font-weight: var(--graisse-forte);
+}
+:root [class*='-ListCardLink']:hover [class*='-ListCardTitle'] {
+  color: var(--couleur-lien);
+}
+
+/* ---- Menu de gauche (collections) ---- */
+:root :is([class*='-SidebarNavLink'], [class*='-TreeNavLink']) {
+  color: var(--couleur-texte);
+  font-weight: var(--graisse-moyenne);
+}
+:root :is([class*='-SidebarNavLink'], [class*='-TreeNavLink']):is(:hover, .sidebar-active) {
+  color: var(--couleur-lien);
+  background-color: var(--couleur-teinte);
+  border-left-color: var(--couleur-accent);
+}
+:root [class*='-SearchInput'] {
+  background: var(--couleur-fond);
+  border-radius: var(--rayon-tres-petit);
+  color: var(--couleur-texte);
+}
+:root [class*='-ViewControlsButton'] {
+  color: var(--couleur-contour);
+}
+:root [class*='-ViewControlsButton'][class*='-ViewControlsButton']:is(:hover) {
+  color: var(--couleur-lien);
+}
+
+/* ---- Éditeur ---- */
+:root [class*='-ToolbarContainer'] {
+  box-shadow: var(--ombre-1);
+}
+:root [class*='-ToolbarSectionBackLink'] {
+  color: var(--couleur-texte);
+}
+:root :is([class*='-ToolbarDropdownWrapper'] [class*='-StyledDropdownButton'], [class*='-StyledToolbarButton']) {
+  border-radius: var(--rayon-plein);
+  font-weight: var(--graisse-forte);
+}
+:root [class*='-RefreshPreviewButton'] {
+  color: var(--couleur-lien);
+}
+/* Étiquette en onglet : teinte au repos, bleu principal quand le champ a le focus */
+:root [class*='-FieldLabel'] {
+  background-color: var(--couleur-teinte) !important;
+  color: var(--couleur-texte) !important;
+  border-color: var(--couleur-teinte) !important;
+  border-radius: var(--rayon-minuscule) var(--rayon-minuscule) 0 0;
+  font-weight: var(--graisse-forte);
+  letter-spacing: 0.02em;
+}
+:root [class*='-ControlContainer']:focus-within > [class*='-ControlTopbar'] > [class*='-FieldLabel'] {
+  background-color: var(--couleur-accent) !important;
+  border-color: var(--couleur-accent) !important;
+  color: var(--couleur-sur-fonce) !important;
+}
+:root [class*='-ControlContainer'] :is(input, textarea, [class*='-control']) {
+  border-color: var(--couleur-bordure);
+  color: var(--couleur-texte);
+}
+:root [class*='-ControlContainer']:focus-within :is(input, textarea, [class*='-control']) {
+  border-color: var(--couleur-accent);
+}
+:root [class*='-ControlHint'] {
+  color: var(--couleur-texte-secondaire);
+}
+:root [class*='-ToggleContainer'][aria-checked='true'] [class*='-ToggleBackground'] {
+  background-color: var(--couleur-accent);
+}
+/* Barre des blocs repliables (Menu de la section, Bannière) */
+:root [class*='-TopBarContainer'] {
+  background-color: var(--couleur-teinte);
+  color: var(--couleur-texte);
+}
+:root [class*='-AddButton'] {
+  background-color: var(--couleur-teinte);
+  color: var(--couleur-lien);
+  border-radius: var(--rayon-plein);
+}
