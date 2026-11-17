@@ -1,6 +1,6 @@
 ---
-title: 'Prêt, renouvellement, retour'
-crumbLabel: 'Prêt, renouvellement, retour'
+title: Prêt, renouvellement, retour
+crumbLabel: Prêt, renouvellement, retour
 secondaryNav:
   order: 1
 superHero:
@@ -9,7 +9,7 @@ superHero:
 ---
 
 ## Prêt, renouvellement, retour
-
+ 
 ### Conditions de prêt
 
 Vous pouvez automatiquement emprunter des documents si vous êtes membre de la communauté UdeM ou de celle de l’un des 17 autres établissements universitaires québécois.
