@@ -38,7 +38,7 @@ npm test             # tests unitaires
 
 | Branche | Rôle |
 | :-- | :-- |
-| `main` | Travail courant. L'interface de rédaction (Decap CMS, `/admin/`) y enregistre directement. Chaque poussée reconstruit la pré-production (https://bibudem.github.io/bibweb/), puis ouvre ou met à jour la pull request `main` → `production`. |
+| `main` | Travail courant. L'interface de rédaction (Decap CMS, `/admin/`, publiée seulement en pré-production) y enregistre directement. Chaque poussée reconstruit la pré-production (https://bibudem.github.io/bibweb/), puis ouvre ou met à jour la pull request `main` → `production`. |
 | `production` | Le site en ligne. On y arrive en fusionnant cette pull request, avec « Create a merge commit ». Chaque fusion construit le site de production. |
 | `site-production` | Produite automatiquement : le site construit (`dist/`), que le serveur des Bibliothèques récupère. Ne pas modifier. |
 

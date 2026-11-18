@@ -69,15 +69,13 @@ jobs:
           key: images-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.avif', 'src/**/*.gif', 'astro.config.mjs') }}
           restore-keys: images-
 
-      # Ni BASE_PATH ni DECAP_ORIGINE : site à la racine de bib.umontreal.ca.
-      # DECAP_ORIGINE sert à la connexion de /admin/ ; en production, Decap
-      # s'ouvre sur l'origine du site (le relais n8n la connaît déjà).
+      # Pas de BASE_PATH : site à la racine de bib.umontreal.ca. Ni
+      # DECAP_ORIGINE ni DECAP_AUTH_URL : /admin/ (Decap CMS) n'est publié
+      # qu'en pré-production (src/plugins/sans-admin.mjs).
       - name: Construire le site
         run: npm run build
         env:
           SITE_ENV: production
-          DECAP_ORIGINE: https://bib.umontreal.ca
-          DECAP_AUTH_URL: https://ordo.bib.umontreal.ca/webhook/decap/auth
 
       # Le cache garde toutes les variantes déjà produites, même celles d'images
       # retirées ou redimensionnées : sans ménage, il grossit à chaque build
@@ -98,6 +96,13 @@ jobs:
           if ! grep -q '^Allow: /$' dist/robots.txt; then
             echo "::error::robots.txt n'est pas celui de production"
             cat dist/robots.txt
+            exit 1
+          fi
+
+      - name: Vérifier que /admin/ n'est pas publié
+        run: |
+          if [ -e dist/admin ]; then
+            echo "::error::dist/admin existe : /admin/ ne doit pas partir en production"
             exit 1
           fi
 
