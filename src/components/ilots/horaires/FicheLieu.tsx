@@ -147,6 +147,7 @@ export interface PropsFiche {
   distance?: number
   horaires?: Horaires | null
   dates?: string[]
+  dernierJour?: string | null
   aujourdhui?: string
   erreur?: Error | null
   decalage?: number
@@ -162,7 +163,7 @@ export interface PropsFiche {
 // donne la version courte de « Les plus proches de vous » : le pavillon au
 // lieu de l'adresse, « Itinéraire » et « Voir la fiche », sans note ni volets.
 export default function FicheLieu(props: PropsFiche) {
-  const { lieu, image, prefixeId = '', niveauTitre = 2, compact = false, statut, extra, distance, horaires, dates, aujourdhui, erreur = null } = props
+  const { lieu, image, prefixeId = '', niveauTitre = 2, compact = false, statut, extra, distance, horaires, dates, dernierJour = null, aujourdhui, erreur = null } = props
   const { decalage = 0, changerDecalage, semaineChargee, plateforme, surlignee, voirSurCarte, voirFiche } = props
   const uid = `${prefixeId}${lieu.id}`
   const Titre = `h${niveauTitre}` as 'h2'
@@ -254,6 +255,7 @@ export default function FicheLieu(props: PropsFiche) {
               lieu={lieu}
               horaires={horaires}
               dates={dates ?? []}
+              dernierJour={dernierJour}
               aujourdhui={aujourdhui}
               decalage={decalage}
               changerDecalage={changerDecalage!}
