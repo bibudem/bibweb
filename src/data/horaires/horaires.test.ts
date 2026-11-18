@@ -2,7 +2,7 @@
 // Lancer avec `npm test` (node --test, sans dépendance).
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { analyserHoraires, ajouterJours, lundiDe, normaliser, statutDe, type ReponseApi } from './horaires.ts'
+import { analyserHoraires, ajouterJours, debutTranche, dernierJourPublie, joursTranche, lireReponse, lundiDe, normaliser, statutDe, trancheDuJour, type ReponseApi } from './horaires.ts'
 import type { Lieu } from './lieux.ts'
 
 const lieu = { codeBib: 'ss' } as Lieu
@@ -66,4 +66,37 @@ test('plage de la veille qui passe minuit : encore ouvert à 0 h 30', () => {
   const h = horaires(jour('2026-11-02', '08:00', '01:00'), jour('2026-11-03', '08:00', '17:00'))
   assert.equal(statut(h, '2026-11-03', 0.5, ['2026-11-03']), 'Ferme bientôt, à 1 h')
   assert.equal(statut(h, '2026-11-03', 2, ['2026-11-03']), 'Fermé, ouvre à 8 h')
+})
+
+test('tranches : deux semaines jusqu’à la 8e, puis quatre, toujours un lundi', () => {
+  assert.deepEqual([0, 1, 2, 3, 4, 5, 6].map(debutTranche), [0, 14, 28, 42, 56, 84, 112])
+  assert.deepEqual([0, 3, 4, 9].map(joursTranche), [14, 14, 28, 28])
+  for (let i = 0; i < 12; i++) {
+    assert.equal(debutTranche(i) % 7, 0)
+    assert.equal(debutTranche(i) + joursTranche(i), debutTranche(i + 1))
+    assert.equal(trancheDuJour(debutTranche(i)), i)
+    assert.equal(trancheDuJour(debutTranche(i + 1) - 1), i)
+  }
+})
+
+test('lireReponse : {"total":0} est une tranche vide, une autre forme une erreur', () => {
+  assert.deepEqual(lireReponse({ total: 0 }), { evenements: [] })
+  const ok = { total: 1, evenements: [jour('2027-01-04', '08:00', '17:00')] }
+  assert.equal(lireReponse(ok), ok)
+  assert.throws(() => lireReponse({ total: 3 }))
+  assert.throws(() => lireReponse(null))
+  assert.throws(() => lireReponse('<html>'))
+})
+
+test('dernierJourPublie : tranche écourtée, tranche vide, ou pas encore de fin', () => {
+  const lundi = '2027-08-02'
+  const tranche = (debut: string, jours: number) => ({ evenements: Array.from({ length: jours }, (_, i) => jour(ajouterJours(debut, i))) }) as ReponseApi
+  const pleines = [tranche('2027-08-02', 14), tranche('2027-08-16', 14)]
+  assert.equal(dernierJourPublie(lundi, pleines), null)
+  // L'API s'arrête un mardi, au milieu de la 3e tranche
+  assert.equal(dernierJourPublie(lundi, [...pleines, tranche('2027-08-30', 2)]), '2027-08-31')
+  // Tranche suivante vide : la fin est la veille de son début
+  assert.equal(dernierJourPublie(lundi, [...pleines, { evenements: [] }]), '2027-08-29')
+  // Première tranche vide (API en maintenance) : on ne conclut rien
+  assert.equal(dernierJourPublie(lundi, [{ evenements: [] }]), null)
 })

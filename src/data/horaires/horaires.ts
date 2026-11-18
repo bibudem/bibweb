@@ -158,6 +158,57 @@ export function urlHoraires(debut: string, jours: number) {
   return `${HORAIRES_API}?debut=${debut}&fin=P${jours}D&format=json`
 }
 
+// Découpage en tranches, en jours depuis le lundi de la semaine courante.
+// Les huit premières semaines (ce que la plupart des gens consultent) se
+// chargent par tranches de deux semaines, ~95 Ko chacune : l'API ne compresse
+// pas ses réponses. Au-delà, on survole : des blocs de quatre semaines
+// (~190 Ko) font moins de requêtes. Tous les débuts tombent un lundi.
+const JOURS_COURTE = 14
+const TRANCHES_COURTES = 4
+const JOURS_LONGUE = 28
+const JOURS_COURTES = JOURS_COURTE * TRANCHES_COURTES
+
+export const joursTranche = (i: number) => (i < TRANCHES_COURTES ? JOURS_COURTE : JOURS_LONGUE)
+
+/** Premier jour de la tranche `i`, en jours depuis le lundi courant */
+export const debutTranche = (i: number) => (i <= TRANCHES_COURTES ? i * JOURS_COURTE : JOURS_COURTES + (i - TRANCHES_COURTES) * JOURS_LONGUE)
+
+/** Tranche qui contient le jour `jour` (jours depuis le lundi courant) */
+export const trancheDuJour = (jour: number) => (jour < JOURS_COURTES ? Math.floor(jour / JOURS_COURTE) : TRANCHES_COURTES + Math.floor((jour - JOURS_COURTES) / JOURS_LONGUE))
+
+/**
+ * Réponse brute de l'API, vérifiée. Au-delà de la dernière date publiée,
+ * l'API répond `{"total":0}`, sans `evenements` : c'est une tranche vide, pas
+ * une panne. Toute autre forme est refusée (l'appelant affiche « Réessayer »).
+ */
+export function lireReponse(donnees: unknown): ReponseApi {
+  const d = donnees as (ReponseApi & { total?: number }) | null
+  if (Array.isArray(d?.evenements)) return d
+  if (d?.total === 0) return { evenements: [] }
+  throw new Error('API horaires : réponse inattendue')
+}
+
+/**
+ * Dernier jour publié par l'API, ou null tant qu'on ne l'a pas atteint.
+ * `tranches` sont les tranches contiguës chargées depuis `lundi`. Les jours
+ * fermés ont bien leurs événements (« fermé ») : une tranche qui s'arrête
+ * avant sa fin, ou qui revient vide, marque la fin des données. Une première
+ * tranche vide ne dit rien de plus (API en maintenance) : null.
+ */
+export function dernierJourPublie(lundi: string, tranches: ReponseApi[]): string | null {
+  for (let i = 0; i < tranches.length; i++) {
+    const evenements = tranches[i].evenements ?? []
+    if (!evenements.length) return i === 0 ? null : ajouterJours(lundi, debutTranche(i) - 1)
+    let derniere = ''
+    for (const evt of evenements) {
+      const date = typeof evt?.date === 'string' ? evt.date.slice(0, 10) : ''
+      if (date > derniere) derniere = date
+    }
+    if (derniere < ajouterJours(lundi, debutTranche(i) + joursTranche(i) - 1)) return derniere
+  }
+  return null
+}
+
 /** Regroupe les événements de l'API par bibliothèque, puis par service, puis par date */
 export function analyserHoraires(donnees: ReponseApi): Horaires {
   const parBib: Horaires['parBib'] = {}

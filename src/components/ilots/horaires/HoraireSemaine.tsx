@@ -5,11 +5,15 @@ import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight'
 import { formaterDate, formaterPlages, libelleService, servicesDe, type Horaires } from '@/data/horaires/horaires'
 import type { Lieu } from '@/data/horaires/lieux'
 
-// « Cette semaine », « Semaine prochaine », « Dans 3 semaines ».
-export function semaineRelative(decalage: number) {
+// « Cette semaine », « Semaine prochaine », « Dans 3 semaines ». Au-delà de
+// huit semaines, « Dans 23 semaines » ne situe plus rien : le mois de la
+// semaine (« Juin 2027 ») prend le relais.
+export function semaineRelative(decalage: number, dates: string[]) {
   if (decalage === 0) return 'Cette semaine'
   if (decalage === 1) return 'Semaine prochaine'
-  return `Dans ${decalage} semaines`
+  if (decalage < 8 || !dates[decalage * 7]) return `Dans ${decalage} semaines`
+  const mois = formaterDate(dates[decalage * 7], { month: 'long', year: 'numeric' })
+  return mois.charAt(0).toUpperCase() + mois.slice(1)
 }
 
 // « du 20 octobre au 26 octobre » : la semaine `decalage` de `dates`
@@ -22,6 +26,8 @@ interface Props {
   lieu: Lieu
   horaires: Horaires
   dates: string[]
+  /** Dernier jour publié par l'API, une fois atteint */
+  dernierJour: string | null
   aujourdhui: string | undefined
   decalage: number
   changerDecalage: (d: number) => void
@@ -29,11 +35,12 @@ interface Props {
   erreur: Error | null
 }
 
-// Tableau de la semaine d'un lieu, avec navigation ← → sur huit semaines. La
+// Tableau de la semaine d'un lieu, avec navigation ← → jusqu'au dernier jour
+// publié par l'API (fin de l'année universitaire). La
 // semaine affichée est partagée par toutes les fiches de la page : changer de
 // semaine dans une fiche change toutes les autres. Un vrai <table> : un
 // lecteur d'écran associe chaque horaire à son jour et à son service.
-export default function HoraireSemaine({ lieu, horaires, dates, aujourdhui, decalage, changerDecalage, semaineChargee, erreur }: Props) {
+export default function HoraireSemaine({ lieu, horaires, dates, dernierJour, aujourdhui, decalage, changerDecalage, semaineChargee, erreur }: Props) {
   const titreRef = useRef<HTMLParagraphElement>(null)
   const chargee = semaineChargee(decalage)
   const decalageMax = Math.max(Math.floor(dates.length / 7) - 1, 0)
@@ -69,7 +76,7 @@ export default function HoraireSemaine({ lieu, horaires, dates, aujourdhui, deca
           {/* Pas de région live ici : la semaine est commune aux 18 fiches,
               c'est la région d'annonce de CarteHoraires qui la dit, une fois. */}
           <p ref={titreRef} tabIndex={-1}>
-            {semaineRelative(decalage)} <span>{periode}</span>
+            {semaineRelative(decalage, dates)} <span>{periode}</span>
           </p>
           {decalage > 0 && (
             <button type="button" class="ch-revenir" onClick={revenir}>
@@ -120,8 +127,9 @@ export default function HoraireSemaine({ lieu, horaires, dates, aujourdhui, deca
                       {formaterDate(date, { weekday: 'long', day: 'numeric', month: 'short' })}
                       {estAujourdhui && ' (aujourd’hui)'}
                     </th>
+                    {/* Après le dernier jour publié, l'API ne dit rien : « Fermé » tromperait */}
                     {services.map((cle) => (
-                      <td key={cle}>{formaterPlages(horaires.parBib[code][cle][date])}</td>
+                      <td key={cle}>{dernierJour && date > dernierJour ? 'Horaire non publié' : formaterPlages(horaires.parBib[code][cle][date])}</td>
                     ))}
                   </tr>
                 )

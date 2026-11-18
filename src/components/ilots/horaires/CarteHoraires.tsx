@@ -98,7 +98,7 @@ export default function CarteHoraires({ lieux, images }: Props) {
     }
   }, [])
 
-  const { horaires, dates, erreur, assurerSemaine, semaineChargee, reessayer } = useHoraires(maintenant?.date ?? null)
+  const { horaires, dates, dernierJour, erreur, assurerSemaine, semaineChargee, reessayer } = useHoraires(maintenant?.date ?? null)
   const erreurRef = useRef<HTMLDivElement>(null)
   // Vrai dès qu'on a changé de semaine : l'annonce dit alors la semaine affichée
   const [navigue, setNavigue] = useState(false)
@@ -121,7 +121,7 @@ export default function CarteHoraires({ lieux, images }: Props) {
           ? 'Horaires chargés.'
           : !semaineChargee(decalage)
             ? 'Chargement de l’horaire de la semaine…'
-            : `Horaire de la semaine : ${semaineRelative(decalage).toLowerCase()}, ${periodeSemaine(dates, decalage)}.`
+            : `Horaire de la semaine : ${semaineRelative(decalage, dates).toLowerCase()}, ${periodeSemaine(dates, decalage)}.`
 
   // « Réessayer » disparaît pendant la requête : le focus reste à sa place
   function relancer() {
@@ -130,6 +130,13 @@ export default function CarteHoraires({ lieux, images }: Props) {
   }
 
   useEffect(() => assurerSemaine(decalage), [decalage, assurerSemaine])
+
+  // Fin des données apprise alors qu'on regardait la semaine en attente, au-delà
+  // du dernier jour publié : on revient à la dernière semaine qui existe.
+  const decalageMax = Math.max(Math.floor(dates.length / 7) - 1, 0)
+  useEffect(() => {
+    if (dates.length && decalage > decalageMax) setDecalage(decalageMax)
+  }, [decalage, decalageMax, dates.length])
 
   const distances = useMemo<Record<string, number>>(() => {
     if (!position) return {}
@@ -257,6 +264,7 @@ export default function CarteHoraires({ lieux, images }: Props) {
   const propsHoraires = {
     horaires,
     dates,
+    dernierJour,
     aujourdhui: maintenant?.date,
     erreur,
     decalage,
