@@ -128,7 +128,7 @@
 
 .ch-etat-open {
   border-color: var(--vert-fonce);
-  background-color: var(--vert-pale);
+  background-color: var(--vert);
 }
 
 .ch-etat-closing-soon {

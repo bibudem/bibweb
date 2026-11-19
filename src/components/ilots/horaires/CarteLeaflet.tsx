@@ -132,7 +132,7 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
     const contour = jeton('--bleu-fonce')
     if (filtreRef.current === 'studios' && montres.some(aStudio)) return { fill: jeton('--jaune'), contour }
     const zone = montres[0]?.zone
-    if (zone === 'conservation') return { fill: jeton('--vert-pale'), contour }
+    if (zone === 'conservation') return { fill: jeton('--vert'), contour }
     if (zone === 'points-service') return { fill: jeton('--violet-fonce'), contour }
     return { fill: jeton('--bleu-principal'), contour }
   }

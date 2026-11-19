@@ -45,7 +45,7 @@ body[data-accueil] [class*='-AppMainContainer'] > :not(#accueil) { display: none
 .ac-libelle { color: var(--couleur-texte-secondaire, #4a5160); font-size: 12px; font-weight: var(--graisse-grasse, 700); letter-spacing: .04em; text-transform: uppercase; }
 .ac-nombre { font-size: 2.25rem; font-weight: var(--graisse-forte, 600); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .ac-detail { color: var(--couleur-texte-secondaire, #4a5160); font-size: 13px; }
-.ac-detail.ac-alerte { color: var(--rouge-orange-texte-sur-clair, #b33410); }
+.ac-detail.ac-alerte { color: var(--couleur-texte-accent, #a83719); }
 .ac-colonnes { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
 .ac-colonnes > .ac-carte { display: flex; flex-direction: column; }
 /* Dernières nouvelles : toute la hauteur de la colonne de droite (2 cartes) */

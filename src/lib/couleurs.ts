@@ -7,39 +7,44 @@
  * (`bgColor="vertPale"`, l'orange reste l'orange graphique).
  */
 
+import { CLES_RENOMMEES, JETON_DE_CLE } from './couleurs-renommees.mjs'
+
 // Jetons de tokens.css, sous leur nom de palette dans le contenu
 const JETONS = new Set([
   'bleu-principal',
+  'bleu-principal-fonce',
   'bleu-fonce',
-  'bleu-100',
-  'bleu-200',
+  'bleu-10',
+  'bleu-20',
   'jaune',
-  'jaune-pale',
-  'rose-100',
-  'rose-300',
+  'jaune-40',
+  'rose',
+  'rose-50',
   'rose-500',
   'rouge-orange',
   'orange',
+  'vert',
   'vert-fonce',
-  'vert-pale',
   'violet-fonce',
 ])
 
 /**
- * Clé de palette du contenu (`vertPale`, `bleu600`, `primary`) vers son jeton ;
- * une autre valeur (`'#fff'`, écrite par le contenu) passe telle quelle.
+ * Clé de palette du contenu (`vert`, `bleu10`, `primary`) vers son jeton ;
+ * une autre valeur (`'#fff'`) passe telle quelle.
  */
 export function couleurPalette(nom: string | undefined): string | undefined {
   if (!nom) return undefined
-  const cle = nom.replace(/\.main$/, '')
+  // Anciennes clés des pages .mdx (vertPale…)
+  const brute = nom.replace(/\.main$/, '')
+  const cle = CLES_RENOMMEES[brute as keyof typeof CLES_RENOMMEES] ?? brute
+  const harmonium = JETON_DE_CLE[cle as keyof typeof JETON_DE_CLE]
+  if (harmonium) return `var(--${harmonium})`
   if (cle === 'primary') return 'var(--bleu-principal)'
   if (cle === 'white' || cle === 'common.white') return 'var(--couleur-sur-fonce)'
   const jeton = cle
     .replace(/([A-Z])/g, '-$1')
     .replace(/(\d+)/, '-$1')
     .toLowerCase()
-  // « bleu600 » (contenu) : fusionné avec le bleu principal foncé, presque identique
-  if (jeton === 'bleu-600') return 'var(--bleu-principal-fonce)'
   return JETONS.has(jeton) ? `var(--${jeton})` : nom
 }
 

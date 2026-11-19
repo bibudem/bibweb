@@ -26,7 +26,7 @@ import { fusionnerStyles, type Style } from '@/lib/styles'
 import { idUnique } from '@/lib/ids'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
 
-type Fond = 'bleuPrincipal' | 'rose300' | 'vertFonce'
+type Fond = 'bleuPrincipal' | 'rose' | 'vertFonce'
 
 interface Props {
   title: string
@@ -38,7 +38,7 @@ interface Props {
   style?: Style
 }
 
-const FONDS: Fond[] = ['bleuPrincipal', 'rose300', 'vertFonce']
+const FONDS: Fond[] = ['bleuPrincipal', 'rose', 'vertFonce']
 
 const { title, Icon, bg = 'bleuPrincipal', niveauTitre = 3, class: classe, style, ...reste } = Astro.props
 
@@ -51,7 +51,7 @@ const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
 <div
-  class:list={['carte', `fond-${bg}`, { 'surface-claire': bg === 'rose300' }, classe]}
+  class:list={['carte', `fond-${bg}`, { 'surface-claire': bg === 'rose' }, classe]}
   style={fusionnerStyles(style)}
   data-carte-revelable
   {...reste}
@@ -112,8 +112,8 @@ const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
     --_fond: var(--vert-fonce);
   }
 
-  .fond-rose300 {
-    --_fond: var(--rose-300);
+  .fond-rose {
+    --_fond: var(--rose);
     --_encre: var(--couleur-texte);
     --_icone: var(--rouge-orange);
   }

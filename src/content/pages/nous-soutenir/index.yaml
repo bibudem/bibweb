@@ -9,9 +9,9 @@ banniere:
 
 sections:
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     icone: flower-tulip
-    couleurIcone: vertPale
+    couleurIcone: vert
     titre: Cultiver la curiosité
     texte: |
       Véritable milieu de vie où se rencontre et se rassemble la communauté universitaire, les bibliothèques de l’Université de Montréal sont des partenaires essentiels au rayonnement des savoirs. Lieux où on cultive la curiosité, elles comptent parmi les grandes bibliothèques de recherche de langue française.
@@ -32,10 +32,10 @@ sections:
         appel: Découvrir la campagne
 
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     id: services-diplomes
     icone: graduation-cap
-    couleurIcone: bleu600
+    couleurIcone: bleuPrincipalFonce
     titre: Des services pour la communauté de l’UdeM+, même après le diplôme!
     texte: |
       Après la fin de vos études à l’UdeM, HEC Montréal et Polytechnique Montréal, les bibliothèques continuent de vous accueillir!
@@ -44,7 +44,7 @@ sections:
       - Accès sur place aux ressources électroniques
 
   - type: icone-texte
-    fond: rose300
+    fond: rose
     icone: heart
     couleurIcone: rose500
     titre: Remerciements
@@ -58,7 +58,7 @@ sections:
       Merci pour votre collaboration précieuse et votre engagement continu. Votre soutien joue un rôle fondamental dans la construction d’un environnement universitaire enrichissant pour tous et toutes.
 
   - type: accordeons
-    fond: rose100
+    fond: rose50
     titre: Aperçu des réalisations
     volets:
       - titre: Cabines insonorisées
@@ -78,7 +78,7 @@ sections:
         texte: Des espaces inspirants pour expérimenter, apprendre et créer avec des outils technologiques.
 
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     icone: book-open-text
     couleurIcone: vertFonce
     titre: Don de livres

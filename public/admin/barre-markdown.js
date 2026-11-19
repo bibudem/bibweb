@@ -70,7 +70,7 @@ const BLOCS = [
   { nom: 'Accordéon', aide: 'Volets repliables : un titre ### par volet.', texte: ':::accordeon\n### Premier volet\n\nContenu du premier volet.\n\n### Deuxième volet\n\nContenu du deuxième volet.\n:::' },
   { nom: 'Citation', aide: 'Citation avec sa source.', texte: ':::citation{source="Nom, fonction"}\nTexte de la citation.\n:::' },
   { nom: 'Chiffres', aide: 'Chiffres clés : un titre #### par groupe, puis 2 ou 3 éléments.', texte: ':::chiffres\n#### Livres\n\n- 1 000 imprimés\n- 2 000 électroniques\n:::' },
-  { nom: 'Encadrés', aide: 'Encadrés colorés : un titre #### par encadré.', texte: ':::encadres{fond=bleu100}\n#### Premier encadré\n\nTexte du premier encadré.\n\n#### Deuxième encadré\n\nTexte du deuxième encadré.\n:::' },
+  { nom: 'Encadrés', aide: 'Encadrés colorés : un titre #### par encadré.', texte: ':::encadres{fond=bleu10}\n#### Premier encadré\n\nTexte du premier encadré.\n\n#### Deuxième encadré\n\nTexte du deuxième encadré.\n:::' },
 ]
 
 const TITRES = [

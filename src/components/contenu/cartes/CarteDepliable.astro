@@ -18,7 +18,7 @@
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
 
-type Couleur = 'bleuPrincipal' | 'rose300' | 'vertFonce'
+type Couleur = 'bleuPrincipal' | 'rose' | 'vertFonce'
 
 interface Props {
   titre: string
@@ -31,7 +31,7 @@ const { titre, Icon, couleur = 'bleuPrincipal', niveauTitre = 3 } = Astro.props
 const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 ---
 
-<details class:list={['carte', 'volet-anime', `couleur-${couleur}`, { 'surface-claire': couleur === 'rose300' }]}>
+<details class:list={['carte', 'volet-anime', `couleur-${couleur}`, { 'surface-claire': couleur === 'rose' }]}>
   <summary class="sommaire">
     <span class="icone">{Icon && <IconeSprite icone={Icon} size={32} aria-hidden="true" focusable="false" />}</span>
     <Titre class="titre">{titre}</Titre>
@@ -62,8 +62,8 @@ const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
     --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
   }
 
-  .couleur-rose300 {
-    --_fond: var(--rose-300);
+  .couleur-rose {
+    --_fond: var(--rose);
     --_survol: var(--rose-500);
     --_encre: var(--couleur-texte);
     --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
