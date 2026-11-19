@@ -17,19 +17,19 @@
 export const FONDS = {
   bleuPrincipal: { couleur: 'var(--bleu-principal)', ton: 'fonce' },
   bleuFonce: { couleur: 'var(--bleu-fonce)', ton: 'fonce' },
-  bleu600: { couleur: 'var(--bleu-principal-fonce)', ton: 'fonce' },
+  bleuPrincipalFonce: { couleur: 'var(--bleu-principal-fonce)', ton: 'fonce' },
   vertFonce: { couleur: 'var(--vert-fonce)', ton: 'fonce' },
   rougeOrange: { couleur: 'var(--rouge-orange)', ton: 'moyen' },
   orange: { couleur: 'var(--orange)', ton: 'moyen' },
   violetFonce: { couleur: 'var(--violet-fonce)', ton: 'moyen' },
-  vertPale: { couleur: 'var(--vert-pale)', ton: 'moyen' },
+  vert: { couleur: 'var(--vert)', ton: 'moyen' },
   jaune: { couleur: 'var(--jaune)', ton: 'moyen' },
   rose500: { couleur: 'var(--rose-500)', ton: 'moyen' },
-  bleu100: { couleur: 'var(--couleur-teinte)', ton: 'clair' },
-  bleu200: { couleur: 'var(--couleur-teinte-forte)', ton: 'clair' },
-  jaunePale: { couleur: 'var(--couleur-teinte-jaune)', ton: 'clair' },
-  rose100: { couleur: 'var(--couleur-teinte-rose)', ton: 'clair' },
-  rose300: { couleur: 'var(--couleur-teinte-rose-forte)', ton: 'clair' },
+  bleu10: { couleur: 'var(--couleur-teinte)', ton: 'clair' },
+  bleu20: { couleur: 'var(--couleur-teinte-forte)', ton: 'clair' },
+  jaune40: { couleur: 'var(--couleur-teinte-jaune)', ton: 'clair' },
+  rose50: { couleur: 'var(--couleur-teinte-rose)', ton: 'clair' },
+  rose: { couleur: 'var(--couleur-teinte-rose-forte)', ton: 'clair' },
 } as const satisfies Record<string, { couleur: string; ton: 'fonce' | 'moyen' | 'clair' }>
 
 export type Fond = keyof typeof FONDS

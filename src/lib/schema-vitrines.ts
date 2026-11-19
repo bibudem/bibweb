@@ -13,6 +13,7 @@
  */
 import { z } from 'astro/zod'
 import { NOMS_FONDS } from '@/lib/fonds'
+import { messageCleRenommee } from '@/lib/couleurs-renommees.mjs'
 import { messageIconeInconnue, trouverIcone } from '@/plugins/icones.mjs'
 import { lieuxAvecFiche } from '@/data/horaires/lieux'
 import { NOMS_BANNIERES } from '@/lib/bannieres'
@@ -46,7 +47,9 @@ const icone = z
     if (!trouverIcone(nom)) ctx.addIssue({ code: 'custom', message: messageIconeInconnue(nom) })
   })
 
-const couleur = z.enum(NOMS_FONDS)
+// Un ancien nom de couleur (bleu100…) renvoie au nouveau
+const erreurCouleur = (probleme: { input?: unknown }) => messageCleRenommee(String(probleme.input)) ?? undefined
+const couleur = z.enum(NOMS_FONDS, { error: erreurCouleur })
 
 // Ancre d'un titre (/recherche/#orcid) : lettres minuscules, chiffres, tirets
 const ancre = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Une ancre s’écrit en minuscules, sans accents ni espaces (ex. droit-auteur)')
@@ -224,7 +227,7 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
         .optional(),
     })
     .strict()
-  const couleurAccordeons = z.enum(['bleuPrincipal', 'rose', 'vertPale']).default('bleuPrincipal')
+  const couleurAccordeons = z.enum(['bleuPrincipal', 'rose', 'vert'], { error: erreurCouleur }).default('bleuPrincipal')
 
   /** Vidéo YouTube sous un titre et un texte (VideoYouTube) */
   const video = z
@@ -320,7 +323,7 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       ...communs,
       titre: texteCourt,
       texte: markdown.optional(),
-      couleurCartes: z.enum(['bleuPrincipal', 'vertFonce', 'rose300', 'jaune']).default('bleuPrincipal'),
+      couleurCartes: z.enum(['bleuPrincipal', 'vertFonce', 'rose', 'jaune'], { error: erreurCouleur }).default('bleuPrincipal'),
       /** Une carte sans `lien` annonce ce qui s'en vient (« Bientôt ») : ni lien ni flèche, comme dans le carrousel */
       cartes: z.array(carteIcone.extend({ lien: lien.optional() })).min(1),
       bouton: bouton.optional(),
@@ -363,7 +366,7 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       titre: texteCourt,
       texte: markdown.optional(),
       /** Fond des cartes à icône */
-      couleurCartes: z.enum(['bleuPrincipal', 'rose300', 'vertFonce']).default('bleuPrincipal'),
+      couleurCartes: z.enum(['bleuPrincipal', 'rose', 'vertFonce'], { error: erreurCouleur }).default('bleuPrincipal'),
       /** `compacte` : cartes dépliables en rangées de deux (CarteDepliable) au lieu du carrousel ; cartes à icône seulement */
       disposition: z.enum(['carrousel', 'compacte']).default('carrousel'),
       cartes: z.array(carteRevelation).min(1),

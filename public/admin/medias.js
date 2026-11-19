@@ -52,7 +52,7 @@ const STYLE = `
 .md-nom { font-weight: var(--graisse-forte, 600); font-size: 13px; overflow-wrap: anywhere; }
 .md-meta { color: var(--couleur-texte-secondaire, #4a5160); font-size: 12px; }
 .md-badge { align-self: flex-start; margin-top: 4px; padding: 1px 8px; border-radius: var(--rayon-plein, 9999px); background: var(--couleur-teinte, #e5eef7); color: var(--couleur-texte, #0b113a); font-size: 12px; font-weight: var(--graisse-forte, 600); }
-.md-badge.md-libre { background: var(--alerte-avertissement-fond, #ffe0c2); color: var(--rouge-orange-texte-sur-clair, #b33410); }
+.md-badge.md-libre { background: var(--alerte-avertissement-fond, #ffe0c2); color: var(--couleur-texte-accent, #a83719); }
 .md-vide { padding: 40px 0; text-align: center; color: var(--couleur-texte-secondaire, #4a5160); font-size: 16px; }
 .md-detail { overflow: auto; padding: 20px; background: var(--couleur-surface, #fff); border-left: 1px solid var(--couleur-teinte, #e5eef7); }
 .md-detail[hidden] { display: none; }

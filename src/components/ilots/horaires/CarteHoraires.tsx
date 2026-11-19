@@ -28,7 +28,7 @@ import { mouvementReduit } from '@/lib/mouvement'
 const FILTRES: [string, string, string?][] = [
   ['all', 'Tous les lieux'],
   ['library', 'Bibliothèques', 'bleu-principal'],
-  ['conservation', 'Centres de conservation', 'vert-pale'],
+  ['conservation', 'Centres de conservation', 'vert'],
   ['studios', 'Studios et ateliers', 'jaune'],
   ['points-service', 'Points de service', 'violet-fonce'],
 ]

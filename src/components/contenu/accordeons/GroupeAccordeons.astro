@@ -16,7 +16,7 @@
  * (fond du contenu). Corrections par rapport à la source :
  * - rose : #b72600 en dur remplacé par le texte orange du thème (#b33410,
  *   5,5:1 sur rose 100) ;
- * - vertPale : le fond valait le rose de la palette (copie fautive) et le
+ * - vert : le fond valait le rose de la palette (copie fautive) et le
  *   titre vert pâle n'atteignait que 2,5:1 sur le fond. Le titre et l'icône
  *   passent au vert foncé du thème ; le vert pâle reste pour le trait et
  *   teinte le fond du contenu.
@@ -25,7 +25,7 @@ import { fusionnerStyles, type Style } from '@/lib/styles'
 import { idUnique } from '@/lib/ids'
 
 interface Props {
-  color?: 'bleuPrincipal' | 'rose' | 'vertPale'
+  color?: 'bleuPrincipal' | 'rose' | 'vert'
   id?: string
   class?: string
   style?: Style
@@ -35,20 +35,20 @@ const COULEURS: Record<string, Record<string, string>> = {
   bleuPrincipal: {
     '--accordeon-accent': 'var(--bleu-principal)',
     '--accordeon-filet': 'var(--bleu-principal)',
-    '--accordeon-pastille': 'var(--bleu-100)',
-    '--accordeon-fond': 'var(--bleu-100)',
+    '--accordeon-pastille': 'var(--bleu-10)',
+    '--accordeon-fond': 'var(--bleu-10)',
   },
   rose: {
-    '--accordeon-accent': 'var(--rouge-orange-texte-sur-clair)',
-    '--accordeon-filet': 'var(--rouge-orange-texte-sur-clair)',
-    '--accordeon-pastille': 'var(--rose-100)',
-    '--accordeon-fond': 'var(--rose-100)',
+    '--accordeon-accent': 'var(--couleur-texte-accent)',
+    '--accordeon-filet': 'var(--couleur-texte-accent)',
+    '--accordeon-pastille': 'var(--rose-50)',
+    '--accordeon-fond': 'var(--rose-50)',
   },
-  vertPale: {
+  vert: {
     '--accordeon-accent': 'var(--vert-fonce)',
-    '--accordeon-filet': 'var(--vert-pale)',
-    '--accordeon-pastille': 'color-mix(in srgb, var(--vert-pale) 25%, var(--couleur-surface))',
-    '--accordeon-fond': 'color-mix(in srgb, var(--vert-pale) 25%, var(--couleur-surface))',
+    '--accordeon-filet': 'var(--vert)',
+    '--accordeon-pastille': 'color-mix(in srgb, var(--vert) 25%, var(--couleur-surface))',
+    '--accordeon-fond': 'color-mix(in srgb, var(--vert) 25%, var(--couleur-surface))',
   },
 }
 

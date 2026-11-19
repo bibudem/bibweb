@@ -45,7 +45,7 @@ sections:
         lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377614
 
   - type: grille-elargissable
-    fond: bleu100
+    fond: bleu10
     titre: Recueillir, gérer et explorer vos données
     libelle: Données de recherche
     texte: Service de soutien et d’accompagnement tout au long d’un projet de recherche.
@@ -86,7 +86,7 @@ sections:
       lien: /nous-joindre/notre-equipe/
 
   - type: liste-liens
-    fond: bleu100
+    fond: bleu10
     titre: Publier et diffuser vos recherches
     libelle: Publication et diffusion
     liens:
@@ -124,7 +124,7 @@ sections:
         appel: Explorer les guides sur l’impact de la recherche
 
   - type: texte
-    fond: bleu100
+    fond: bleu10
     titre: La science ouverte, un engagement des bibliothèques
     libelle: Science ouverte
     texte: Consultez nos engagements en matière de science ouverte pour en savoir plus sur les actions des bibliothèques en faveur de la science ouverte.

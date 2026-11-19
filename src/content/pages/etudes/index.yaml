@@ -49,7 +49,7 @@ sections:
         lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/iag
 
   - type: grille-elargissable
-    fond: bleu100
+    fond: bleu10
     titre: Problème informatique? Pas de panique!
     libelle: Aide informatique
     texte: Nos comptoirs, nos services et nos spécialistes vous sont accessibles à l’année! Nos services vont de la connexion hors campus à l’impression, en passant par le prêt d’ordinateurs ou de tablettes.
@@ -84,7 +84,7 @@ sections:
       lien: https://calendrier.bib.umontreal.ca/calendar?cid=7690&t=m&d=0000-00-00&cal=7690&inc=0
 
   - type: image-texte
-    fond: bleu100
+    fond: bleu10
     titre: Accessibilité
     libelle: Accessibilité
     texte: L’accès à la documentation dont vous avez besoin est notre priorité.
