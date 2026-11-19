@@ -9,34 +9,27 @@ superHero:
   title: Nous joindre
 ---
 
-import './clavarder.css'
 import Alerte from '@/components/primitives/Alerte.astro'
 import ModuleClavardage from '@/components/contenu/integrations/ModuleClavardage.astro'
 
-## Clavardez avec un membre de l’équipe
+## Clavarder
 
-<div class="clavarder-colonnes">
-  {/* Zone clavardage */}
-  <div class="clavarder-clavardage">
-    <ModuleClavardage hash="9ee6ed73a6fb1854335aacfa8a7497ef4acaff4303c125783909dacc7b3200b9" />
-  </div>
+Clavardez avec un membre de l’équipe.
 
-  {/* Zone horaire */}
-  <div class="clavarder-horaire">
+<ModuleClavardage hash="9ee6ed73a6fb1854335aacfa8a7497ef4acaff4303c125783909dacc7b3200b9" />
 
 ### Horaire
 
 #### Aide et référence
 
-- Lundi au vendredi 9 h à 22 h
-- Samedi et dimanche 11 h à 17 h
+- Lundi au vendredi : 9 h à 22 h
+- Samedi et dimanche : 11 h à 17 h
 
 <Alerte severity="info" icon={false}>
   **Horaire spécial pour la référence virtuelle concernant les prochains congés**
 
-  Lundi 7 septembre : fermé<br />
-  Mercredi 30 septembre : ouvert de 9 h à 17 h<br />
-  Lundi 12 octobre : ouvert de 9 h à 17 h
+  Du jeudi 24 décembre au lundi 4 janvier : fermé<br />
+  Mardi 5 et mercredi 6 janvier : ouvert de 9 h à 17 h
 </Alerte>
 
 #### Soutien informatique
@@ -44,6 +37,3 @@ import ModuleClavardage from '@/components/contenu/integrations/ModuleClavardage
 - Lundi au vendredi : 9 h à 17 h
 
 (selon la disponibilité des techniciens)
-
-  </div>
-</div>

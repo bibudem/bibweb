@@ -16,6 +16,7 @@ import { remarkDirectivesBib, rehypeDirectivesBib } from './src/plugins/directiv
 import baseSousDossier from './src/plugins/base-sous-dossier.mjs'
 import llms from './src/plugins/llms.mjs'
 import indexPublic from './src/plugins/index-public.mjs'
+import sansAdmin from './src/plugins/sans-admin.mjs'
 
 const SITE = 'https://bib.umontreal.ca'
 
@@ -91,6 +92,8 @@ export default defineConfig({
     indexPublic(),
     // llms.txt et versions Markdown des pages ; après baseSousDossier (liens déjà préfixés)
     llms(),
+    // Production : /admin/ (Decap CMS) n'est publié qu'en pré-production
+    sansAdmin(),
   ],
   // Page vide dans la source : on renvoie vers la page du site qui en tient lieu
   redirects: {
