@@ -1,0 +1,67 @@
+/* ---------- Progression + navigation ---------- */
+@layer components {
+  .progress {
+    position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 60;
+    background: var(--udem-jaune);
+    transform-origin: 0 50%; transform: scaleX(0);
+  }
+  .nav {
+    position: fixed; inset: 0 0 auto 0; z-index: 50;
+    padding-top: env(safe-area-inset-top);
+    color: var(--on-blue);
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, transform 300ms var(--ease-out);
+  }
+  .nav.scrolled {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom-color: var(--line);
+  }
+  .nav.hidden { transform: translateY(-100%); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; white-space: nowrap; }
+  .brand-logo { display: block; color: #fff; border-radius: 4px; transition: color 250ms ease, opacity 150ms ease; }
+  .brand-name { color: inherit; text-decoration: none; border-radius: 4px; }
+  @media (hover: hover) and (pointer: fine) { .brand-logo:hover, .brand-name:hover { opacity: 0.8; } }
+  .brand-logo svg { display: block; height: 40px; width: auto; }
+  .brand-sep { width: 1.5px; height: 28px; background: currentColor; opacity: 0.45; }
+  .brand-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .nav.scrolled .brand-logo { color: var(--logo); }
+  @media (max-width: 420px) {
+    .brand { gap: 10px; }
+    .brand-logo svg { height: 34px; }
+    .brand-sep { height: 24px; }
+    .brand-name { font-size: 14px; }
+  }
+  .nav-links { display: flex; gap: 4px; margin-left: auto; }
+  .nav a.link {
+    font-size: 14px; font-weight: 500; text-decoration: none; opacity: 0.85;
+    padding: 7px 12px; border-radius: 999px;
+    transition: background-color 150ms ease, opacity 150ms ease, transform 160ms var(--ease-out);
+    white-space: nowrap;
+  }
+  .nav a.link.active { opacity: 1; background: color-mix(in srgb, currentColor 10%, transparent); }
+  .nav a.link:active { transform: scale(0.96); }
+  /* Survol (souris seulement) : le lien s’allume dans une pastille, un peu plus marquée que l’état actif */
+  @media (hover: hover) and (pointer: fine) {
+    .nav a.link:hover { opacity: 1; background: color-mix(in srgb, currentColor 16%, transparent); }
+    .nav a.link.active:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
+  }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+  /* Bouton clair / sombre : caché sans JavaScript (le thème du système s’applique alors) */
+  html:not(.js) .theme-toggle { display: none; }
+  .theme-toggle {
+    flex: none; width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center; cursor: pointer; padding: 0;
+    color: inherit; background: transparent; border: 1.5px solid color-mix(in srgb, currentColor 45%, transparent);
+    transition: background-color 150ms ease, transform 160ms var(--ease-out);
+  }
+  .theme-toggle:active { transform: scale(0.94); }
+  @media (hover: hover) and (pointer: fine) { .theme-toggle:hover { background: color-mix(in srgb, currentColor 12%, transparent); } }
+  /* L’icône montre le thème vers lequel on bascule */
+  .theme-toggle .i-sun, .theme-toggle[aria-pressed="true"] .i-moon { display: none; }
+  .theme-toggle[aria-pressed="true"] .i-sun { display: block; }
+}

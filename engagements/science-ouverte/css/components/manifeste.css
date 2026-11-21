@@ -1,0 +1,31 @@
+/* ---------- Manifeste : deux phrases qui s’allument mot à mot au défilement ---------- */
+@layer components {
+  .manifeste { padding: 0; }
+  .manifeste-sticky {
+    min-height: 100svh; display: flex; align-items: center;
+    padding: clamp(72px, 12vw, 136px) 0;
+  }
+  .manifeste-text {
+    font: 400 clamp(26px, 3.4vw, 44px)/1.2 var(--serif); letter-spacing: -0.015em;
+    color: var(--ink); max-width: 30ch; margin: 0; text-wrap: pretty;
+  }
+  .manifeste-text + .manifeste-text { margin-top: clamp(28px, 4vw, 48px); }
+  .manifeste-text em { font-style: italic; color: var(--accent); }
+  .manifeste-actions { margin-top: clamp(32px, 4vw, 48px); }
+  /* Le bouton du haut de page est pensé pour le fond bleu : ici, il passe en couleur d’accent. */
+  .manifeste .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  @media (hover: hover) and (pointer: fine) {
+    .manifeste .btn.primary:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); }
+  }
+
+  /* Avec JavaScript : la section s’allonge, son contenu reste fixe à l’écran, et chaque mot
+     s’allume selon --p (progression de 0 à 1, posée par scroll.js). Sans --p, tout est allumé. */
+  .js .manifeste { height: 240svh; }
+  .js .manifeste-sticky { position: sticky; top: 0; height: 100svh; min-height: 0; padding: 0; }
+  .manifeste .w { opacity: clamp(0.16, calc((var(--p, 1) * (var(--n) + 3) - var(--i)) / 3), 1); }
+  /* Le bouton apparaît une fois le texte lu (ou dès qu’il reçoit le focus au clavier). */
+  .manifeste-actions { opacity: clamp(0, calc((var(--p, 1) - 0.9) * 10), 1); }
+  .manifeste-actions:focus-within { opacity: 1; }
+  /* Arrivée au clavier sur le bouton : tout le texte s’allume, sans attendre le défilement. */
+  .manifeste:focus-within .w { opacity: 1; }
+}

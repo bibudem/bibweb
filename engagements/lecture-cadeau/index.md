@@ -1,0 +1,87 @@
+# La lecture en cadeau
+
+En 2026, la collecte a lieu du 1er au 28 février.
+
+Le programme [La lecture en cadeau](https://fondationalphabetisation.org/nos-initiatives/la-lecture-en-cadeau/), organisé par la [Fondation pour l’alphabétisation](https://fondationalphabetisation.org/), remettra les livres neufs recueillis à l’UdeM à des enfants des écoles ou des centres de la petite enfance de communautés autochtones du Québec déjà inscrits au programme La lecture en cadeau, à la demande des bibliothèques. Depuis 2017, 4 766 livres ont été distribués.
+
+![logo La lecture en cadeau](https://bib.umontreal.ca/_astro/lecture-en-cadeau.Cb_yInAk_jWg3v.webp)
+
+## Liste des partenaires UdeM
+
+- Librairie UdeM
+- Direction des ressources humaines
+- École de bibliothéconomie et des sciences de l’information (EBSI)
+- Faculté de médecine
+- Division des archives et de la gestion de l’information (DAGI)
+- Faculté de médecine dentaire
+- Faculté de médecine – Campus de la Mauricie
+- Faculté des arts et sciences (FAS)
+- Faculté des sciences de l’éducation
+
+## Comment participer
+
+Il y a deux façons de participer :
+
+1. Faire un don en argent au [Fonds spécial des bibliothèques pour La lecture en cadeau](https://formulairereseau.umontreal.ca/site/Donation2?df_id=1560&1560.donation=form1\&mfc_pref=T\&s_locale=fr_CA) : l’argent recueilli servira en fin de campagne à acheter des livres neufs à la Librairie de l’UdeM, qui offre pour l’occasion un rabais de 25 % sur une sélection de livres jeunesse.
+
+2. Déposer des livres jeunesse neufs dans les boîtes de collecte situées dans les bibliothèques UdeM ou dans les locaux de nos partenaires UdeM :
+
+   - Bibliothèque des lettres et sciences humaines
+   - Bibliothèque du Parc
+   - Bibliothèque Thérèse-Gouin-Décarie
+   - Direction des ressources humaines
+   - Division des archives et de la gestion de l’information (DAGI)
+   - Faculté de médecine (campus de la montagne et Mauricie)
+   - Librairie UdeM (Jean-Brillant, Laval, MIL, Roger-Gaudry, Saint-Hyacinthe)
+
+## Rabais à la Librairie de l’Université de Montréal
+
+À titre de partenaire de l’opération La lecture en cadeau, la Librairie de l’UdeM offre une réduction de 25 % sur une sélection de livres jeunesse entre le 1er et le 28 février 2026.
+
+### Nouveauté – Boutiques éphémères
+
+La Librairie de l’UdeM se déplace aux différents pavillons suivants et proposera une sélection de livres pour enfants.
+
+| Dates    | Pavillon              | Produits                 |
+| -------- | --------------------- | ------------------------ |
+| 3-4 fév. | Marie-Victorin        | UdeM + Lecture en cadeau |
+| 10 fév.  | Marguerite-d’Youville | UdeM + Lecture en cadeau |
+| 16 fév.  | 7077 av. du Parc      | UdeM + Lecture en cadeau |
+
+## Questions et réponses au sujet de la campagne
+
+### À qui iront ces livres?
+
+Les livres seront remis à des enfants des écoles ou des centres de la petite enfance de communautés autochtones du Québec déjà inscrits au programme La lecture en cadeau.
+
+En accord avec l’Université, les bibliothèques de l’UdeM ont choisi de remettre les livres à ces groupes après avoir constaté leurs besoins dans le cadre d’autres projets menés par des membres de la communauté universitaire.
+
+### Quoi et comment donner?
+
+1. Acheter un livre neuf et amusant destiné aux enfants de 0 à 12 ans.
+2. Sur le campus de l’UdeM, repérer les boîtes de dons prévues à cet effet dans les succursales de la Librairie de l’UdeM (Jean-Brillant, Roger-Gaudry, MIL, Laval et Saint-Hyacinthe) ou dans les locaux de certains de nos partenaires pour y déposer votre livre.
+3. La Fondation pour l’alphabétisation se chargera de distribuer les livres aux enfants.
+
+### J’ai des livres usagés en très bon état, puis-je les donner à La lecture en cadeau?
+
+Non. La campagne est basée sur le principe que les enfants recevront pour certains leur premier livre neuf – un livre acheté rien que pour eux. Les livres usagés ne seront pas distribués.
+
+### Je ne veux pas acheter de livre, puis-je quand même soutenir le programme?
+
+Oui, vous pouvez faire un don en argent au [Fonds La lecture en cadeau des bibliothèques/UdeM](https://formulairereseau.umontreal.ca/site/Donation2?df_id=1560&1560.donation=form1\&mfc_pref=T\&s_locale=fr_CA), mis en place en collaboration avec le Réseau des diplômés et des donateurs. L’argent ramassé servira à acheter des livres jeunesse à la Librairie de l’UdeM à la fin de la campagne.
+
+### Puis-je donner des livres en anglais?
+
+Oui. La Fondation accepte les livres en anglais, en français et pouvant contenir des mots dans différentes langues autochtones.
+
+### Mon département/école/association ou ma faculté désire être partenaire de la campagne. Que dois-je faire?
+
+Les bibliothèques s’occupent de la coordination de la campagne UdeM : nous nous assurons d’organiser le transport des livres recueillis vers les locaux de la Fondation à la fin de la campagne.
+
+Nous vous fournirons également du matériel promotionnel, soit des affiches et signatures courriel que vous pourrez imprimer et utiliser pour faire la promotion de votre campagne auprès de votre communauté.
+
+Pour vous inscrire, vous pouvez écrire à [Sophie Chiasson](mailto:sophie.chiasson@umontreal.ca).
+
+---
+
+Page HTML : https://bib.umontreal.ca/engagements/lecture-cadeau/

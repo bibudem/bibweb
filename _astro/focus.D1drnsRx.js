@@ -1,0 +1,1 @@
+function e(e,t){e.setAttribute(`tabindex`,`-1`),e.focus(t),e.addEventListener(`blur`,()=>e.removeAttribute(`tabindex`),{once:!0})}export{e as t};

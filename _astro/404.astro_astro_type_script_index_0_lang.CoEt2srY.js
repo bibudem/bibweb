@@ -1,0 +1,1 @@
+import{t as e}from"./pages.D7cJsQMg.js";e(()=>{let e=document.querySelector(`[data-recherche-404] input[type=search]`);if(!e)return;let t=location.pathname;try{t=decodeURIComponent(t)}catch{}let n=t.replace(/\.[a-z0-9]+$/i,``).split(/[/\-_.+]+/).filter(e=>e&&!/^\d+$/.test(e)).join(` `);n&&(e.value=n)});

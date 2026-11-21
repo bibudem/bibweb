@@ -1,0 +1,58 @@
+/* Palette — marque.umontreal.ca (2.3.4 Couleurs)
+   Dominantes : bleu principal #0057AC, bleu foncé #0B113A, bleu principal 10 % #E5F1FA.
+   Secondaires (accents, toujours en duo avec le bleu principal, avec parcimonie). */
+@layer tokens {
+  :root {
+    --udem-bleu: #0057ac;
+    --udem-bleu-fonce: #0b113a;
+    --udem-bleu-10: #e5f1fa;
+    --udem-sarcelle: #00474b;
+    --udem-vert: #55b98b;
+    --udem-rose: #fde2de;
+    --udem-orange: #ff5c39;
+    --udem-jaune: #ffcb3d;
+
+    /* Un accent secondaire par pilier, toujours accompagné du bleu principal */
+    --pilier-1: var(--udem-vert);      --pilier-1-ink: var(--udem-bleu-fonce);
+    --pilier-3: var(--udem-orange);    --pilier-3-ink: var(--udem-bleu-fonce);
+    --pilier-4: var(--udem-jaune);     --pilier-4-ink: var(--udem-bleu-fonce);
+
+    /* Thème : clair ou sombre selon color-scheme (système, ou bouton de la barre de navigation).
+       light-dark(clair, sombre) ; le sarcelle de la marque disparaît sur le bleu foncé : même teinte, éclaircie. */
+    color-scheme: light dark;
+    --pilier-2: light-dark(var(--udem-sarcelle), color-mix(in srgb, var(--udem-sarcelle) 45%, #ffffff));
+    --pilier-2-ink: light-dark(#ffffff, var(--udem-bleu-fonce));
+    --bg: light-dark(#ffffff, var(--udem-bleu-fonce));
+    --bg-alt: light-dark(var(--udem-bleu-10), #0f1748);
+    --surface: light-dark(#ffffff, #141d55);
+    --surface-2: light-dark(var(--udem-bleu-10), #1a2462);
+    --ink: light-dark(var(--udem-bleu-fonce), #ffffff);
+    --ink-2: light-dark(#39406a, #c9d3ee);
+    --ink-3: light-dark(#5f6688, #8f9bc4);
+    --line: light-dark(rgba(11, 17, 58, 0.12), rgba(255, 255, 255, 0.12));
+    --accent: light-dark(var(--udem-bleu), #7fb6ec);
+    --accent-soft: light-dark(rgba(0, 87, 172, 0.1), rgba(127, 182, 236, 0.14));
+    --on-blue: #ffffff;
+    /* Couleurs propres à un composant, qui changent avec le thème */
+    --logo: light-dark(var(--udem-bleu), #ffffff);
+    /* Haut de page : bleu principal en clair, bleu foncé en sombre, pour que la bascule se voie dès l’arrivée */
+    --hero-bg: light-dark(var(--udem-bleu), var(--udem-bleu-fonce));
+    --cta-bg: light-dark(var(--udem-bleu-fonce), var(--udem-bleu));
+    --cta-kicker: light-dark(var(--udem-vert), var(--udem-jaune));
+
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+    --sans: "Figtree", Arial, sans-serif;
+    --serif: "Lora", "Times New Roman", serif;
+
+    --gutter: clamp(16px, 5vw, 48px);
+    --max: 1120px;
+    /* Grille graphique : côté le plus court divisé par 8 */
+    --cell: calc(min(100vw, 100svh) / 8);
+  }
+  /* Choix explicite (bouton) : prend le pas sur la préférence du système */
+  :root[data-theme="light"] { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; }
+}

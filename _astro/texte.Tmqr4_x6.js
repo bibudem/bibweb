@@ -1,0 +1,1 @@
+var e=e=>e.normalize(`NFD`).replace(/\p{Diacritic}/gu,``);export{e as t};
