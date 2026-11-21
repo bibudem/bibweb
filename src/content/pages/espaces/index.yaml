@@ -65,7 +65,7 @@ sections:
         texte: À la Bibliothèque de droit. Coin de jeux et jouets adaptés pour les enfants de 4 à 12 ans.
 
   - type: cartes-revelation
-    fond: bleu100
+    fond: bleu10
     id: bien-etre
     titre: On repense nos espaces
     libelle: Nouveaux espaces
@@ -128,7 +128,7 @@ sections:
         lien: /espaces/blrcs/
 
   - type: image-texte
-    fond: bleu100
+    fond: bleu10
     titre: |
       Des bibliothèques ouvertes au monde.
       Tout le monde.

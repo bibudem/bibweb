@@ -90,28 +90,28 @@ sections:
   # Les pages de la barre de navigation, dans le même ordre
   - type: cartes-sections
     cartes:
-      - fond: bleu100
+      - fond: bleu10
         titre: Des espaces pour chaque moment
         texte: "Le réseau, c’est 14 bibliothèques, chacune avec sa personnalité. Choisissez votre espace selon vos besoins du jour : horaires étendus, accès autonome, création numérique, cabine silencieuse, salon de détente…"
         image: ./images/espaces-alveoles.webp
         bouton:
           texte: Explorer la section Espaces
           lien: /espaces/
-      - fond: bleu100
+      - fond: bleu10
         titre: Des études à votre manière
         texte: "Il y a mille et une façons d’apprendre : guides de nos spécialistes, soutien informatique, formations gratuites, Service Accessibilité et aide personnalisée, de la première à la dernière session."
         image: ./images/super-heroes/etudes.webp
         bouton:
           texte: Découvrir la section Études
           lien: /etudes/
-      - fond: bleu100
+      - fond: bleu10
         titre: De l’accompagnement pour faire de la recherche
         texte: "Nos spécialistes vous accompagnent tout au long du cycle de la recherche : intelligence artificielle générative, données, synthèses des connaissances, publication et libre accès, mesure de l’impact."
         image: ./images/recherche-accueil.webp
         bouton:
           texte: Voir la section Recherche
           lien: /recherche/
-      - fond: bleu100
+      - fond: bleu10
         titre: Des ressources pour enseigner à l’UdeM
         texte: "Réserve de cours, droit d’auteur et déclarations dans Savia, formations dans vos cours et dans StudiUM, salles et ressources éducatives libres : notre équipe appuie votre enseignement."
         image: ./images/enseignement-accueil.webp

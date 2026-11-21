@@ -19,7 +19,7 @@ sections:
     positionImage: droite
 
   - type: image-texte
-    fond: bleu100
+    fond: bleu10
     titre: Un laboratoire de recherche vivant
     image: ./images/laboratoire-restauration.webp
     legende: Restaurateurs en résidence à l’automne 2026
@@ -54,7 +54,7 @@ sections:
 
   # Ajouter `transcription` quand la page de transcription existera
   - type: video
-    fond: rose100
+    fond: rose50
     titre: Des ouvrages d’exception
     youtube: 3cMdFZbivdg
     image: ./images/video-ouvrages-exception.webp
@@ -74,7 +74,7 @@ sections:
       lien: /nouvelles/?sujet=livres-rares
 
   - type: image-texte
-    fond: rose100
+    fond: rose50
     titre: Ressources complémentaires
     image: ./images/estampes-cartes.webp
     legende: Cartons d’invitation à des vernissages d’exposition, collection Gilles-Rioux

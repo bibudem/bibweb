@@ -64,7 +64,7 @@ sections:
         appel: Découvrir les collections spéciales
 
   - type: grille-elargissable
-    fond: bleu100
+    fond: bleu10
     titre: Explorez l’intelligence artificielle générative
     libelle: IA générative
     texte: Pour utiliser l’IAg de façon efficace, éthique et responsable à l’Université, consultez nos ressources spécialisées.
@@ -154,7 +154,7 @@ sections:
         contour: true
 
   - type: texte-icones
-    fond: bleu100
+    fond: bleu10
     titre: Aider les étudiants et étudiantes, c’est réussir ensemble
     libelle: Réussite étudiante
     texte: Parlez de nos services aux personnes inscrites à vos cours qui pourraient en bénéficier!

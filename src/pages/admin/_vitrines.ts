@@ -18,19 +18,19 @@ type Champ = Record<string, unknown>
 const LIBELLES_FONDS: Record<(typeof NOMS_FONDS)[number], string> = {
   bleuPrincipal: 'Bleu principal',
   bleuFonce: 'Bleu foncé',
-  bleu600: 'Bleu 600',
+  bleuPrincipalFonce: 'Bleu principal foncé',
   vertFonce: 'Vert foncé',
   rougeOrange: 'Rouge orangé',
   orange: 'Orange (chandail orange)',
   violetFonce: 'Violet foncé',
-  vertPale: 'Vert pâle',
+  vert: 'Vert',
   jaune: 'Jaune',
-  rose500: 'Rose 500',
-  bleu100: 'Bleu 100 (clair)',
-  bleu200: 'Bleu 200 (clair)',
-  jaunePale: 'Jaune pâle',
-  rose100: 'Rose 100 (clair)',
-  rose300: 'Rose 300 (clair)',
+  rose500: 'Rose 500 (moyen)',
+  bleu10: 'Bleu 10 (très pâle)',
+  bleu20: 'Bleu 20 (pâle)',
+  jaune40: 'Jaune 40 (pâle)',
+  rose50: 'Rose 50 (très pâle)',
+  rose: 'Rose (pâle)',
 }
 
 const MOTIF_LIEN = ['^(/|#|https?://|mailto:|tel:)', 'Un lien commence par / (page du site), # (ancre), https://, mailto: ou tel:']
@@ -148,8 +148,8 @@ const communs = (avecFond = true): Champ[] => [
   facultatif(texte('Libellé du sommaire', 'libelle', 'Nom court dans « Sur cette page » ; sans libellé, le bloc n’y figure pas.')),
 ]
 
-const COULEURS_CARTES = ['bleuPrincipal', 'vertFonce', 'rose300', 'jaune'].map((nom) => ({ label: LIBELLES_FONDS[nom as keyof typeof LIBELLES_FONDS], value: nom }))
-const COULEURS_ACCORDEONS = ['bleuPrincipal', 'rose', 'vertPale'].map((nom) => ({ label: nom === 'rose' ? 'Rose' : LIBELLES_FONDS[nom as keyof typeof LIBELLES_FONDS], value: nom }))
+const COULEURS_CARTES = ['bleuPrincipal', 'vertFonce', 'rose', 'jaune'].map((nom) => ({ label: LIBELLES_FONDS[nom as keyof typeof LIBELLES_FONDS], value: nom }))
+const COULEURS_ACCORDEONS = ['bleuPrincipal', 'rose', 'vert'].map((nom) => ({ label: LIBELLES_FONDS[nom as keyof typeof LIBELLES_FONDS], value: nom }))
 
 const carteIcone = (lienRequis = true): Champ[] => [
   texte('Titre', 'titre'),

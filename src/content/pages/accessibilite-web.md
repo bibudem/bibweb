@@ -26,9 +26,9 @@ Dernière évaluation : octobre 2026.
 Voici la liste des icônes ayant un rôle fonctionnel :
 
 :::modalites
-- :icone[burger]{taille=40 couleur=neutre700} Ouvrir le menu du site
+- :icone[burger]{taille=40 couleur=gris700} Ouvrir le menu du site
 - :icone[magnifying-glass]{taille=40} Rechercher
-- :icone[sofia]{taille=40 couleur=neutre700} Outil de recherche Sofia
+- :icone[sofia]{taille=40 couleur=gris700} Outil de recherche Sofia
 - :icone[clock-countdown]{taille=40} Voir les horaires
 - :icone[calendar-plus]{taille=40} Réserver une salle de travail
 - :icone[lifebuoy]{taille=40} Obtenir du soutien informatique
