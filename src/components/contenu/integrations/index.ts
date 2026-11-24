@@ -6,3 +6,4 @@
 export { default as ScriptTiers } from './ScriptTiers.astro'
 export { default as FormulaireConsentement } from './FormulaireConsentement.astro'
 export { default as ModuleClavardage } from './ModuleClavardage.astro'
+export { default as FormulaireSuggestionAchat } from './FormulaireSuggestionAchat.astro'

@@ -1,0 +1,103 @@
+---
+/*
+ * Formulaire de suggestion d'achat de la chaîne d'achats
+ * (achats.bib.umontreal.ca), dans une iframe.
+ *
+ * L'application envoie sa hauteur à la page qui l'accueille
+ * (postMessage { type: 'chaine-achat:hauteur', hauteur }) : l'iframe prend
+ * exactement cette hauteur, sans barre de défilement interne. Seuls les
+ * messages de cette iframe et de son origine sont lus.
+ *
+ * Hauteur réservée avant le premier message : celle de l'écran de connexion
+ * mesurée (337 px à 328 px de large, 261 px à 600 px, 236 px à 840 px). La
+ * connexion UdeM s'ouvre dans une fenêtre à part ; une fois connecté, le
+ * formulaire s'allonge et renvoie sa hauteur.
+ */
+interface Props {
+  src?: string
+  titre?: string
+}
+
+const { src = 'https://achats.bib.umontreal.ca/suggestion-public', titre = 'Formulaire de suggestion d’achat' } = Astro.props
+const origine = new URL(src).origin
+---
+
+<div class="formulaire-achat" data-formulaire-achat data-origine={origine}>
+  <iframe class="cadre" src={src} title={titre}></iframe>
+  <p class="message-chargement" data-chargement>Chargement du formulaire…</p>
+</div>
+
+<script>
+  import { aChaquePage } from '@/lib/pages'
+
+  aChaquePage((signal) => {
+    for (const racine of document.querySelectorAll<HTMLElement>('[data-formulaire-achat]')) {
+      const iframe = racine.querySelector('iframe')
+      if (!iframe) continue
+      const retirerChargement = () => racine.querySelector('[data-chargement]')?.remove()
+      // L'iframe a pu se charger avant ce script : le message ou un délai le retire aussi
+      iframe.addEventListener('load', retirerChargement, { once: true, signal })
+      const delai = setTimeout(retirerChargement, 10000)
+      signal.addEventListener('abort', () => clearTimeout(delai))
+
+      addEventListener(
+        'message',
+        (evenement) => {
+          if (evenement.origin !== racine.dataset.origine || evenement.source !== iframe.contentWindow) return
+          const { type, hauteur } = evenement.data ?? {}
+          if (type !== 'chaine-achat:hauteur' || !Number.isFinite(hauteur) || hauteur <= 0 || hauteur > 20000) return
+          iframe.style.height = `${Math.ceil(hauteur)}px`
+          racine.dataset.ajuste = ''
+          retirerChargement()
+        },
+        { signal },
+      )
+    }
+  })
+</script>
+
+<style>
+  .formulaire-achat {
+    position: relative;
+    container-type: inline-size;
+  }
+
+  /* L'application entoure sa carte d'une marge blanche (16 px en haut, 36 px
+     en bas, 12 px sur les côtés, 24 px dès 576 px de large) : l'iframe la
+     déborde et la masque, la carte s'aligne sur la colonne de texte. */
+  .cadre {
+    --marge-application: 12px;
+    display: block;
+    width: calc(100% + 2 * var(--marge-application));
+    height: 340px;
+    margin: -16px calc(-1 * var(--marge-application)) -36px;
+    border: none;
+    clip-path: inset(16px var(--marge-application) 36px round 10px);
+    color-scheme: light;
+  }
+
+  @container (width >= 552px) {
+    .cadre {
+      --marge-application: 24px;
+    }
+  }
+
+  @media (width >= 600px) {
+    .cadre {
+      height: 265px;
+    }
+  }
+
+  @media (width >= 900px) {
+    .cadre {
+      height: 240px;
+    }
+  }
+
+  /* Changements de hauteur (connexion, erreurs du formulaire) adoucis */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-ajuste] .cadre {
+      transition: height var(--duree-moyenne-2, 0.25s) var(--courbe-standard, ease);
+    }
+  }
+</style>
