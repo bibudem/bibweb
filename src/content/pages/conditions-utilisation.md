@@ -14,7 +14,7 @@ Les contenus du site web des bibliothèques de l’Université de Montréal et d
 
 Avec la licence *Creative Commons* Attribution 4.0 International, l’auteur ou l’autrice permet à toute personne d’utiliser son œuvre aux conditions suivantes.
 
-:::encadres{fond=bleu100}
+:::encadres{fond=bleu10}
 #### Vous pouvez :icone[check-circle]
 
 - **Partager** : copier, distribuer et communiquer le matériel par tous moyens et sous tous formats.

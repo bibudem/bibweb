@@ -1,48 +1,57 @@
 /*
  * Jetons de design des Bibliothèques de l'UdeM.
  *
- * Repris tels quels du thème MUI de coquille-web
- * (plugins/gatsby-plugin-bib-theme/tokens) pour que le rendu reste identique.
+ * Couleurs : noms et valeurs d'Harmonium, le système de design des
+ * Bibliothèques (https://bibudem.github.io/harmonium/). Le reste vient du
+ * thème MUI de coquille-web (plugins/gatsby-plugin-bib-theme/tokens).
  * Les composants n'écrivent jamais de couleur, de police ni de durée en dur :
  * ils passent par ces variables.
  */
 
 :root {
-  /* ---- Couleurs de marque ---- */
+  /* ---- Couleurs de marque : celles d'Harmonium (bib-jetons.css) ---- */
   --bleu-principal: #0057ac;
-  --bleu-principal-fonce: #003c78;
+  --bleu-principal-fonce: #003d78;
   --bleu-fonce: #0b113a;
-  --bleu-100: #e5f0f8;
-  --bleu-200: #cce2f3;
+  --bleu-10: #e5eef7;
+  --bleu-20: #ccddee;
   --jaune: #ffca40;
-  --jaune-pale: #ffe8ac;
-  --rose-100: #fcf3f1;
-  --rose-300: #fee1de;
-  --rose-500: #f4bdb7;
+  --jaune-40: #ffeab3;
+  --rose-50: #fff0ef;
+  --rose: #fee1de;
   --rouge-orange: #f04e24;
-  /* Variante assombrie pour le texte : #f04e24 n'atteint que 3,45:1 sur le
-     fond du site et 2,93:1 sur rose 300, insuffisant pour du texte courant
-     (WCAG 1.4.3, 4,5:1). #b33410 passe sur tous les fonds clairs du thème
-     (de 4,61:1 sur bleu 200 à 5,87:1 sur le fond). Le #f04e24 reste pour
-     les icônes et les éléments graphiques (3:1 suffit, WCAG 1.4.11). */
-  --rouge-orange-texte-sur-clair: #b33410;
+  --rouge-orange-40: #f9b8a7;
+  /* Rouge orangé du texte : 4,70:1 au moins sur les fonds clairs (WCAG 1.4.3).
+     #f04e24 (3,45:1) reste pour les icônes et le graphisme (WCAG 1.4.11). */
+  --rouge-orange-fonce: #a83719;
+  --rouge: #b10000;
   /* Orange du chandail orange (« Chaque enfant compte », 30 septembre),
      plus chaud que le rouge orangé : fond de l'icône Premiers Peuples
      (engagements). L'icône assombrie d'IconeCarree y fait environ 7:1 */
   --orange: #f7941d;
+  --orange-30: #fddfbb;
   --vert-fonce: #024244;
-  --vert-pale: #52b782;
-  --violet-fonce: #9374f6;
-  /* Neutres de la palette : ceux des rôles du thème clair, pour les
-     éléments qui gardent leurs couleurs dans les deux thèmes (barre de
-     l'en-tête posée sur la photo de la bannière) */
+  --vert: #52b782;
+  --vert-20: #dcf1e6;
+  --gris-50: #f8fafb;
+  --gris-100: #e5e9ee;
+  --gris-200: #d4dbe2;
+  --gris-300: #c3ccd5;
+  --gris-400: #a0a9b6;
+  --gris-500: #7d8696;
+  --gris-600: #4a5160;
   --gris-700: #222930;
-  --blanc-casse: #f8fafb;
   --blanc: #fff;
+  --noir: #000;
+
+  /* Propres au site */
+  --rose-500: #f4bdb7;
+  --violet-fonce: #9374f6;
+
 
   /* Voile noir posé sur les photos des bannières et des sections à image
      (rgba(0,0,0,.4) ou .5 dans la source), dosé avec color-mix */
-  --couleur-voile: #000;
+  --couleur-voile: var(--noir);
   /* Survol des boutons pleins bleu foncé (assombri, comme dark de MUI) */
   --bleu-fonce-survol: #070b28;
 
@@ -206,16 +215,21 @@
 .theme-clair,
 .surface-claire {
   --couleur-texte: var(--bleu-fonce);
-  --couleur-texte-secondaire: #4a5160;
+  --couleur-texte-secondaire: var(--gris-600);
+  --couleur-texte-accent: var(--rouge-orange-fonce);
+  --couleur-texte-neutre: var(--gris-700);
   --couleur-neutre-700: var(--gris-700);
-  --couleur-fond: var(--blanc-casse);
+  --couleur-fond: var(--gris-50);
   --couleur-surface: var(--blanc);
-  --couleur-bordure: #c3ccd5;
+  --couleur-bordure: var(--gris-300);
   /* Contour d'un élément interactif (carte-lien) : 3,7:1 sur blanc, WCAG 1.4.11 */
-  --couleur-contour: #7d8696;
+  --couleur-contour: var(--gris-500);
   --couleur-lien: var(--bleu-principal);
   --couleur-lien-survol: var(--bleu-principal-fonce);
   --couleur-focus: var(--bleu-principal);
+  --couleur-focus-interieur: var(--blanc);
+  --couleur-desactive-fond: var(--gris-100);
+  --couleur-desactive-texte: var(--gris-500);
   /* Texte et icônes posés sur un fond foncé ou coloré (boutons pleins,
      bandes bleues) : blanc dans les deux thèmes */
   --couleur-sur-fonce: var(--blanc);
@@ -225,31 +239,41 @@
   /* Texte et icônes de la couleur de marque sur une surface */
   --couleur-accent: var(--bleu-principal);
   /* Fonds teintés de bleu (encadrés, puces, survols) */
-  --couleur-teinte: var(--bleu-100);
-  --couleur-teinte-forte: var(--bleu-200);
-  --couleur-teinte-jaune: var(--jaune-pale);
-  --couleur-teinte-rose: var(--rose-100);
-  --couleur-teinte-rose-forte: var(--rose-300);
-  --rouge-orange-texte: var(--rouge-orange-texte-sur-clair);
+  --couleur-teinte: var(--bleu-10);
+  --couleur-teinte-forte: var(--bleu-20);
+  --couleur-teinte-jaune: var(--jaune-40);
+  --couleur-teinte-rose: var(--rose-50);
+  --couleur-teinte-rose-forte: var(--rose);
+  --rouge-orange-texte: var(--couleur-texte-accent);
+
+  /* États */
+  --couleur-succes: var(--vert-fonce);
+  --couleur-succes-fond: var(--vert-20);
+  --couleur-succes-bordure: var(--vert);
+  --couleur-info: var(--bleu-principal);
+  --couleur-info-fond: var(--bleu-20);
+  --couleur-info-bordure: var(--bleu-principal);
+  --couleur-avertissement: var(--rouge-orange-fonce);
+  --couleur-avertissement-fond: var(--orange-30);
+  --couleur-avertissement-bordure: var(--rouge-orange);
+  --couleur-erreur: var(--rouge);
+  --couleur-erreur-fond: var(--rose);
+  --couleur-erreur-bordure: var(--rouge);
 
   /* Ombres (Surface, cartes, tiroirs), teintées du bleu foncé du thème */
   --ombre-1: 0 2px 1px -1px rgb(11 17 58 / 20%), 0 1px 1px 0 rgb(11 17 58 / 14%), 0 1px 3px 0 rgb(11 17 58 / 12%);
   --ombre-2: 0 3px 5px -1px rgb(11 17 58 / 20%), 0 6px 10px 0 rgb(11 17 58 / 14%), 0 1px 18px 0 rgb(11 17 58 / 12%);
 
   /* Alertes : fond, couleur de l'icône */
-  --alerte-fond: #eef4f7;
-  /* Comme studio·bib : vert adouci (le #52b782 plein de la source tranchait
-     sur les autres alertes), icône vert foncé : 9,3:1 */
-  --alerte-succes-fond: #d6f0e2;
-  --alerte-succes-icone: var(--vert-fonce);
-  --alerte-info-fond: var(--bleu-200);
-  --alerte-info-icone: var(--bleu-principal);
-  /* Comme studio·bib : orangé pâle, et non le jaune pâle des actions douces
-     (une alerte n'est pas cliquable) ; icône rouge orangé foncé : 4,9:1 */
-  --alerte-avertissement-fond: #ffe0c2;
-  --alerte-avertissement-icone: var(--rouge-orange-texte-sur-clair);
-  --alerte-erreur-fond: var(--rose-300);
-  --alerte-erreur-icone: #b10000;
+  --alerte-fond: var(--bleu-10);
+  --alerte-succes-fond: var(--couleur-succes-fond);
+  --alerte-succes-icone: var(--couleur-succes);
+  --alerte-info-fond: var(--couleur-info-fond);
+  --alerte-info-icone: var(--couleur-info);
+  --alerte-avertissement-fond: var(--couleur-avertissement-fond);
+  --alerte-avertissement-icone: var(--couleur-avertissement);
+  --alerte-erreur-fond: var(--couleur-erreur-fond);
+  --alerte-erreur-icone: var(--couleur-erreur);
 
   color-scheme: light;
 }

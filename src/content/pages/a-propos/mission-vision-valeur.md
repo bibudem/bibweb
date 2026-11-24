@@ -26,7 +26,7 @@ Le but des ateliers était de mettre à jour la vision, la mission et les valeu
 
 ---
 
-:::icone-texte{icone=target fond=vertPale}
+:::icone-texte{icone=target fond=vert}
 ### Notre mission
 
 Les bibliothèques assurent à la communauté de l’UdeM :
@@ -39,7 +39,7 @@ Les bibliothèques assurent à la communauté de l’UdeM :
 
 ---
 
-:::icone-texte{icone=binoculars fond=bleu100}
+:::icone-texte{icone=binoculars fond=bleu10}
 ### Notre vision
 
 Au cœur de la vie universitaire et fortes d’une équipe engagée, les bibliothèques de l’Université de Montréal comptent parmi les grandes bibliothèques de recherche de langue française. Elles sont un partenaire essentiel au rayonnement des savoirs. Audacieuses, inclusives et accessibles, elles sont un vibrant milieu de vie où les membres de la communauté UdeM se rencontrent et se rassemblent autour d’expériences de découverte et de création riches et stimulantes.
@@ -49,7 +49,7 @@ Au cœur de la vie universitaire et fortes d’une équipe engagée, les bibliot
 
 ### Valeurs
 
-:::encadres{fond=rose300}
+:::encadres{fond=rose}
 #### Passion :icone[heart]
 
 C’est la passion d’apprendre, d’explorer, d’innover et de découvrir qui unit les bibliothèques à la communauté de l’Université de Montréal. C’est aussi la passion de transmettre ses connaissances et de se dépasser qui motive notre équipe à être à l’écoute de ses usagères et usagers afin d’évoluer avec les avancées de leurs milieux. C’est cette passion de contribuer au développement de la recherche et de l’enseignement qui fait des bibliothèques de l’Université de Montréal des actrices incontournables dans le rayonnement des savoirs.

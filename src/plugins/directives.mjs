@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { marqueurFermant, marqueurOuvrant } from './marqueurs-directives.mjs'
 import { messageIconeInconnue, trouverIcone } from './icones.mjs'
+import { messageCleRenommee } from '../lib/couleurs-renommees.mjs'
 
 /*
  * Directives des pages Markdown (remark-directive), pour les rares besoins
@@ -24,7 +25,7 @@ const ALERTES = ['info', 'succes', 'attention', 'erreur']
 /** Couleurs permises pour :icone[nom]{couleur=…} → jeton de tokens.css */
 export const COULEURS_ICONE = {
   texte: 'var(--couleur-texte)',
-  neutre700: 'var(--couleur-neutre-700)',
+  gris700: 'var(--couleur-neutre-700)',
   bleuPrincipal: 'var(--bleu-principal)',
   bleuFonce: 'var(--bleu-fonce)',
   vertFonce: 'var(--vert-fonce)',
@@ -35,8 +36,8 @@ const TAILLE_ICONE = { min: 16, max: 64 }
 
 // Fonds clairs ou moyens : texte foncé lisible, icône assombrie d'IconeCarree
 // visible (les fonds foncés de Section n'y ont pas leur place)
-const FONDS_ICONE_TEXTE = ['vertPale', 'bleu100', 'bleu200', 'jaunePale', 'jaune', 'rose100', 'rose300']
-const FONDS_ENCADRES = ['rose300', 'rose100', 'bleu100', 'bleu200', 'jaunePale', 'vertPale']
+const FONDS_ICONE_TEXTE = ['vert', 'bleu10', 'bleu20', 'jaune40', 'jaune', 'rose50', 'rose']
+const FONDS_ENCADRES = ['rose', 'rose50', 'bleu10', 'bleu20', 'jaune40', 'vert']
 
 /**
  * genre : containerDirective (:::nom … :::), leafDirective (::nom[texte]{…})
@@ -45,20 +46,20 @@ const FONDS_ENCADRES = ['rose300', 'rose100', 'bleu100', 'bleu200', 'jaunePale',
 export const VOCABULAIRE = {
   accordeon: { genre: 'containerDirective', syntaxe: ':::accordeon (un titre ### par volet)', attributs: {} },
   alerte: { genre: 'containerDirective', syntaxe: ':::alerte{type=info}', attributs: { type: { valeurs: ALERTES }, titre: {} } },
-  cartes: { genre: 'containerDirective', syntaxe: ':::cartes (liste de - :icone[nom] [Titre](/lien/))', attributs: { couleur: { valeurs: ['bleuPrincipal', 'vertFonce', 'rose300', 'jaune'] } } },
+  cartes: { genre: 'containerDirective', syntaxe: ':::cartes (liste de - :icone[nom] [Titre](/lien/))', attributs: { couleur: { valeurs: ['bleuPrincipal', 'vertFonce', 'rose', 'jaune'] } } },
   chiffres: { genre: 'containerDirective', syntaxe: ':::chiffres (un titre #### par groupe, suivi d’une liste de 2 ou 3 éléments - 1 234 libellé) ou :::chiffres{forme=tuiles} (une liste seule)', attributs: { forme: { valeurs: ['barres', 'tuiles'] } } },
   citation: { genre: 'containerDirective', syntaxe: ':::citation{source="Nom, fonction"}', attributs: { source: {} } },
-  encadres: { genre: 'containerDirective', syntaxe: ':::encadres{fond=rose300} (un titre #### par encadré, suivi au besoin de :icone[nom])', attributs: { fond: { valeurs: FONDS_ENCADRES } } },
+  encadres: { genre: 'containerDirective', syntaxe: ':::encadres{fond=rose} (un titre #### par encadré, suivi au besoin de :icone[nom])', attributs: { fond: { valeurs: FONDS_ENCADRES } } },
   galerie: { genre: 'containerDirective', syntaxe: ':::galerie (liste de - ![](./images/photo.jpg) Légende)', attributs: {} },
-  'icone-texte': { genre: 'containerDirective', syntaxe: ':::icone-texte{icone=target fond=vertPale}', attributs: { icone: { obligatoire: true }, fond: { valeurs: FONDS_ICONE_TEXTE } } },
+  'icone-texte': { genre: 'containerDirective', syntaxe: ':::icone-texte{icone=target fond=vert}', attributs: { icone: { obligatoire: true }, fond: { valeurs: FONDS_ICONE_TEXTE } } },
   'image-texte': { genre: 'containerDirective', syntaxe: ':::image-texte{position=droite taille=petite}', attributs: { position: { valeurs: ['gauche', 'droite'] }, taille: { valeurs: ['normale', 'petite'] } } },
   logos: { genre: 'containerDirective', syntaxe: ':::logos (liste de - ![Description](./images/logo.png) ou - [![Description](./images/logo.png)](https://lien/))', attributs: {} },
   liens: { genre: 'containerDirective', syntaxe: ':::liens (liste de - [Titre](/lien/) et une description) ou :::liens{forme=grille} (cartes côte à côte)', attributs: { forme: { valeurs: ['liste', 'grille'] } } },
   modalites: { genre: 'containerDirective', syntaxe: ':::modalites', attributs: {} },
-  section: { genre: 'containerDirective', syntaxe: ':::section{fond=bleu100}', attributs: { fond: { obligatoire: true }, id: {} } },
+  section: { genre: 'containerDirective', syntaxe: ':::section{fond=bleu10}', attributs: { fond: { obligatoire: true }, id: {} } },
   tableau: { genre: 'containerDirective', syntaxe: ':::tableau{titre="Nom du tableau"}', attributs: { titre: { obligatoire: true } } },
   bouton: { genre: 'leafDirective', syntaxe: '::bouton[Texte du bouton]{lien=/adresse/}', attributs: { lien: { obligatoire: true }, type: { valeurs: ['principal', 'secondaire'] }, alignement: { valeurs: ['gauche', 'centre'] } } },
-  icone: { genre: 'textDirective', syntaxe: ':icone[nom]{taille=40 couleur=neutre700}', attributs: { taille: {}, couleur: { valeurs: Object.keys(COULEURS_ICONE) } } },
+  icone: { genre: 'textDirective', syntaxe: ':icone[nom]{taille=40 couleur=gris700}', attributs: { taille: {}, couleur: { valeurs: Object.keys(COULEURS_ICONE) } } },
   'nombre-liens': { genre: 'textDirective', syntaxe: ':nombre-liens (nombre de liens du bloc :::liens qui suit)', attributs: {} },
 }
 
@@ -91,7 +92,10 @@ function verifier(noeud, fichier) {
       fichier.fail(`Attribut « ${cle} » inconnu pour « ${noeud.name} ». ${permis.length ? `Attributs possibles : ${permis.join(', ')}.` : 'Cette directive ne prend pas d’attribut.'}`, noeud)
     }
     const { valeurs } = regle.attributs[cle]
-    if (valeurs && !valeurs.includes(valeur)) fichier.fail(`« ${noeud.name} » : ${cle}=${valeur} n'existe pas. Valeurs possibles : ${valeurs.join(', ')}.`, noeud)
+    if (valeurs && !valeurs.includes(valeur)) {
+      const renommee = messageCleRenommee(valeur)
+      fichier.fail(`« ${noeud.name} » : ${renommee ? `${cle}=${valeur} : ${renommee}` : `${cle}=${valeur} n'existe pas.`} Valeurs possibles : ${valeurs.join(', ')}.`, noeud)
+    }
   }
   for (const [cle, { obligatoire }] of Object.entries(regle.attributs)) {
     if (obligatoire && !attributs[cle]?.trim()) fichier.fail(`« ${noeud.name} » : l'attribut ${cle} est obligatoire (${regle.syntaxe}).`, noeud)
@@ -292,7 +296,7 @@ function iconeTexte(noeud, attributs, fichier) {
   const nom = attributs.icone.trim()
   if (!trouverIcone(nom)) fichier.fail(messageIconeInconnue(nom), noeud)
   if (!noeud.children.length) fichier.fail('Le bloc :::icone-texte contient du texte (un titre, des paragraphes, une liste).', noeud)
-  marquer(noeud, 'icone-texte', { icone: nom, fond: attributs.fond ?? 'bleu100' })
+  marquer(noeud, 'icone-texte', { icone: nom, fond: attributs.fond ?? 'bleu10' })
 }
 
 /*
@@ -337,7 +341,7 @@ function encadres(noeud, attributs, fichier) {
     if (volet.children.length < 2) fichier.fail('Cet encadré n’a pas de texte sous son titre.', titre)
     marquer(volet, 'encadre', icone)
   }
-  marquer(noeud, 'encadres', { fond: attributs.fond ?? 'rose300' })
+  marquer(noeud, 'encadres', { fond: attributs.fond ?? 'rose' })
 }
 
 /*

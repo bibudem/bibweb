@@ -11,9 +11,9 @@ banniere:
 
 sections:
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     icone: lock-open
-    couleurIcone: vertPale
+    couleurIcone: vert
     titre: La science ouverte, notre conviction
     libelle: Science ouverte
     texte: |
@@ -45,9 +45,9 @@ sections:
         lien: /recherche/diffuser/financement-monographie/
 
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     icone: head-circuit
-    couleurIcone: rose300
+    couleurIcone: rose
     titre: Intelligence artificielle, une intégration éthique
     libelle: IA éthique
     texte: Nous nous engageons à soutenir et à encourager un usage éthique et innovant de l’intelligence artificielle dans un contexte de recherche, d’enseignement et d’apprentissage. Nous voulons créer un environnement expérientiel où l’IA est mise au service de la collaboration, de la créativité et de l’accès équitable à la connaissance, tout en s’ancrant dans un cadre d’utilisation responsable. Nous avons adopté des principes directeurs pour guider les actions et formations portées par les bibliothèques en IA.
@@ -98,7 +98,7 @@ sections:
           - Installation de postes de travail actif et de luminothérapie
 
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     icone: savoirs-autochtones
     couleurIcone: orange
     titre: Soutien et valorisation des savoirs des Premiers Peuples
@@ -133,7 +133,7 @@ sections:
       lien: /engagements/rapport-GES-bibliotheques-UdeM-2024.pdf
 
   - type: icone-texte
-    fond: bleu100
+    fond: bleu10
     icone: chat-text
     couleurIcone: jaune
     titre: La science en français, notre singularité

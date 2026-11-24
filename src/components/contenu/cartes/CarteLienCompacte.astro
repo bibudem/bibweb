@@ -12,7 +12,7 @@
  *   contour gris --couleur-contour (3,7:1 sur blanc, WCAG 1.4.11), pastille à
  *   contour qui se remplit de bleu foncé au survol et au focus (flèche
  *   blanche, 18:1). Pas de jaune (identité de studio·bib) ;
- * - pleine couleur (`bleuPrincipal`, `vertFonce`, `rose300`, `jaune`), comme
+ * - pleine couleur (`bleuPrincipal`, `vertFonce`, `rose`, `jaune`), comme
  *   CarteIcone : fond de couleur, pastille pleine de la teinte de survol.
  *   Contrastes : texte blanc 7,10:1 sur bleu principal, 11,26:1 sur vert
  *   foncé ; bleu foncé ≥ 11:1 sur rose 300 et sur jaune ; flèche rouge orangé
@@ -30,7 +30,7 @@ import { lienCarte } from '@/lib/liens'
 import { fusionnerStyles, type Style } from '@/lib/styles'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
 
-type Couleur = 'neutre' | 'bleuPrincipal' | 'vertFonce' | 'rose300' | 'jaune'
+type Couleur = 'neutre' | 'bleuPrincipal' | 'vertFonce' | 'rose' | 'jaune'
 
 interface Props {
   titre: string
@@ -52,7 +52,7 @@ const { titre, description, href, target, rel, Icone, niveauTitre = 3, couleur =
 const { interne, rel: relFinal, annonce } = href ? lienCarte(href, target, rel) : { interne: true, rel: undefined, annonce: '' }
 const Titre = (niveauTitre === null ? 'div' : `h${niveauTitre}`) as 'h3'
 const Element = element as 'li'
-const claire = couleur === 'neutre' || couleur === 'rose300' || couleur === 'jaune'
+const claire = couleur === 'neutre' || couleur === 'rose' || couleur === 'jaune'
 // Sans les attributs de portée des composants parents : CarteIcone lui
 // délègue sa variante pleine largeur, et ses règles .carte (grande carte de
 // 400 px) s'appliqueraient sinon à cette rangée
@@ -138,12 +138,12 @@ const attributs = Object.fromEntries(Object.entries(reste).filter(([cle]) => !cl
     --pastille-encre: var(--couleur-sur-fonce);
   }
 
-  .couleur-rose300 {
-    --_fond: var(--rose-300);
+  .couleur-rose {
+    --_fond: var(--rose);
     --_survol: var(--rose-500);
     --_encre: var(--couleur-texte);
     --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
-    --pastille-encre: var(--rouge-orange-texte-sur-clair);
+    --pastille-encre: var(--couleur-texte-accent);
   }
 
   /* Le #ffdb81 et le #bc8800 que la source écrivait en dur, dérivés du jaune */

@@ -33,7 +33,7 @@ import { lienCarte } from '@/lib/liens'
 import { idUnique } from '@/lib/ids'
 import IconeSprite from '@/components/icones/IconeSprite.astro'
 
-type Couleur = 'primary' | 'bleuPrincipal' | 'vertFonce' | 'rose300' | 'jaune'
+type Couleur = 'primary' | 'bleuPrincipal' | 'vertFonce' | 'rose' | 'jaune'
 
 interface Props {
   title: string
@@ -51,8 +51,8 @@ interface Props {
   style?: Style
 }
 
-const COULEURS: Couleur[] = ['primary', 'bleuPrincipal', 'vertFonce', 'rose300', 'jaune']
-const CLAIRES: Couleur[] = ['rose300', 'jaune']
+const COULEURS: Couleur[] = ['primary', 'bleuPrincipal', 'vertFonce', 'rose', 'jaune']
+const CLAIRES: Couleur[] = ['rose', 'jaune']
 
 const { title, Icon, color = 'bleuPrincipal', moreText, href, target, rel, small = false, fullWidth = false, class: classe, style, ...reste } = Astro.props
 
@@ -193,12 +193,12 @@ const idPlus = moreText && href ? idUnique('carte-plus') : undefined
     --_fleche: var(--couleur-sur-fonce);
   }
 
-  .couleur-rose300 {
-    --_fond: var(--rose-300);
+  .couleur-rose {
+    --_fond: var(--rose);
     --_survol: var(--rose-500);
     --_encre: var(--couleur-texte);
     --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
-    --_fleche: var(--rouge-orange-texte-sur-clair);
+    --_fleche: var(--couleur-texte-accent);
   }
 
   /* Le #ffdb81 et le #bc8800 que la source écrivait en dur, dérivés du jaune */
