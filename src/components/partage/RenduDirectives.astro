@@ -14,7 +14,7 @@
  * l'unique taille qu'Astro produit pour une image Markdown.
  *
  * Les directives à gabarit ou à styles propres (cartes, image-texte,
- * galerie, logos, icone-texte, encadrés, tableau) ont leur composant dans
+ * galerie, logos, icone-texte, encadrés, tableau, vidéo) ont leur composant dans
  * directives/ : RenduDirectives charge leurs icônes et leurs images, puis
  * rend leurs enfants dans leur slot.
  */
@@ -48,6 +48,7 @@ import IconeTexte from './directives/IconeTexte.astro'
 import Encadres from './directives/Encadres.astro'
 import Encadre from './directives/Encadre.astro'
 import Tableau from './directives/Tableau.astro'
+import LecteurVideo from './LecteurVideo.astro'
 import { directives, estDirective, type Noeud } from './directives/types'
 import { largeurs, sansConversion } from './directives/images'
 
@@ -109,6 +110,7 @@ for (const noeud of directives(noeuds ?? [])) {
   if (noeud.nom === 'modalite') ressources.set(noeud, await composantIcone(a.icone))
   else if (noeud.nom === 'image') ressources.set(noeud, await chargerImage(a.src))
   else if (noeud.nom === 'image-texte') ressources.set(noeud, await chargerImage(a.image))
+  else if (noeud.nom === 'video' && a.image) ressources.set(noeud, await chargerImage(a.image))
   else if (noeud.nom === 'figure' || noeud.nom === 'logo') ressources.set(noeud, await chargerImage(a.src))
   else if (noeud.nom === 'icone-texte' || (noeud.nom === 'encadre' && a.icone)) ressources.set(noeud, await composantIcone(a.icone))
   else if (noeud.nom === 'cartes') {
@@ -263,6 +265,8 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
             <Astro.self noeuds={enfants} />
           </Encadre>
         )
+      case 'video':
+        return <LecteurVideo youtube={a.youtube} titreVideo={a.titreVideo} image={ressources.get(noeud)} transcription={a.transcription} />
       case 'separateur':
         return <Separateur />
       case 'citation':
@@ -334,4 +338,5 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
   .boutons.centre {
     justify-content: center;
   }
+
 </style>
