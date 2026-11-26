@@ -25,7 +25,8 @@
  * carte vert foncé, texte, liens et focus blancs (11,26:1), bouton clair.
  * `teinteEncart: bleu` : carte bleu UdeM, texte, liens et focus blancs
  * (7,1:1), bouton clair. `teinteEncart: bleuFonce` : carte bleu foncé,
- * mêmes réglages.
+ * mêmes réglages. `teinteEncart: vert` : carte vert (--vert), texte, liens,
+ * focus et bouton bleu foncé comme sur le rose.
  */
 import { Picture } from 'astro:assets'
 import BandeImageTexte from '@/components/contenu/mise-en-page/BandeImageTexte.astro'
@@ -43,7 +44,7 @@ type Props = { bloc: BlocDe<'image-texte'> }
 
 const { bloc } = Astro.props
 const encart = bloc.disposition === 'encart'
-const encartFonce = encart && bloc.teinteEncart !== 'rose'
+const encartFonce = encart && bloc.teinteEncart !== 'rose' && bloc.teinteEncart !== 'vert'
 const clair = !encart && (bloc.fond !== undefined && FONDS[bloc.fond].ton === 'fonce')
 const boutons = [...(bloc.bouton ? [bloc.bouton] : []), ...(bloc.boutons ?? [])]
 const largeurImage = bloc.image.width
@@ -57,7 +58,7 @@ const couleurIcones = bloc.couleurIcones ? couleurPalette(bloc.couleurIcones) : 
 
 {
   encart ? (
-    <div class:list={['encart', { 'encart-vert-fonce': encartFonce, 'encart-bleu': bloc.teinteEncart === 'bleu', 'encart-bleu-fonce': bloc.teinteEncart === 'bleuFonce' }, 'theme-clair', `image-${bloc.positionImage}`]}>
+    <div class:list={['encart', { 'encart-vert': bloc.teinteEncart === 'vert', 'encart-vert-fonce': encartFonce, 'encart-bleu': bloc.teinteEncart === 'bleu', 'encart-bleu-fonce': bloc.teinteEncart === 'bleuFonce' }, 'theme-clair', `image-${bloc.positionImage}`]}>
       <div class="encart-texte">
         <Titre texte={bloc.titre} id={bloc.id} />
         <TexteMarkdown texte={bloc.texte} brut />
@@ -231,6 +232,12 @@ const couleurIcones = bloc.couleurIcones ? couleurPalette(bloc.couleurIcones) : 
     border-radius: var(--rayon-grand);
     background-color: var(--_fond);
     color: var(--bleu-fonce);
+  }
+
+  /* Variante vert (jeton Harmonium --vert) : mêmes réglages que le
+     rose, bleu foncé sur vert, 7,3:1 */
+  .encart-vert {
+    --_fond: var(--vert);
   }
 
   /* Variante vert foncé : réglages du ton « fonce » de Section (blanc sur
