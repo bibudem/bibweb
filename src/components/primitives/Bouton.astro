@@ -11,6 +11,7 @@
  * - `retour` : lien de retour (page 404 vers l'accueil) ; flèche vers la
  *   gauche avant le texte, qui recule d'un cran au survol et au focus, au
  *   lieu de la flèche de fin.
+ * - `Icone` : icône décorative avant le texte (courriel…), qui ne bouge pas.
  * - `light` (inopérant dans la source) : variante pour fond foncé.
  * - Corrigé : `rel` fourni n'est plus écrasé, et une adresse absolue d'un
  *   sous-domaine des Bibliothèques reste un lien ordinaire.
@@ -33,6 +34,8 @@ interface Props {
   light?: boolean
   disableEndIcon?: boolean
   retour?: boolean
+  /** Icône avant le texte (composant Phosphor), fixe au survol : ::bouton{icone=envelope} */
+  Icone?: any
   target?: string
   rel?: string
   type?: 'button' | 'submit' | 'reset'
@@ -50,6 +53,7 @@ const {
   light = false,
   disableEndIcon = false,
   retour = false,
+  Icone,
   target,
   rel,
   type = 'button',
@@ -78,7 +82,8 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
 {
   estLien ? (
     <a href={href} target={cible} rel={relFinal} class:list={listeClasses} style={fusionnerStyles(style)} {...reste}>
-      {estLien && retour && <IconeSprite icone={ArrowLeftIcon} size={24} aria-hidden="true" focusable="false" className="icone-debut" />}
+      {estLien && retour && <IconeSprite icone={ArrowLeftIcon} size={24} aria-hidden="true" focusable="false" className="icone-debut icone-retour" />}
+      {!retour && Icone && <IconeSprite icone={Icone} size={24} aria-hidden="true" focusable="false" className="icone-debut" />}
       <span class="libelle"><slot /></span>
       {annonce && <span class="visuellement-masque">{annonce}</span>}
       {IconeFin && <IconeSprite icone={IconeFin} size={24} aria-hidden="true" focusable="false" className={interne ? 'icone-fin' : 'icone-fin icone-externe'} />}
@@ -175,12 +180,12 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .bouton:hover > :global(.icone-debut) {
+    .bouton:hover > :global(.icone-retour) {
       transform: translateX(-3px);
     }
   }
 
-  .bouton:focus-visible > :global(.icone-debut) {
+  .bouton:focus-visible > :global(.icone-retour) {
     transform: translateX(-3px);
   }
 

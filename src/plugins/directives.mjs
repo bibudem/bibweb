@@ -58,7 +58,7 @@ export const VOCABULAIRE = {
   modalites: { genre: 'containerDirective', syntaxe: ':::modalites', attributs: {} },
   section: { genre: 'containerDirective', syntaxe: ':::section{fond=bleu10}', attributs: { fond: { obligatoire: true }, id: {} } },
   tableau: { genre: 'containerDirective', syntaxe: ':::tableau{titre="Nom du tableau"}', attributs: { titre: { obligatoire: true } } },
-  bouton: { genre: 'leafDirective', syntaxe: '::bouton[Texte du bouton]{lien=/adresse/}', attributs: { lien: { obligatoire: true }, type: { valeurs: ['principal', 'secondaire'] }, alignement: { valeurs: ['gauche', 'centre'] } } },
+  bouton: { genre: 'leafDirective', syntaxe: '::bouton[Texte du bouton]{lien=/adresse/}', attributs: { lien: { obligatoire: true }, type: { valeurs: ['principal', 'secondaire', 'contour'] }, alignement: { valeurs: ['gauche', 'centre'] }, icone: {} } },
   video: { genre: 'leafDirective', syntaxe: '::video[Titre de la vidéo]{youtube=3cMdFZbivdg image=./images/apercu.webp transcription=/adresse/}', attributs: { youtube: { obligatoire: true }, image: {}, transcription: {} } },
   icone: { genre: 'textDirective', syntaxe: ':icone[nom]{taille=40 couleur=gris700}', attributs: { taille: {}, couleur: { valeurs: Object.keys(COULEURS_ICONE) } } },
   'nombre-liens': { genre: 'textDirective', syntaxe: ':nombre-liens (nombre de liens du bloc :::liens qui suit)', attributs: {} },
@@ -505,7 +505,8 @@ export function remarkDirectivesBib() {
           else if (noeud.name === 'video') video(noeud, attributs, fichier)
           else if (noeud.name === 'bouton') {
             if (!texteDe(noeud).trim()) fichier.fail('Le bouton n’a pas de texte : ::bouton[Texte du bouton]{lien=/adresse/}', noeud)
-            marquer(noeud, 'bouton', { lien: attributs.lien, type: attributs.type ?? 'principal', alignement: attributs.alignement ?? 'gauche' })
+            if (attributs.icone && !trouverIcone(attributs.icone)) fichier.fail(messageIconeInconnue(attributs.icone), noeud)
+            marquer(noeud, 'bouton', { lien: attributs.lien, type: attributs.type ?? 'principal', alignement: attributs.alignement ?? 'gauche', icone: attributs.icone })
           }
         } else if (noeud.type === 'heading') {
           ancreTitre(noeud, fichier)

@@ -113,6 +113,11 @@ for (const noeud of directives(noeuds ?? [])) {
   else if (noeud.nom === 'video' && a.image) ressources.set(noeud, await chargerImage(a.image))
   else if (noeud.nom === 'figure' || noeud.nom === 'logo') ressources.set(noeud, await chargerImage(a.src))
   else if (noeud.nom === 'icone-texte' || (noeud.nom === 'encadre' && a.icone)) ressources.set(noeud, await composantIcone(a.icone))
+  else if (noeud.nom === 'boutons') {
+    for (const bouton of directives(noeud.enfants)) {
+      if (bouton.attributs.icone) ressources.set(bouton, await composantIcone(bouton.attributs.icone))
+    }
+  }
   else if (noeud.nom === 'cartes') {
     for (const carte of directives(noeud.enfants)) {
       ressources.set(carte, carte.attributs.image ? await chargerImage(carte.attributs.image) : await composantIcone(carte.attributs.icone))
@@ -165,7 +170,7 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
         return (
           <div class:list={['boutons', { centre: a.centre }]}>
             {directives(noeud.enfants).map((bouton) => (
-              <Bouton href={bouton.attributs.lien} primary={bouton.attributs.type !== 'secondaire'} secondary={bouton.attributs.type === 'secondaire'}>
+              <Bouton href={bouton.attributs.lien} primary={bouton.attributs.type !== 'secondaire'} secondary={bouton.attributs.type === 'secondaire'} variant={bouton.attributs.type === 'contour' ? 'outlined' : undefined} Icone={ressources.get(bouton)}>
                 <Astro.self noeuds={bouton.enfants} />
               </Bouton>
             ))}
