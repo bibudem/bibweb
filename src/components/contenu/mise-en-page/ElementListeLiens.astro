@@ -115,6 +115,13 @@ const Titre = `h${niveauTitre}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
     --carte-fond-survol: color-mix(in srgb, currentColor 14%, transparent);
   }
 
+  /* Sur une bande de fond clair (bleu10, rose…), la teinte translucide se
+     perdait dans le fond : la carte prend la couleur de surface (blanche) */
+  :global(.ton-clair) .element-riche {
+    --carte-fond: var(--couleur-surface);
+    --carte-fond-survol: color-mix(in srgb, currentColor 6%, var(--couleur-surface));
+  }
+
 
   .texte {
     flex: 1 1 auto;
