@@ -24,7 +24,7 @@ En soutenant le Fonds des livres rares, vous contribuez à préserver cette hist
 :::galerie
 - ![](./images/cartons-invitation.webp) Cartons d’invitation à des vernissages d’expositions
 - ![](./images/corrections-manuscrites.webp) Corrections manuscrites d’un ancien propriétaire
-- ![](./images/illustration-animaliere.webp) Illustration animalière dans « Voyage en Abyssinie »
+- ![](./images/illustration-animaliere.webp) Illustration animalière dans « Voyage en Abyssinie »
 :::
 
 ::bouton[Faire un don au Fonds des livres rares]{lien="https://formulairereseau.umontreal.ca/site/Donation2?1560.donation=form1&df_id=1560&mfc_pref=T&s_locale=fr_CA"}
