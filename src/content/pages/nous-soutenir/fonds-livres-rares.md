@@ -7,15 +7,19 @@ superHero:
 ---
 ## Soutenez le fonds des livres rares de l’Université de Montréal
 
-### Le trésor des bibliothèques de l’UdeM
+::video[Ouvrages d’exception | La Bibliothèque des livres rares et collections spéciales de l’UdeM]{youtube=3cMdFZbivdg image=../espaces/blrcs/images/video-ouvrages-exception.webp}
 
-Près de 175 000 documents anciens, rares ou précieux forment les collections spéciales de l’Université de Montréal.
+### Un patrimoine documentaire au service de la recherche et de l’enseignement
 
-À la Bibliothèque des livres rares et collections spéciales où ils sont conservés, on trouve des tablettes d’argile de 4 000 ans d’âge, des manuscrits du Moyen Âge, des affiches de guerre (et de l’entre-deux-guerres) ou encore des livres imprimés de l’époque de Gutenberg jusqu’à nos jours.
+La [Bibliothèque des livres rares et collections spéciales](/espaces/blrcs/) de l’Université de Montréal donne accès à près de 175 000 documents sur des sujets touchant de nombreuses disciplines. Manuscrits, imprimés anciens, cartes et affiches témoignent de la manière dont les idées et les savoirs ont circulé au fil des siècles.
 
-Les documents de notre collection s’inscrivent dans l’histoire mondiale. Saviez-vous que les fabricants des premiers papiers laissaient leur marque en filigrane, et qu’il est possible de retracer ainsi des maîtres papetiers ayant exercé il y a plus de 500 ans? Ou encore, que notre exemplaire des Commentaires de M. Pierre André Matthiole, médecin senois, sur les six livres de Ped. Dioscoride Anazarbeen de la matière médicinale comprend des corrections manuscrites d’un de ses anciens propriétaires, et est donc unique au monde?
+Aujourd’hui, ces collections permettent aux étudiantes et étudiants de travailler avec des sources contemporaines aux époques étudiées; au corps professoral de les intégrer à ses cours; et à la communauté universitaire d’explorer de nouvelles pistes de recherche.
 
-Ce ne sont que deux exemples dont nous assurons la conservation. Or, cette conservation comprend des travaux de restauration aussi inévitables que le temps qui passe et l’histoire qui se construit. Compte tenu de la grande quantité d’œuvres et de leur valeur, l’Université de Montréal ne peut pas couvrir l’entièreté des frais de restauration et de conservation de ces pièces uniques.
+### Enrichir, préserver et mettre en valeur les collections
+
+L’acquisition d’un ouvrage peut ouvrir une nouvelle piste de recherche. Pour que les documents demeurent accessibles au fil du temps, la Bibliothèque veille à leur conservation et restaure ceux qui se fragilisent. Elle fait aussi connaître ses collections au-delà de la salle de consultation, en numérisant certaines pièces et en les faisant découvrir au public lors d’expositions.
+
+En soutenant le Fonds des livres rares, vous contribuez à préserver cette histoire pour que les prochaines générations puissent, à leur tour, l’étudier et porter un regard nouveau sur le passé.
 
 :::galerie
 - ![](./images/cartons-invitation.webp) Cartons d’invitation à des vernissages d’expositions
@@ -23,32 +27,30 @@ Ce ne sont que deux exemples dont nous assurons la conservation. Or, cette conse
 - ![](./images/illustration-animaliere.webp) Illustration animalière dans « Voyage en Abyssinie »
 :::
 
-::bouton[Je donne]{lien="https://formulairereseau.umontreal.ca/site/Donation2?df_id=1560&1560.donation=form1&mfc_pref=T&s_locale=fr_CA"}
+::bouton[Faire un don au Fonds des livres rares]{lien="https://formulairereseau.umontreal.ca/site/Donation2?1560.donation=form1&df_id=1560&mfc_pref=T&s_locale=fr_CA"}
 
-### Documents exceptionnels à adopter
+Vous aimeriez en savoir plus sur les façons de soutenir le Fonds? L’équipe de la Bibliothèque des livres rares et collections spéciales sera heureuse de vous rencontrer, de vous présenter les projets en cours et d’échanger avec vous sur ce que votre don pourrait rendre possible.
 
-Votre soutien peut aussi se traduire par une adoption d’un livre ancien. En posant ce geste, vous participerez directement à la restauration complète d’un ouvrage. Une fois restauré, celui-ci sera conservé dans un boîtier protecteur et accompagné d’un certificat d’adoption, témoignant de votre contribution à la préservation de ce patrimoine pour les générations futures.
+::bouton[Communiquer avec l’équipe de la Bibliothèque]{lien="mailto:philanthropie@bib.umontreal.ca" type=contour icone=envelope}
 
-En 2023-2024, le Dr Gilles Théorêt, diplômé de l’Université de Montréal, a ainsi adopté notre édition datée de 1632 des Voyages de la Nouvelle France occidentale, dicte Canada de Samuel de Champlain. Ce document, une version révisée et augmentée de l’édition de 1613, est considéré comme la plus importante de toutes les éditions de cet ouvrage. La carte géographique qui l’accompagne est la première représentation occidentale de l’entièreté des Grands Lacs.
+### Adopter un ouvrage ancien
+
+L’adoption vous permet de soutenir la restauration d’un ouvrage en particulier. Une fois restauré, celui-ci est conservé dans un boîtier protecteur, et un certificat d’adoption témoigne de votre contribution à sa préservation.
+
+Le Dr Gilles Théorêt, diplômé de l’Université de Montréal, a ainsi choisi d’adopter une édition de 1632 des Voyages de la Nouvelle France occidentale de Samuel de Champlain.
 
 ::::image-texte{taille=petite position=gauche}
 ![](./images/voyages-nouvelle-france.webp)
 
-:::citation{source="Dr Gilles Théorêt, diplômé de l’Université de Montréal et adoptant de l’ouvrage Les voyages de la Nouvelle France occidentale"}
+:::citation{source="Dr Gilles Théorêt, diplômé de l’Université de Montréal"}
 L’histoire peut se perdre ou être déformée par le temps. Il est important d’avoir des sources de première main pour la comprendre.
 :::
 ::::
 
-### Soutenez notre héritage culturel
+::bouton[Adopter un ouvrage]{lien="mailto:philanthropie@bib.umontreal.ca" icone=envelope}
 
-Votre participation contribuera à restaurer, protéger et conserver des livres et des affiches d’une valeur inestimable.
+### Découvrir la bibliothèque
 
-Chaque geste de générosité nous aide à soutenir les coûts de travaux, tels que :
-- Création d’un boîtier pour un livre ancien – de 400 $ à 500 $;
-- Nettoyage d’un livre ancien – entre 800 $ et 1 500 $, selon le format;
-- Reliure ou restauration d’un livre ancien – jusqu’à 10 000 $;
-- Restauration d’une affiche ancienne – entre 1 500 $ et 3 000 $.
+Le patrimoine documentaire de la Bibliothèque des livres rares et collections spéciales est ouvert à toutes et à tous. Les visites et les expositions sont autant d’occasions de découvrir les collections et de mieux comprendre leur histoire. Si vous souhaitez explorer un sujet ou voir un document de près, l’équipe peut vous accompagner dans vos recherches et vous aider à préparer une consultation sur place.
 
-**Chaque don est précieux, tout comme ces livres**. En combinant votre générosité à celle d’autres personnes au grand cœur, nous intensifions notre plan de restauration en fonction des priorités et de la condition des ouvrages pour qu’ils restent accessibles pour les générations futures.
-
-::bouton[Je donne]{lien="https://formulairereseau.umontreal.ca/site/Donation2?df_id=1560&1560.donation=form1&mfc_pref=T&s_locale=fr_CA"}
+::bouton[En savoir plus sur la bibliothèque]{lien=/espaces/blrcs/ type=contour}
