@@ -344,4 +344,26 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
     justify-content: center;
   }
 
+  /* Bouton qui suit un paragraphe ou une galerie : il en est le
+     prolongement. La marge de l'élément suffit ; celle du bouton (1rem)
+     doublait l'écart. */
+  :global(p) + .boutons > :global(.bouton),
+  :global(.galerie) + .boutons > :global(.bouton),
+  :global(.image-texte-petite) + .boutons > :global(.bouton) {
+    margin-top: 0;
+  }
+
+  /* Paragraphe après un bouton : il ouvre une nouvelle idée, bien détachée
+     du bouton qui conclut la précédente */
+  .boutons:has(+ :global(p)) {
+    margin-block-end: var(--espace-bloc);
+  }
+
+  /* Galerie ou petite image-texte suivie d'un bouton (fonds-livres-rares :
+     « Faire un don », « Adopter un ouvrage ») : le bouton se rattache au
+     bloc, à l'écart d'un paragraphe */
+  :global(.galerie:has(+ .boutons)),
+  :global(.image-texte-petite:has(+ .boutons)) {
+    margin-block-end: var(--espace-element);
+  }
 </style>
