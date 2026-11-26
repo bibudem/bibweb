@@ -8,10 +8,11 @@ banniere:
   taille: petite
 
 sections:
-  - type: icone-texte
-    fond: bleu10
-    icone: flower-tulip
-    couleurIcone: vert
+  - type: image-texte
+    disposition: encart
+    teinteEncart: vert
+    image: ./images/livres-rares.webp
+    positionImage: droite
     titre: Cultiver la curiosité
     texte: |
       Véritable milieu de vie où se rencontre et se rassemble la communauté universitaire, les bibliothèques de l’Université de Montréal sont des partenaires essentiels au rayonnement des savoirs. Lieux où on cultive la curiosité, elles comptent parmi les grandes bibliothèques de recherche de langue française.
@@ -23,25 +24,26 @@ sections:
       - texte: Faire un don maintenant
         lien: https://formulairereseau.umontreal.ca/site/Donation2?df_id=1560&1560.donation=form1&mfc_pref=T&s_locale=fr_CA
 
-  - type: cartes-images
-    fond: vertFonce
-    cartes:
-      - titre: Fonds des livres rares de l’UdeM
-        image: ./images/fonds-livres-rares.webp
-        lien: /nous-soutenir/fonds-livres-rares/
-        appel: Découvrir la campagne
-
-  - type: icone-texte
+  - type: liste-liens
     fond: bleu10
-    id: services-diplomes
-    icone: graduation-cap
-    couleurIcone: bleuPrincipalFonce
-    titre: Des services pour la communauté de l’UdeM+, même après le diplôme!
-    texte: |
-      Après la fin de vos études à l’UdeM, HEC Montréal et Polytechnique Montréal, les bibliothèques continuent de vous accueillir!
+    titre: Projets philanthropiques en cours
+    liens:
+      - titre: Fonds des livres rares de l’UdeM
+        description: En soutenant le Fonds des livres rares de l’Université de Montréal, vous contribuez à enrichir, à préserver et à faire connaître les collections de la Bibliothèque des livres rares et collections spéciales. Votre don appuie des projets d’acquisition, de restauration, de numérisation et d’exposition qui permettent de transmettre ce patrimoine et de le faire découvrir à un plus large public.
+        lien: /nous-soutenir/fonds-livres-rares/
 
-      - Emprunt gratuit de la collection imprimée
-      - Accès sur place aux ressources électroniques
+  - type: texte-icones
+    id: services-diplomes
+    titre: Des services, même après le diplôme!
+    texte: Après la fin de vos études à l’UdeM, HEC Montréal et Polytechnique Montréal, les bibliothèques continuent de vous accueillir!
+    couleurIcones: bleuPrincipal
+    icones:
+      - icone: books
+        texte: Emprunt gratuit de la collection imprimée
+      - icone: file-text
+        texte: Accès sur place aux ressources électroniques
+      - icone: chalkboard-teacher
+        texte: Visites de la Bibliothèque des livres rares et collections spéciales
 
   - type: icone-texte
     fond: rose
@@ -49,40 +51,22 @@ sections:
     couleurIcone: rose500
     titre: Remerciements
     texte: |
-      Un immense merci à toutes les personnes qui ont contribué à la réussite de la mission des bibliothèques de l’Université de Montréal
+      Un immense merci à toutes les personnes qui contribuent à la mission des bibliothèques de l’Université de Montréal. La générosité de nos donatrices et donateurs nous permet d’enrichir l’expérience de la communauté universitaire par des projets concrets pensés en fonction de leurs besoins.
 
-      En particulier, nous souhaitons remercier chaleureusement les généreux donateurs et donatrices, dont le soutien financier a été essentiel à la concrétisation de projets novateurs et à la création d’occasions exceptionnelles pour la communauté universitaire.
+      Nous remercions chaleureusement les étudiantes et étudiants de l’UdeM pour leur contribution par l’intermédiaire des Fonds d’amélioration de la vie étudiante (FAVE) et des Frais d’amélioration des services technologiques et informatiques et des collections des bibliothèques (STIC).
 
-      La confiance des étudiantes et étudiants de l’Université de Montréal, exprimée à travers le Fonds de l’amélioration de la vie étudiante et les frais d’amélioration des services technologiques et informatiques et des collections des bibliothèques (STIC), est une source inépuisable de motivation. Leur engagement a permis la mise en œuvre de nombreuses initiatives stimulantes, adaptées aux besoins évolutifs de la communauté. Entre autres projets réalisés grâce à leur soutien, on compte la création d’ateliers de fabrication numérique, l’enrichissement des collections des bibliothèques, l’achat d’équipement de travail actif et de cabines insonorisées pour le travail individuel et d’équipe, et le renouvellement de plusieurs places de travail à travers le réseau.
+      Ces fonds pour a permis de créer les ateliers de fabrication numérique, de renouveler le mobilier dans nos bibliothèques et d’acquérir des outils technologiques de pointe pour soutenir la réussite étudiante. Nous avons aussi enrichi nos collections et installé des cabines insonorisées pour le travail individuel et en équipe.
 
-      Merci pour votre collaboration précieuse et votre engagement continu. Votre soutien joue un rôle fondamental dans la construction d’un environnement universitaire enrichissant pour tous et toutes.
+      Votre soutien ouvre de nouvelles possibilités à celles et ceux qui viennent à la bibliothèque pour apprendre, créer et faire avancer la recherche.
 
-  - type: accordeons
-    fond: rose50
-    titre: Aperçu des réalisations
-    volets:
-      - titre: Cabines insonorisées
-        texte: |
-          - Bibliothèque d’aménagement
-          - Bibliothèque du campus de l’UdeM à Laval
-          - Bibliothèque de droit
-          - Bibliothèque Marguerite-d’Youville
-          - Bibliothèque de médecine vétérinaire
-          - Bibliothèque Thérèse-Gouin-Décarie
-          - Bibliothèque de la santé
-      - titre: Achats de licence Adobe Creative Cloud
-        texte: Profitez d’un accès complet aux outils Adobe Creative Cloud pour tous vos projets graphiques, vidéo et audio.
-      - titre: Postes de travail actif
-        texte: Des postes de travail actifs équipés de vélos stationnaires, de ballons d’assise ou de surfaces modulables, pour bouger tout en étudiant.
-      - titre: Ateliers de fabrication
-        texte: Des espaces inspirants pour expérimenter, apprendre et créer avec des outils technologiques.
+      Merci.
 
-  - type: icone-texte
-    fond: bleu10
-    icone: book-open-text
-    couleurIcone: vertFonce
+  - type: image-texte
     titre: Don de livres
-    texte: Les Bibliothèques accueillent avec intérêt les propositions de don de collections spéciales ou d’ouvrages ayant une valeur unique pour enrichir nos collections. Pour assurer une intégration harmonieuse aux ressources existantes, nous vous invitons à consulter notre politique de don avant de soumettre votre offre.
+    texte: Les bibliothèques de l’Université de Montréal accueillent avec intérêt les propositions de don de collections spéciales ou d’ouvrages qui se distinguent par leur rareté ou leur caractère unique. Pour connaître les critères de sélection, nous vous invitons à consulter notre politique de don avant de soumettre votre proposition.
+    image: ./images/don-livres.webp
+    positionImage: droite
+    recadrerImage: true
     boutons:
-      - texte: Politique de dons 2025
+      - texte: Consulter la politique de don
         lien: /nous-soutenir/politique-dons-2025-adoptee.pdf
