@@ -1877,6 +1877,19 @@
       ],
       "telephone": "514 353-6000, poste 1617",
       "courriel": "sosthene.yamale@umontreal.ca"
+    },
+    {
+      "prenom": "Oscar",
+      "nom": "Salazar Varela",
+      "fonction": "Bibliothécaire disciplinaire",
+      "disciplines": [
+        "Musique"
+      ],
+      "bibliotheques": [
+        "Bibliothèque de musique"
+      ],
+      "telephone": "514 343-6111, poste 4701",
+      "courriel": "oscar.salazar.varela@umontreal.ca"
     }
   ]
 }

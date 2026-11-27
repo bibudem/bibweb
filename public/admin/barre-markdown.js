@@ -69,6 +69,7 @@ const BLOCS = [
   { nom: 'Tableau', aide: 'Tableau avec un titre (lu par les lecteurs d’écran).', texte: ':::tableau{titre="Nom du tableau"}\n| Colonne 1 | Colonne 2 |\n| --- | --- |\n| Valeur | Valeur |\n| Valeur | Valeur |\n:::' },
   { nom: 'Accordéon', aide: 'Volets repliables : un titre ### par volet.', texte: ':::accordeon\n### Premier volet\n\nContenu du premier volet.\n\n### Deuxième volet\n\nContenu du deuxième volet.\n:::' },
   { nom: 'Citation', aide: 'Citation avec sa source.', texte: ':::citation{source="Nom, fonction"}\nTexte de la citation.\n:::' },
+  { nom: 'Vidéo', aide: 'Vidéo YouTube : son titre entre crochets, son identifiant (11 caractères après watch?v=).', texte: '::video[Titre de la vidéo]{youtube=3cMdFZbivdg}' },
   { nom: 'Chiffres', aide: 'Chiffres clés : un titre #### par groupe, puis 2 ou 3 éléments.', texte: ':::chiffres\n#### Livres\n\n- 1 000 imprimés\n- 2 000 électroniques\n:::' },
   { nom: 'Encadrés', aide: 'Encadrés colorés : un titre #### par encadré.', texte: ':::encadres{fond=bleu10}\n#### Premier encadré\n\nTexte du premier encadré.\n\n#### Deuxième encadré\n\nTexte du deuxième encadré.\n:::' },
 ]

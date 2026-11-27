@@ -58,7 +58,8 @@ export const VOCABULAIRE = {
   modalites: { genre: 'containerDirective', syntaxe: ':::modalites', attributs: {} },
   section: { genre: 'containerDirective', syntaxe: ':::section{fond=bleu10}', attributs: { fond: { obligatoire: true }, id: {} } },
   tableau: { genre: 'containerDirective', syntaxe: ':::tableau{titre="Nom du tableau"}', attributs: { titre: { obligatoire: true } } },
-  bouton: { genre: 'leafDirective', syntaxe: '::bouton[Texte du bouton]{lien=/adresse/}', attributs: { lien: { obligatoire: true }, type: { valeurs: ['principal', 'secondaire'] }, alignement: { valeurs: ['gauche', 'centre'] } } },
+  bouton: { genre: 'leafDirective', syntaxe: '::bouton[Texte du bouton]{lien=/adresse/}', attributs: { lien: { obligatoire: true }, type: { valeurs: ['principal', 'secondaire', 'contour'] }, alignement: { valeurs: ['gauche', 'centre'] }, icone: {} } },
+  video: { genre: 'leafDirective', syntaxe: '::video[Titre de la vidéo]{youtube=3cMdFZbivdg image=./images/apercu.webp transcription=/adresse/}', attributs: { youtube: { obligatoire: true }, image: {}, transcription: {} } },
   icone: { genre: 'textDirective', syntaxe: ':icone[nom]{taille=40 couleur=gris700}', attributs: { taille: {}, couleur: { valeurs: Object.keys(COULEURS_ICONE) } } },
   'nombre-liens': { genre: 'textDirective', syntaxe: ':nombre-liens (nombre de liens du bloc :::liens qui suit)', attributs: {} },
 }
@@ -246,6 +247,26 @@ function imageTexte(noeud, attributs, fichier) {
   if (!reste.length) fichier.fail(`Le bloc :::image-texte n'a pas de texte après l'image. ${exemple}`, noeud)
   noeud.children = reste
   marquer(noeud, 'image-texte', { image: cheminImage(image.url, fichier, image), alt: petite ? (image.alt ?? '').trim() : '', position: attributs.position ?? 'droite', taille: attributs.taille ?? 'normale' })
+}
+
+/*
+ * ::video[Titre de la vidéo]{youtube=… image=./images/apercu.webp transcription=/adresse/}
+ * Le titre, lu sur le bouton de lecture et par les lecteurs d'écran, est
+ * obligatoire (WCAG 4.1.2) ; l'image, décorative, se place derrière le bouton.
+ * Rendu par LecteurVideo, comme le bloc « video » des vitrines.
+ */
+function video(noeud, attributs, fichier) {
+  const exemple = 'Exemple :\n::video[Titre de la vidéo]{youtube=3cMdFZbivdg}'
+  const titreVideo = texteDe(noeud).trim()
+  if (!titreVideo) fichier.fail(`La vidéo n’a pas de titre entre crochets : il est lu sur le bouton de lecture. ${exemple}`, noeud)
+  if (!/^[\w-]{11}$/.test(attributs.youtube)) fichier.fail(`« youtube » : écrivez l’identifiant de la vidéo, les 11 caractères après watch?v= dans son adresse. ${exemple}`, noeud)
+  noeud.children = []
+  marquer(noeud, 'video', {
+    youtube: attributs.youtube,
+    titreVideo,
+    image: attributs.image ? cheminImage(attributs.image, fichier, noeud) : undefined,
+    transcription: attributs.transcription,
+  })
 }
 
 /*
@@ -481,9 +502,11 @@ export function remarkDirectivesBib() {
           else if (noeud.name === 'citation') marquer(noeud, 'citation', { source: attributs.source })
           else if (noeud.name === 'alerte') marquer(noeud, 'alerte', { type: attributs.type ?? 'info', titre: attributs.titre })
           else if (noeud.name === 'section') marquer(noeud, 'section', { fond: attributs.fond, id: attributs.id })
+          else if (noeud.name === 'video') video(noeud, attributs, fichier)
           else if (noeud.name === 'bouton') {
             if (!texteDe(noeud).trim()) fichier.fail('Le bouton n’a pas de texte : ::bouton[Texte du bouton]{lien=/adresse/}', noeud)
-            marquer(noeud, 'bouton', { lien: attributs.lien, type: attributs.type ?? 'principal', alignement: attributs.alignement ?? 'gauche' })
+            if (attributs.icone && !trouverIcone(attributs.icone)) fichier.fail(messageIconeInconnue(attributs.icone), noeud)
+            marquer(noeud, 'bouton', { lien: attributs.lien, type: attributs.type ?? 'principal', alignement: attributs.alignement ?? 'gauche', icone: attributs.icone })
           }
         } else if (noeud.type === 'heading') {
           ancreTitre(noeud, fichier)

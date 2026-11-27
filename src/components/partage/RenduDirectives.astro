@@ -14,7 +14,7 @@
  * l'unique taille qu'Astro produit pour une image Markdown.
  *
  * Les directives à gabarit ou à styles propres (cartes, image-texte,
- * galerie, logos, icone-texte, encadrés, tableau) ont leur composant dans
+ * galerie, logos, icone-texte, encadrés, tableau, vidéo) ont leur composant dans
  * directives/ : RenduDirectives charge leurs icônes et leurs images, puis
  * rend leurs enfants dans leur slot.
  */
@@ -48,6 +48,7 @@ import IconeTexte from './directives/IconeTexte.astro'
 import Encadres from './directives/Encadres.astro'
 import Encadre from './directives/Encadre.astro'
 import Tableau from './directives/Tableau.astro'
+import LecteurVideo from './LecteurVideo.astro'
 import { directives, estDirective, type Noeud } from './directives/types'
 import { largeurs, sansConversion } from './directives/images'
 
@@ -109,8 +110,14 @@ for (const noeud of directives(noeuds ?? [])) {
   if (noeud.nom === 'modalite') ressources.set(noeud, await composantIcone(a.icone))
   else if (noeud.nom === 'image') ressources.set(noeud, await chargerImage(a.src))
   else if (noeud.nom === 'image-texte') ressources.set(noeud, await chargerImage(a.image))
+  else if (noeud.nom === 'video' && a.image) ressources.set(noeud, await chargerImage(a.image))
   else if (noeud.nom === 'figure' || noeud.nom === 'logo') ressources.set(noeud, await chargerImage(a.src))
   else if (noeud.nom === 'icone-texte' || (noeud.nom === 'encadre' && a.icone)) ressources.set(noeud, await composantIcone(a.icone))
+  else if (noeud.nom === 'boutons') {
+    for (const bouton of directives(noeud.enfants)) {
+      if (bouton.attributs.icone) ressources.set(bouton, await composantIcone(bouton.attributs.icone))
+    }
+  }
   else if (noeud.nom === 'cartes') {
     for (const carte of directives(noeud.enfants)) {
       ressources.set(carte, carte.attributs.image ? await chargerImage(carte.attributs.image) : await composantIcone(carte.attributs.icone))
@@ -163,7 +170,7 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
         return (
           <div class:list={['boutons', { centre: a.centre }]}>
             {directives(noeud.enfants).map((bouton) => (
-              <Bouton href={bouton.attributs.lien} primary={bouton.attributs.type !== 'secondaire'} secondary={bouton.attributs.type === 'secondaire'}>
+              <Bouton href={bouton.attributs.lien} primary={bouton.attributs.type !== 'secondaire'} secondary={bouton.attributs.type === 'secondaire'} variant={bouton.attributs.type === 'contour' ? 'outlined' : undefined} Icone={ressources.get(bouton)}>
                 <Astro.self noeuds={bouton.enfants} />
               </Bouton>
             ))}
@@ -263,6 +270,8 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
             <Astro.self noeuds={enfants} />
           </Encadre>
         )
+      case 'video':
+        return <LecteurVideo youtube={a.youtube} titreVideo={a.titreVideo} image={ressources.get(noeud)} transcription={a.transcription} />
       case 'separateur':
         return <Separateur />
       case 'citation':
@@ -333,5 +342,28 @@ const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', att
 
   .boutons.centre {
     justify-content: center;
+  }
+
+  /* Bouton qui suit un paragraphe ou une galerie : il en est le
+     prolongement. La marge de l'élément suffit ; celle du bouton (1rem)
+     doublait l'écart. */
+  :global(p) + .boutons > :global(.bouton),
+  :global(.galerie) + .boutons > :global(.bouton),
+  :global(.image-texte-petite) + .boutons > :global(.bouton) {
+    margin-top: 0;
+  }
+
+  /* Paragraphe après un bouton : il ouvre une nouvelle idée, bien détachée
+     du bouton qui conclut la précédente */
+  .boutons:has(+ :global(p)) {
+    margin-block-end: var(--espace-bloc);
+  }
+
+  /* Galerie ou petite image-texte suivie d'un bouton (fonds-livres-rares :
+     « Faire un don », « Adopter un ouvrage ») : le bouton se rattache au
+     bloc, à l'écart d'un paragraphe */
+  :global(.galerie:has(+ .boutons)),
+  :global(.image-texte-petite:has(+ .boutons)) {
+    margin-block-end: var(--espace-element);
   }
 </style>

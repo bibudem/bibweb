@@ -157,8 +157,8 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       positionImage: z.enum(['gauche', 'droite']).default('droite'),
       /** `encart` : carte rose pâle ramassée, texte et bouton bleu foncé, image fondue au bord (BlocImageTexte) */
       disposition: z.enum(['colonnes', 'encart']).default('colonnes'),
-      /** Encart : couleur de la carte, rose pâle (espaces), vert foncé (études : « Besoin d’aide? »), bleu UdeM (recherche : « Premier arrêt ») ou bleu foncé (enseignement : « Inscrivez-nous »), texte blanc sauf sur le rose */
-      teinteEncart: z.enum(['rose', 'vertFonce', 'bleu', 'bleuFonce']).default('rose'),
+      /** Encart : couleur de la carte, rose pâle (espaces), vert (nous soutenir : « Cultiver la curiosité »), vert foncé (études : « Besoin d’aide? »), bleu UdeM (recherche : « Premier arrêt ») ou bleu foncé (enseignement : « Inscrivez-nous »), texte blanc sauf sur le rose et le vert */
+      teinteEncart: z.enum(['rose', 'vert', 'vertFonce', 'bleu', 'bleuFonce']).default('rose'),
       /** Encart : hauteur de la photo gardée quand elle est recadrée (bandeau sur tablette) : 0 % le haut, 50 % le centre */
       cadrage: cadrage.optional(),
       /** Encart : position gardée quand la photo est coupée sur les côtés (téléphone) : 0 % la gauche, 50 % le centre */
