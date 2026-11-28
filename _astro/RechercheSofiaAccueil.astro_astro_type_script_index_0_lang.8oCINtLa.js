@@ -1,0 +1,1 @@
+import{n as e}from"./sofia.BfAWoFxv.js";import{t}from"./pages.D7cJsQMg.js";import{n}from"./infobulle.DEzi4sFn.js";t(t=>{e();let r=document.querySelector(`[data-aide-sofia]`);r&&n([r],t)});

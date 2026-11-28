@@ -1,0 +1,35 @@
+/* ---------- Révélation au défilement ---------- */
+@layer motion {
+  /* États de départ réservés à .js : sans JavaScript, tout reste visible. */
+  .js .reveal { opacity: 0; transform: translateY(20px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: var(--d, 0ms); }
+  .reveal.in { opacity: 1; transform: none; }
+  /* Entrée du haut de page en CSS pur : elle démarre au premier affichage, sans attendre
+     le JavaScript. Le texte devient visible plus tôt (meilleur LCP pour le référencement). */
+  .js h1 .line > span { animation: heroLine 1000ms var(--ease-out) var(--d, 0ms) both; }
+  .js .hero .fade { animation: heroFade 800ms var(--ease-out) var(--d, 0ms) both; }
+  @keyframes heroLine { from { transform: translateY(105%); } }
+  @keyframes heroFade { from { opacity: 0; transform: translateY(12px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .hero-texture, .scroll-hint::after { animation: none; }
+    .reveal, .js h1 .line > span, .js .hero .fade, .bleed { transform: none !important; }
+    .reveal { transition: opacity 300ms ease; }
+    .js h1 .line > span, .js .hero .fade { animation: fadeOnly 300ms ease both; }
+    .panel.active, .panel.active .card { animation: fadeOnly 200ms ease; }
+    @keyframes fadeOnly { from { opacity: 0; } }
+    .tab-indicator { transition: none; }
+    .timeline-fill { transform: scaleY(1) !important; }
+    .js .manifeste { height: auto; }
+    .js .manifeste-sticky { position: static; height: auto; min-height: 100svh; padding: clamp(72px, 12vw, 136px) 0; }
+    .manifeste .w, .manifeste-actions { opacity: 1; }
+  }
+
+  /* Bouton pause (WCAG 2.2.2) : dans la dernière couche pour l’emporter sur la déclaration
+     « animation » des composants, qui remet sinon animation-play-state à running. */
+  .motion-paused .hero-texture, .motion-paused .scroll-hint::after { animation-play-state: paused; }
+
+  /* Sans JavaScript : pas de bouton pause possible, donc pas d’animation en continu (WCAG 2.2.2). */
+  html:not(.js) .hero-texture, html:not(.js) .scroll-hint::after { animation: none; }
+  html:not(.js) .timeline-fill { transform: scaleY(1); }
+}

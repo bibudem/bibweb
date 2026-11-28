@@ -1,0 +1,1 @@
+function e(e,t){for(let n of[`pointerleave`,`blur`])e.addEventListener(n,()=>e.removeAttribute(`data-infobulle-fermee`),{signal:t})}function t(e){for(let t of e)t.matches(`:hover, :focus-visible`)&&t.setAttribute(`data-infobulle-fermee`,``)}function n(n,r){document.addEventListener(`keydown`,e=>{e.key===`Escape`&&t(n)},{signal:r});for(let t of n)e(t,r)}export{n,e as r,t};

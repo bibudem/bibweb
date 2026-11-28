@@ -1,0 +1,1 @@
+import{t as e}from"./carrousel.k_CBivhk.js";import{t}from"./pages.D7cJsQMg.js";t(t=>{for(let n of document.querySelectorAll(`[data-carrousel]`))e(n,t)});

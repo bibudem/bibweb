@@ -1,0 +1,15 @@
+/*
+ * Science ouverte — Bibliothèques de l’Université de Montréal
+ * Ordre des couches de la cascade. Chargé en premier ; chaque fichier se range lui-même
+ * dans sa couche (@layer …) et tous sont chargés en parallèle depuis index.html,
+ * plutôt qu’en cascade d’@import (plus lent sur un vrai serveur).
+ *
+ * Les couches (@layer) fixent l’ordre de la cascade indépendamment de la
+ * spécificité : une couche déclarée plus loin l’emporte toujours.
+ *   tokens      → couleurs de la marque UdeM, typographie, courbes, grille
+ *   base        → réinitialisation et éléments HTML
+ *   a11y        → focus visible, lien d’évitement, texte pour lecteurs d’écran
+ *   components  → un fichier par section de la page
+ *   motion      → révélations au défilement et préférences de mouvement
+ */
+@layer tokens, base, a11y, components, motion;

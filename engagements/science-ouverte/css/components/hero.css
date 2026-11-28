@@ -1,0 +1,75 @@
+/* ---------- Héros : fond bleu principal (bleu foncé en thème sombre) ---------- */
+@layer components {
+  .hero {
+    min-height: 100svh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: calc(104px + env(safe-area-inset-top)) 0 72px;
+    position: relative; isolation: isolate; overflow: hidden;
+    background: var(--hero-bg); color: var(--on-blue);
+  }
+  /* Texture typographique : le vocabulaire de la science ouverte */
+  .hero-texture {
+    position: absolute; z-index: -1; left: 0; bottom: calc(var(--cell) * 0.4);
+    font: 800 clamp(80px, 17vw, 220px)/1 var(--sans); letter-spacing: -0.04em;
+    color: rgba(255,255,255,.07); white-space: nowrap; pointer-events: none;
+    display: flex; width: max-content;
+    animation: texture 140s linear infinite;
+  }
+  .hero-texture .t-half { display: flex; align-items: center; }
+  .hero-texture .it { font: italic 400 1em/1 var(--serif); letter-spacing: -0.02em; }
+  .hero-texture i { display: inline-block; width: 0.22em; height: 0.22em; margin: 0 0.45em; background: rgba(255,255,255,.07); }
+  @keyframes texture { to { transform: translateX(-50%); } }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px; width: fit-content; margin: 0 0 28px;
+    font-size: 14px; font-weight: 500;
+    padding: 7px 14px 7px 10px; border-radius: 999px;
+    background: rgba(255,255,255,.12); color: var(--on-blue);
+  }
+  .eyebrow .dot { width: 8px; height: 8px; border-radius: 2px; background: var(--udem-jaune); }
+  /* Dans le h1 (nom de la page pour les moteurs de recherche) : la pastille ne reprend pas
+     la typographie du grand titre, et passe en bloc pour ne pas hériter de sa hauteur de ligne. */
+  h1 .eyebrow { display: flex; font-family: var(--sans); line-height: 1.4; letter-spacing: normal; }
+
+  /* Premier titre : toujours en Figtree, jamais en majuscules */
+  h1 {
+    font-family: var(--sans); font-weight: 700;
+    font-size: clamp(54px, 12vw, 152px);
+    line-height: 0.95; letter-spacing: -0.035em;
+    margin: 0;
+  }
+  h1 .line { display: block; overflow: hidden; padding-bottom: 0.16em; margin-bottom: -0.16em; }
+  h1 .line > span { display: inline-block; }
+  h1 em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em; color: var(--udem-jaune); }
+  .lede { max-width: 660px; margin: 28px 0 0; font-size: clamp(18px, 2.2vw, 21px); line-height: 1.55; color: rgba(255,255,255,.88); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 50px; padding: 0 24px; border-radius: 999px;
+    font: 600 16px/1 var(--sans); text-decoration: none;
+    border: 1.5px solid currentColor; background: transparent; color: inherit;
+    transition: transform 160ms var(--ease-out), background-color 150ms ease, color 150ms ease;
+  }
+  .btn.primary { background: #fff; color: var(--udem-bleu); border-color: #fff; }
+  .btn:active { transform: scale(0.97); }
+  .btn svg { transition: transform 200ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover { background: rgba(255,255,255,.12); }
+    .btn.primary:hover { background: var(--udem-bleu-10); }
+    .btn:hover svg { transform: translateX(3px); }
+  }
+
+  .scroll-hint {
+    position: absolute; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: 22px; height: 36px; border: 1.5px solid rgba(255,255,255,.6); border-radius: 12px;
+  }
+  .scroll-hint::after {
+    content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; margin-left: -1.5px;
+    border-radius: 2px; background: #fff;
+    animation: wheel 1.8s var(--ease-out) infinite;
+  }
+  @keyframes wheel { 0% { opacity: 0; transform: translateY(-3px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(10px); } }
+  @media (max-height: 640px) { .scroll-hint { display: none; } }
+}

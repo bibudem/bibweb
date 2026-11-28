@@ -1,0 +1,111 @@
+/* ---------- Photographies ----------
+   Traitement selon la marque (2.3.6) : cadrages serrés ou angles inhabituels,
+   peu de couleurs, tons dominants alignés sur la palette. */
+@layer components {
+  picture, picture img { display: block; }
+  figure { margin: 0; }
+
+  /* Photos de fond (haut de page, Quatre piliers) :
+     même traitement sur ordinateur et sur mobile ; seules les dimensions changent. */
+
+  /* Haut de page : duotone bleu UdeM, fondu dans le fond du côté gauche.
+     Le titre blanc reste lisible au-dessus (blanc sur bleu ≥ 6:1). */
+  .hero-photo {
+    position: absolute; z-index: -1; top: 0; right: 0; bottom: 0; width: 46vw;
+    background: var(--udem-bleu);
+    -webkit-mask: linear-gradient(90deg, transparent 0%, #000 42%);
+            mask: linear-gradient(90deg, transparent 0%, #000 42%);
+  }
+  .hero-photo picture, .hero-photo img { width: 100%; height: 100%; }
+  .hero-photo img {
+    object-fit: cover; object-position: 50% 40%;
+    filter: grayscale(1) contrast(1.08) brightness(1.05);
+    mix-blend-mode: multiply; opacity: 0.9;
+  }
+  .js .hero-photo img {
+    animation: heroPhotoClip 1400ms var(--ease-in-out) 150ms both, heroPhotoScale 2200ms var(--ease-out) 150ms both;
+  }
+  @keyframes heroPhotoClip { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0); } }
+  @keyframes heroPhotoScale { from { scale: 1.06; } to { scale: 1; } }
+  @media (max-width: 899px) {
+    .hero-photo { width: 78vw; }
+  }
+
+  /* Quatre piliers : photo en noir et blanc ancrée en haut à gauche, fondue vers la droite
+     et vers le bas ; le titre se place à côté (ordinateur) ou dessous (mobile). */
+  #piliers { position: relative; isolation: isolate; overflow: hidden; }
+  .photo-head { display: grid; gap: 28px; }
+  .photo-head h2 em { white-space: nowrap; } /* « chaque étape. » ne se coupe pas */
+  /* Texte posé sur la photo (WCAG 1.4.3) : le grand titre garde un halo de la couleur du fond ;
+     le petit titre, trop fin pour un halo, reçoit une pastille de cette même couleur. */
+  .photo-head h2 { text-shadow: 0 0 6px var(--bg-alt), 0 0 14px var(--bg-alt), 0 0 24px var(--bg-alt); }
+  .photo-head .kicker { background: var(--bg-alt); padding: 5px 12px 5px 10px; margin-left: -10px; border-radius: 999px; }
+  .photo-left {
+    /* Jusqu’à 260 px sous la colonne du titre, quelle que soit la largeur de l’écran */
+    position: absolute; z-index: -1; top: 0; left: 0; width: calc(50vw + 260px); height: min(80vh, 760px);
+    overflow: hidden;
+    /* Deux fondus sur deux éléments imbriqués, plutôt qu’un masque composé :
+       la composition de masques n’est pas rendue de façon fiable sur grand écran. */
+    /* Fondu long et adouci (courbe en S) : il commence tôt et s’éteint sans bord visible.
+       Les 7 % de droite restent transparents : la photo s’y termine par un pilier sombre qui dessinait un trait. */
+    -webkit-mask-image: linear-gradient(270deg, transparent 0%, transparent 7%, rgba(0,0,0,.04) 16%, rgba(0,0,0,.16) 28%, rgba(0,0,0,.42) 42%, rgba(0,0,0,.74) 55%, #000 68%);
+            mask-image: linear-gradient(270deg, transparent 0%, transparent 7%, rgba(0,0,0,.04) 16%, rgba(0,0,0,.16) 28%, rgba(0,0,0,.42) 42%, rgba(0,0,0,.74) 55%, #000 68%);
+  }
+  .photo-left picture {
+    width: 100%; height: 100%;
+    -webkit-mask-image: linear-gradient(180deg, #000 26%, rgba(0,0,0,.78) 42%, rgba(0,0,0,.46) 56%, rgba(0,0,0,.18) 70%, rgba(0,0,0,.04) 80%, transparent 88%);
+            mask-image: linear-gradient(180deg, #000 26%, rgba(0,0,0,.78) 42%, rgba(0,0,0,.46) 56%, rgba(0,0,0,.18) 70%, rgba(0,0,0,.04) 80%, transparent 88%);
+  }
+  .photo-left img {
+    width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%;
+    filter: grayscale(1) contrast(1.08) brightness(1.05);
+    opacity: 0.9; /* noir et blanc, posé directement sur le fond de la section */
+  }
+  @media (min-width: 900px) {
+    /* Titre décalé vers la gauche, posé sur la partie déjà fondue de la photo */
+    .photo-head { grid-template-columns: 5fr 7fr; }
+    .photo-head > div { grid-column: 2; }
+  }
+  @media (max-width: 899px) {
+    .photo-left { width: 88vw; height: 340px; }
+    .photo-head { padding-top: 190px; }
+  }
+  /* Dévoilement depuis la gauche, en miroir du haut de page */
+  .js .photo-left.photo-reveal picture,
+  .js .photo-left.photo-reveal.in picture { clip-path: none; }
+  .js .photo-left.photo-reveal img { clip-path: inset(0 100% 0 0); scale: 1.06; transform-origin: left center; }
+  .js .photo-left.photo-reveal.in img {
+    clip-path: inset(0); scale: 1;
+    transition: clip-path 1400ms var(--ease-in-out) 100ms, scale 2200ms var(--ease-out) 100ms;
+  }
+
+
+  /* Passer à l’action : photo à droite, sous le carré orange et le logo */
+  .cta-photo { position: relative; z-index: -2; margin: calc(-1 * var(--cta-pad)) calc(-1 * var(--cta-pad)) 32px; aspect-ratio: 16 / 10; overflow: hidden; }
+  .cta-photo picture, .cta-photo img { width: 100%; height: 100%; }
+  .cta-photo img { object-fit: cover; object-position: 35% 30%; }
+  @media (min-width: 900px) {
+    .cta-photo { position: absolute; top: 0; right: 0; bottom: 0; width: 38%; margin: 0; aspect-ratio: auto; }
+    .cta > :not(.cta-photo):not(.cta-mark) { max-width: 56%; }
+  }
+
+  /* Panneaux de détail : photo en tête du contenu */
+  .card-photo { aspect-ratio: 16 / 9; overflow: hidden; border-radius: 4px; margin: 0 0 20px; background: var(--surface-2); }
+  .card-photo picture, .card-photo img { width: 100%; height: 100%; }
+  .card-photo img { object-fit: cover; }
+
+  /* Dévoilement au défilement : la photo se découvre de haut en bas.
+     Le masque est posé sur l’image, pas sur le cadre observé : un élément entièrement
+     masqué n’est jamais signalé comme visible par IntersectionObserver. */
+  .js .photo-reveal picture { clip-path: inset(0 0 100% 0); }
+  .js .photo-reveal.in picture { clip-path: inset(0); transition: clip-path 1100ms var(--ease-in-out); }
+  .js .photo-reveal img { scale: 1.08; }
+  .js .photo-reveal.in img { scale: 1; transition: scale 1600ms var(--ease-out); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .hero-photo img, .js .photo-reveal picture, .js .photo-reveal img { clip-path: none !important; scale: 1 !important; }
+    .js .hero-photo img { animation: none; }
+    .js .photo-reveal { opacity: 0; transition: opacity 300ms ease; }
+    .js .photo-reveal.in { opacity: 1; }
+  }
+}

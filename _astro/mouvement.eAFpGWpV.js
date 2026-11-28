@@ -1,0 +1,1 @@
+var e=`(prefers-reduced-motion: reduce)`,t=()=>window.matchMedia(e).matches;export{t as n,e as t};
